@@ -7,6 +7,7 @@
   * [Withdraw](api-doc/withdraw.md)
   * [Rozo Smart Contract](api-doc/rozo-smart-contract/README.md)
     * [OnChain Data Queries with Graph](api-doc/rozo-smart-contract/onchain-data-queries-with-graph.md)
+  * [Create Order](api-doc/create-order.md)
 * [How to Use](how-to-use.md)
 * [Terms of service](terms-of-service.md)
 * [Privacy Policy](privacy-policy.md)
