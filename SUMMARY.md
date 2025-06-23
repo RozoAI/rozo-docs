@@ -11,3 +11,4 @@
 * [How to Use](how-to-use.md)
 * [Terms of service](terms-of-service.md)
 * [Privacy Policy](privacy-policy.md)
+* [🧾 Rozo - Stablecoin Abstraction](rozo-stablecoin-abstraction.md)
