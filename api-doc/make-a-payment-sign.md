@@ -81,7 +81,7 @@ OUT_OF_CREDIT:  the credit is not enough for the payment
 
 ```
 Body
-API Host: https://api.rozo.ai/v1/sign
+API Host: https://api.rozo.ai/v1/cashbacksign
 
 Body: 
  {
@@ -110,7 +110,7 @@ Request Body Example:
 #### Curl Command
 
 ```markup
-curl -X POST https://api.rozo.ai/v1/sign \
+curl -X POST https://api.rozo.ai/v1/cashbacksign \
   -H "Content-Type: application/json" \
   -d '{"from_address":"0xBbCa2269b1EBbB859DD4E5F0b024a5b574151B57","to_address":"0xab47828c07eeea1ecff55baa729da0eb3790f6fb","amount_usd_cents":100,"timestamp":1741597464229,"signature":"0x75cedff072993e4ee929c1077b4334663cce768c43982b95edf0aeed7455c63957ca223dd9ebc6e07e0846af342bf72064b73ae09b55be6702ce1f807c87704e1b","order_id":"ORDER123","about":"Monitor rental for 1 day"}'
 
@@ -188,7 +188,7 @@ async function testSignEndpoint(): Promise<void> {
 
 
         // Make the actual request using fetch
-        const response = await fetch('http://localhost:3000/v1/sign', {
+        const response = await fetch('http://localhost:3000/v1/cashbacksign', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

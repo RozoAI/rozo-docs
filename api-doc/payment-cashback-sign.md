@@ -21,7 +21,7 @@ API Host: https://api.rozo.ai/v1/cashbacksign
 #### Curl Command
 
 ```shellscript
-curl -X POST https://api.rozo.ai/v1/nssign \
+curl -X POST https://api.rozo.ai/v1/cashbacksign \
   -H "Content-Type: application/json" \
   -d '{
     "from_address": "0x1234",
