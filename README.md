@@ -2,7 +2,7 @@
 
 ### Overview
 
-Rozo is building the last-mile infrastructure for crypto-native payments — enabling users to tap and pay with stablecoins as effortlessly as using Apple Pay. By abstracting away the complexity of blockchains, wallets, gas fees, and token types, Rozo delivers a frictionless experience for both users and merchants, online and in the real world.
+Rozo is building the Visa for crypto-native payments — enabling users to tap and pay with stablecoins as effortlessly as using Apple Pay. By abstracting away the complexity of blockchains, wallets, gas fees, and token types, Rozo delivers a frictionless experience for both users and merchants, online and in the real world.
 
 ### 1. 🎯 The Problem: Fragmented Stablecoin Payments
 
