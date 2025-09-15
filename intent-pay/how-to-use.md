@@ -1,4 +1,4 @@
-# RozoAI Intent Pay SDK
+# RozoAI Intent Pay SDK - AI Service Quick Start Guide
 
 > **Cross-chain crypto payments made simple** – Accept payments from any blockchain with a single component
 
@@ -6,9 +6,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org/)
 
-## 🚀 What is RozoAI Intent Pay?
+## 🤖 For AI Services: Single Prompt Implementation
 
-RozoAI Intent Pay SDK is a React component that lets your users pay you in crypto **from any blockchain** - whether they have Ethereum, Solana, Polygon, or dozens of other tokens. Your users can pay with their preferred wallet and token, while you receive exactly what you want.
+This guide is optimized for AI services to quickly create working examples from a single prompt. All requirements and patterns are clearly defined below.
+
+### 🎯 What RozoAI Intent Pay Does
+
+RozoAI Intent Pay SDK is a React component that lets users pay you in crypto **from any blockchain** - whether they have Ethereum, Solana, Polygon, or dozens of other tokens. Your users can pay with their preferred wallet and token, while you receive exactly what you want.
 
 **Key Benefits:**
 
@@ -19,77 +23,361 @@ RozoAI Intent Pay SDK is a React component that lets your users pay you in crypt
 - ✅ **Mobile Ready** - Works perfectly on mobile apps
 - ✅ **Zero Config** - Smart defaults, easy customization
 
-## 📦 Installation
+## 📋 REQUIREMENTS CHECKLIST (MANDATORY)
 
-```bash
-npm install @rozoai/intent-pay
-# or
-yarn add @rozoai/intent-pay
-# or
-pnpm add @rozoai/intent-pay
-```
+When creating examples, AI services MUST follow these requirements:
 
-## 🏃‍♂️ Quick Start (2 minutes)
-
-### 1. Wrap Your App
+### ✅ 1. Provider Structure (REQUIRED)
 
 ```tsx
-import { RozoPayProvider } from "@rozoai/intent-pay";
+// MUST wrap your app with these providers in this exact order:
+<WagmiProvider config={wagmiConfig}>
+  <QueryClientProvider client={queryClient}>
+    <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
+      {/* Your app components here */}
+    </RozoPayProvider>
+  </QueryClientProvider>
+</WagmiProvider>
+```
 
+### ✅ 2. Dependencies (REQUIRED)
+
+```json
+{
+  "dependencies": {
+    "@rozoai/intent-pay": "^0.0.25-beta.6",
+    "@rozoai/intent-common": "^0.0.20",
+    "@tanstack/react-query": "^5.51.11",
+    "wagmi": "^2.15.6",
+    "viem": "^2.31.6",
+    "react": "^18.2.0"
+  }
+}
+```
+
+### ✅ 3. Wagmi Config (REQUIRED)
+
+```tsx
+import { getDefaultConfig } from "@rozoai/intent-pay";
+import { createConfig } from "wagmi";
+
+export const wagmiConfig = createConfig(
+  getDefaultConfig({
+    appName: "Your App Name",
+  })
+);
+```
+
+### ✅ 4. QueryClient Setup (REQUIRED)
+
+```tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+```
+
+### ✅ 5. Required Imports (COPY EXACTLY)
+
+```tsx
+// Core SDK imports
+import {
+  RozoPayProvider,
+  RozoPayButton,
+  getDefaultConfig,
+} from "@rozoai/intent-pay";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createConfig, WagmiProvider } from "wagmi";
+import { getAddress } from "viem";
+
+// Optional: Common tokens and utilities
+import { baseUSDC } from "@rozoai/intent-common";
+```
+
+## 🚀 COMPLETE WORKING EXAMPLE (COPY & PASTE READY)
+
+Here's a complete, working example that AI services can generate. This follows all requirements:
+
+### 📁 File Structure
+
+```
+src/
+├── providers.tsx          # Required providers setup
+├── App.tsx               # Main app component
+└── package.json          # Dependencies
+```
+
+### 📄 providers.tsx (REQUIRED)
+
+```tsx
+"use client";
+
+import { getDefaultConfig, RozoPayProvider } from "@rozoai/intent-pay";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type ReactNode } from "react";
+import { createConfig, WagmiProvider } from "wagmi";
+
+export const wagmiConfig = createConfig(
+  getDefaultConfig({
+    appName: "RozoAI Payment Demo",
+  })
+);
+
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
+          {children}
+        </RozoPayProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+### 📄 App.tsx (Main Component)
+
+```tsx
+"use client";
+
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC } from "@rozoai/intent-common";
+import { getAddress } from "viem";
+import { Providers } from "./providers";
+
+function PaymentDemo() {
+  return (
+    <div className="p-8 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Crypto Payment Demo</h1>
+
+      <RozoPayButton
+        appId="rozoDemoMP" // Demo app ID - replace with yours
+        toChain={baseUSDC.chainId} // Base chain (8453)
+        toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")} // Your wallet
+        toToken={getAddress(baseUSDC.token)} // USDC on Base
+        toUnits="5" // $5 USDC
+        intent="Pay $5" // Button text
+        onPaymentStarted={(event) => {
+          console.log("✅ Payment started!", event.paymentId);
+          // Handle payment start (e.g., show loading state)
+        }}
+        onPaymentCompleted={(event) => {
+          console.log("🎉 Payment completed!", event.txHash);
+          alert("Payment successful! 🎉");
+          // Handle successful payment (e.g., fulfill order)
+        }}
+        onPaymentBounced={(event) => {
+          console.log("❌ Payment bounced!", event);
+          alert("Payment failed. You'll receive a refund.");
+          // Handle failed payment
+        }}
+      />
+
+      <p className="text-sm text-gray-600 mt-4">
+        Users can pay from any supported blockchain and wallet
+      </p>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Providers>
+      <PaymentDemo />
+    </Providers>
+  );
+}
+```
+
+### 📄 package.json (Dependencies)
+
+```json
+{
+  "name": "rozoai-payment-demo",
+  "private": true,
+  "dependencies": {
+    "@rozoai/intent-pay": "^0.0.25-beta.6",
+    "@rozoai/intent-common": "^0.0.20",
+    "@tanstack/react-query": "^5.51.11",
+    "wagmi": "^2.15.6",
+    "viem": "^2.31.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
+```
+
+## 🎯 QUICK CUSTOMIZATION PATTERNS
+
+### Pattern 1: Different Amount
+
+```tsx
+<RozoPayButton
+  appId="rozoDemoMP"
+  toChain={baseUSDC.chainId}
+  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+  toToken={getAddress(baseUSDC.token)}
+  toUnits="25" // $25 instead of $5
+  intent="Buy Pro Plan"
+/>
+```
+
+### Pattern 2: Multiple Payment Options
+
+```tsx
+<RozoPayButton
+  appId="rozoDemoMP"
+  toChain={baseUSDC.chainId}
+  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+  toToken={getAddress(baseUSDC.token)}
+  toUnits="10"
+  intent="Donate $10"
+  preferredChains={[8453, 137]} // Prefer Base and Polygon
+  preferredTokens={[
+    { chain: 8453, address: getAddress(baseUSDC.token) }, // Base USDC first
+  ]}
+/>
+```
+
+### Pattern 3: Solana/Stellar Support
+
+```tsx
+<RozoPayButton
+  appId="rozoDemoMP"
+  // REQUIRED: Base chain config (settlement layer)
+  toChain={8453} // MUST be Base Chain (8453)
+  toToken={getAddress(baseUSDC.token)} // MUST be Base USDC
+  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")} // Any valid EVM address
+  // Your actual destinations
+  toSolanaAddress="DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK"
+  toStellarAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ"
+  toUnits="15"
+  intent="Multi-Chain Payment"
+/>
+```
+
+**⚠️ CRITICAL: Solana/Stellar Configuration Requirements**
+
+When using `toSolanaAddress` or `toStellarAddress`, you **MUST** set:
+
+- `toChain` to Base Chain (8453)
+- `toToken` to Base USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+- The `toAddress` can be any valid EVM address in this case
+
+This is because RozoAI uses Base chain as the settlement layer for cross-chain payments.
+
+## ⚠️ COMMON MISTAKES TO AVOID
+
+### ❌ Missing Provider Wrapper
+
+```tsx
+// DON'T DO THIS - Missing providers
+function App() {
+  return <RozoPayButton {...props} />; // ❌ Will crash
+}
+
+// ✅ DO THIS - Proper provider setup
 function App() {
   return (
-    <RozoPayProvider>
-      <YourApp />
-    </RozoPayProvider>
+    <Providers>
+      <RozoPayButton {...props} />
+    </Providers>
   );
 }
 ```
 
-### 2. Add the Payment Button
+### ❌ Wrong Import Paths
 
 ```tsx
-import { RozoPayButton } from "@rozoai/intent-pay";
+// ❌ DON'T DO THIS
+import { RozoPayButton } from "@rozoai/connectkit";
+import { RozoPayButton } from "rozoai-intent-pay";
 
-function CheckoutPage() {
-  return (
-    <RozoPayButton
-      appId="your-app-id" // Get this from RozoAI dashboard
-      toAddress="0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2" // Your wallet
-      toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // USDC on Base
-      toUnits="10" // $10 USDC
-      toChain={8453} // Base chain
-      intent="Purchase" // Button text
-      onPaymentStarted={(event) => {
-        console.log("Payment started!", event);
-        // User has initiated payment
-      }}
-      onPaymentCompleted={(event) => {
-        console.log("Payment completed!", event);
-        // Payment successful - fulfill order
-      }}
-      onPaymentBounced={(event) => {
-        console.log("Payment bounced!", event);
-        // Payment failed - handle refund
-      }}
-    />
-  );
-}
+// ✅ DO THIS
+import { RozoPayButton } from "@rozoai/intent-pay";
 ```
 
-That's it! 🎉 Your users can now pay you from any supported blockchain.
+### ❌ Missing getAddress() Wrapper
+
+```tsx
+// ❌ DON'T DO THIS - Raw strings
+toAddress="0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2"
+toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+
+// ✅ DO THIS - Wrapped with getAddress()
+toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+toToken={getAddress(baseUSDC.token)}
+```
+
+### ❌ Mixing payId with appId
+
+```tsx
+// ❌ DON'T DO THIS
+<RozoPayButton appId="app123" payId="pay456" />
+
+// ✅ DO THIS - Use one approach
+<RozoPayButton appId="app123" toChain={8453} {...otherProps} />
+// OR
+<RozoPayButton payId="pay456" />
+```
+
+### ❌ Wrong Solana/Stellar Configuration
+
+```tsx
+// ❌ DON'T DO THIS - Wrong chain/token for Solana/Stellar
+<RozoPayButton
+  appId="rozoDemoMP"
+  toChain={1}  // ❌ Wrong chain
+  toToken={getAddress("0xA0b86a33...")}  // ❌ Wrong token
+  toSolanaAddress="DYw8jCTf..."
+/>
+
+// ✅ DO THIS - Correct Base chain config
+<RozoPayButton
+  appId="rozoDemoMP"
+  toChain={8453}  // ✅ Base chain
+  toToken={getAddress(baseUSDC.token)}  // ✅ Base USDC
+  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+  toSolanaAddress="DYw8jCTf..."
+/>
+```
 
 ## 🎯 Supported Chains & Tokens
 
-### 🔗 Blockchains
+### 🔗 Blockchains (AI Services: Use these Chain IDs)
 
-| Chain        | Chain ID | Popular Tokens    |
-| ------------ | -------- | ----------------- |
-| **Ethereum** | 1        | ETH, USDC, USDT   |
-| **Base**     | 8453     | ETH, USDC         |
-| **Polygon**  | 137      | MATIC, USDC, USDT |
-| **Solana**   | 900      | SOL, USDC         |
-| **Stellar**  | 1500     | XLM, USDC         |
-| **BSC**      | 56       | BNB, USDC, USDT   |
+| Chain        | Chain ID | Token Examples    | Usage in Code                   |
+| ------------ | -------- | ----------------- | ------------------------------- |
+| **Ethereum** | 1        | ETH, USDC, USDT   | `toChain={1}`                   |
+| **Base**     | 8453     | ETH, USDC         | `toChain={8453}` ⭐ RECOMMENDED |
+| **Polygon**  | 137      | MATIC, USDC, USDT | `toChain={137}`                 |
+| **Arbitrum** | 42161    | ETH, USDC         | `toChain={42161}`               |
+| **Optimism** | 10       | ETH, USDC         | `toChain={10}`                  |
+| **BSC**      | 56       | BNB, USDC, USDT   | `toChain={56}`                  |
+| **Solana**   | Special  | SOL, USDC         | Use `toSolanaAddress`           |
+| **Stellar**  | Special  | XLM, USDC         | Use `toStellarAddress`          |
+
+### 💰 Common Token Addresses (Copy-Paste Ready)
+
+```tsx
+// Base USDC (RECOMMENDED for most use cases)
+import { baseUSDC } from "@rozoai/intent-common";
+toChain={baseUSDC.chainId}      // 8453
+toToken={getAddress(baseUSDC.token)} // 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+
+// Ethereum USDC
+toChain={1}
+toToken={getAddress("0xA0b86a33E6B5A6B6B1c8C9C7B7B8C9C8C9C8C9C8")}
+
+// Polygon USDC
+toChain={137}
+toToken={getAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")}
+
+// Native tokens (ETH, MATIC, etc.)
+toToken={getAddress("0x0000000000000000000000000000000000000000")} // Native token
+```
 
 ## 💳 Payment Methods Your Users Can Use
 
@@ -100,514 +388,318 @@ That's it! 🎉 Your users can now pay you from any supported blockchain.
 - **Solana**: Phantom, Backpack, Solflare
 - **Advanced**: Hardware wallets, multisig wallets
 
-## 📋 Complete API Reference
+## 🔧 AI SERVICE PROMPT TEMPLATES
 
-### RozoPayButton Props
+### Template 1: Basic Payment Button
+
+```
+Create a React component that accepts crypto payments using RozoAI Intent Pay SDK.
+Requirements:
+- Accept $10 USDC payments on Base chain
+- Use demo app ID "rozoDemoMP"
+- Show success/error alerts
+- Include all required providers (WagmiProvider, QueryClientProvider, RozoPayProvider)
+- Use proper TypeScript types
+```
+
+### Template 2: E-commerce Checkout
+
+```
+Create a crypto payment checkout page using RozoAI Intent Pay SDK.
+Requirements:
+- Multiple payment amounts ($5, $25, $100)
+- Different button text for each amount
+- Handle payment events with console logs
+- Include providers setup in separate file
+- Use Base USDC as the payment token
+```
+
+### Template 3: Multi-Chain Support
+
+```
+Create a donation component using RozoAI Intent Pay SDK that supports:
+- Base, Polygon, and Solana payments
+- $20 donation amount
+- Prefer Base and Polygon chains
+- Include Solana address support
+- Show payment status updates
+```
+
+## 📋 ESSENTIAL API REFERENCE (AI Services)
+
+### Core Props (ALWAYS REQUIRED)
 
 ```tsx
-interface RozoPayButtonProps {
-  // Payment Configuration - Either use appId + params OR payId
+<RozoPayButton
+  appId="rozoDemoMP" // Demo app ID
+  toChain={8453} // Base chain ID
+  toAddress={getAddress("0x...")} // Your wallet address
+  toToken={getAddress(baseUSDC.token)} // USDC token
+  toUnits="10" // $10 USDC
+  intent="Pay Now" // Button text
+/>
+```
 
-  // Option 1: Direct parameters
-  appId: string; // Your app ID from RozoAI dashboard
-  toChain: number; // Destination chain ID
-  toToken: Address; // Token contract address ("0x0" for native token)
-  toAddress: Address; // EVM destination address
-  toUnits?: string; // Amount in smallest token units (optional)
-  toStellarAddress?: string; // Stellar destination address
-  toSolanaAddress?: string; // Solana destination address
-  toCallData?: Hex; // Optional contract call data
-  intent?: string; // Button text (e.g., "Pay", "Purchase", "Donate")
+### Event Handlers (RECOMMENDED)
 
-  // Option 2: Pre-generated payment
-  payId: string; // Payment ID from RozoAI API (replaces above params)
+```tsx
+  onPaymentStarted={(event) => {
+  console.log("Payment started:", event.paymentId);
+  // Show loading state
+  }}
+  onPaymentCompleted={(event) => {
+  console.log("Payment completed:", event.txHash);
+  // Fulfill order, show success
+  }}
+  onPaymentBounced={(event) => {
+  console.log("Payment failed:", event);
+  // Handle refund, show error
+}}
+```
 
-  // Payment Options & Preferences
-  paymentOptions?: ExternalPaymentOptionsString[]; // Available payment methods
-  preferredChains?: number[]; // Chains shown first in UI
-  preferredTokens?: {
-    // Tokens shown first in UI
-    chain: number;
-    address: Address;
-  }[];
-  evmChains?: number[]; // Restrict to specific EVM chains only
+### Optional Customization
 
-  // Metadata & Tracking
-  externalId?: string; // Your correlation ID
-  metadata?: RozoPayUserMetadata; // Custom metadata for tracking
-  refundAddress?: Address; // Where to refund if payment bounces
+```tsx
+// Chain/token preferences
+preferredChains={[8453, 137]}           // Prefer Base, Polygon
+preferredTokens={[                      // Prefer specific tokens
+  { chain: 8453, address: getAddress(baseUSDC.token) }
+]}
 
-  // UI Customization
-  mode?: "light" | "dark" | "auto"; // Color scheme
-  theme?:
-    | "auto"
-    | "minimal"
-    | "rounded"
-    | "retro"
-    | "soft"
-    | "midnight"
-    | "web95"
-    | "nouns";
-  customTheme?: CustomTheme; // Custom theme object
-  disabled?: boolean; // Disable button interaction
+// UI customization
+theme="minimal"                         // Built-in themes
+mode="auto"                            // Light/dark mode
+disabled={false}                       // Enable/disable button
 
-  // Modal Behavior
-  defaultOpen?: boolean; // Open modal immediately
-  closeOnSuccess?: boolean; // Auto-close after successful payment
-  resetOnSuccess?: boolean; // Reset payment state after success
-  connectedWalletOnly?: boolean; // Skip method selection, use connected wallets only
+// Multi-chain destinations
+toSolanaAddress="DYw8jCTf..."          // Solana wallet
+toStellarAddress="GABC123..."          // Stellar wallet
 
-  // Messages & URLs
-  confirmationMessage?: string; // Custom success message
-  redirectReturnUrl?: string; // Return URL after external payment flows
-  showProcessingPayout?: boolean; // Show processing state after payment
+// Tracking
+metadata={{ orderId: "123" }}          // Custom metadata
+externalId="order_456"                 // Your tracking ID
+```
 
-  // Event Handlers
-  onPaymentStarted?: (event: PaymentStartedEvent) => void;
-  onPaymentCompleted?: (event: PaymentCompletedEvent) => void;
-  onPaymentBounced?: (event: PaymentBouncedEvent) => void;
-  onOpen?: () => void; // Modal opened
-  onClose?: () => void; // Modal closed
+## 🚨 TESTING CHECKLIST
+
+Before submitting code, AI services should verify:
+
+### ✅ Provider Setup
+
+- [ ] `WagmiProvider` wraps the app with `wagmiConfig`
+- [ ] `QueryClientProvider` wraps with `queryClient`
+- [ ] `RozoPayProvider` wraps with correct `payApiUrl`
+- [ ] All providers are in correct nesting order
+
+### ✅ Imports
+
+- [ ] `@rozoai/intent-pay` package imported correctly
+- [ ] `getAddress` imported from `viem`
+- [ ] `baseUSDC` imported from `@rozoai/intent-common` (if used)
+- [ ] All required React hooks imported
+
+### ✅ Button Props
+
+- [ ] `appId` is set (use "rozoDemoMP" for demos)
+- [ ] `toChain` is a valid chain ID (8453 for Base recommended)
+- [ ] `toAddress` wrapped in `getAddress()`
+- [ ] `toToken` wrapped in `getAddress()`
+- [ ] `toUnits` is a string (e.g., "10" not 10)
+- [ ] `intent` prop used for button text
+
+### ✅ Solana/Stellar Support (If Used)
+
+- [ ] `toChain` set to Base Chain (8453) when using `toSolanaAddress` or `toStellarAddress`
+- [ ] `toToken` set to Base USDC when using Solana/Stellar addresses
+- [ ] `toAddress` can be any valid EVM address for Solana/Stellar payments
+
+### ✅ Event Handlers
+
+- [ ] `onPaymentStarted` logs payment ID
+- [ ] `onPaymentCompleted` logs transaction hash
+- [ ] `onPaymentBounced` handles errors gracefully
+
+### ✅ TypeScript
+
+- [ ] All imports have proper types
+- [ ] Address types use `Address` from `viem`
+- [ ] Event handlers have correct event types
+
+## 🎉 SUCCESS EXAMPLES
+
+### Next.js App Router Example
+
+```tsx
+// app/providers.tsx
+"use client";
+import { getDefaultConfig, RozoPayProvider } from "@rozoai/intent-pay";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createConfig, WagmiProvider } from "wagmi";
+
+const wagmiConfig = createConfig(getDefaultConfig({ appName: "Demo" }));
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
+          {children}
+        </RozoPayProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+
+// app/layout.tsx
+import { Providers } from "./providers";
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+
+// app/page.tsx
+("use client");
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC } from "@rozoai/intent-common";
+import { getAddress } from "viem";
+
+export default function HomePage() {
+  return (
+    <RozoPayButton
+      appId="rozoDemoMP"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits="5"
+      intent="Pay $5"
+      onPaymentCompleted={() => alert("Payment successful! 🎉")}
+    />
+  );
 }
 ```
 
-### Event Types
+### Vite/CRA Example
 
 ```tsx
-interface PaymentStartedEvent {
-  type: "payment_started";
-  paymentId: string; // Rozo payment ID
-  chainId: number; // Source chain where user paid
-  txHash?: string; // Transaction hash on source chain
-  payment: RozoPayment; // Full payment details
+// src/providers.tsx
+import { getDefaultConfig, RozoPayProvider } from "@rozoai/intent-pay";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createConfig, WagmiProvider } from "wagmi";
+
+const wagmiConfig = createConfig(getDefaultConfig({ appName: "Demo" }));
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
+          {children}
+        </RozoPayProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
 }
 
-interface PaymentCompletedEvent {
-  type: "payment_completed";
-  paymentId: string; // Rozo payment ID
-  chainId: number; // Destination chain
-  txHash: string; // Destination transaction hash
-  payment: RozoPayment; // Full payment details
-  rozoPaymentId?: string; // Your external/correlation ID
+// src/App.tsx
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC } from "@rozoai/intent-common";
+import { getAddress } from "viem";
+import { Providers } from "./providers";
+
+function PaymentApp() {
+  return (
+    <div style={{ padding: "2rem", textAlign: "center" }}>
+      <h1>Crypto Payment Demo</h1>
+      <RozoPayButton
+        appId="rozoDemoMP"
+        toChain={baseUSDC.chainId}
+        toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+        toToken={getAddress(baseUSDC.token)}
+        toUnits="10"
+        intent="Pay $10"
+        onPaymentCompleted={() => console.log("Payment completed! 🎉")}
+      />
+    </div>
+  );
 }
 
-interface PaymentBouncedEvent {
-  type: "payment_bounced";
-  paymentId: string; // Rozo payment ID
-  chainId: number; // Chain where refund occurred
-  txHash: string; // Refund transaction hash
-  payment: RozoPayment; // Full payment details
-  rozoPaymentId?: string; // Your external/correlation ID
-}
-
-// Payment details object
-interface RozoPayment {
-  id: string;
-  status: string;
-  fromChain: number;
-  fromToken: string;
-  fromAmount: string;
-  toChain: number;
-  toToken: string;
-  toAmount: string;
-  // ... additional payment metadata
+export default function App() {
+  return (
+    <Providers>
+      <PaymentApp />
+    </Providers>
+  );
 }
 ```
 
-## 🎨 Themes & Customization
+---
+
+## 📚 ADDITIONAL RESOURCES (Optional Reading)
 
 ### Built-in Themes
 
 ```tsx
-<RozoPayButton
-  theme="minimal" // Clean, minimal design
-  theme="rounded" // Rounded corners, modern
-  theme="retro" // Retro/vintage style
-  theme="midnight" // Dark theme
-  theme="web95" // Windows 95 nostalgic
-  theme="soft" // Soft, gentle colors
-  theme="nouns" // Nouns DAO inspired
-  theme="auto" // Matches system preference
-/>
+theme = "minimal"; // Clean, minimal design
+theme = "rounded"; // Rounded corners, modern
+theme = "retro"; // Retro/vintage style
+theme = "midnight"; // Dark theme
+theme = "web95"; // Windows 95 nostalgic
+theme = "soft"; // Soft, gentle colors
+theme = "nouns"; // Nouns DAO inspired
+theme = "auto"; // Matches system preference (default)
 ```
 
-### Custom Styling
+### Advanced Configuration
 
 ```tsx
-<RozoPayProvider
-  customTheme={{
-    primaryColor: "#ff6b35",
-    borderRadius: "12px",
-    fontFamily: "Inter, sans-serif",
-  }}
->
-  <YourApp />
-</RozoPayProvider>
-```
-
-## 🔧 Advanced Features
-
-### Custom Button Component
-
-```tsx
-import { RozoPayButton } from "@rozoai/intent-pay";
-
-// Use your own button design
-<RozoPayButton.Custom
-  appId="your-app-id"
-  toAddress="0x..."
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-  toUnits="10"
-  toChain={8453}
->
-  {({ show, hide }) => (
-    <button
-      onClick={show}
-      className="my-custom-button-class"
-      style={{ background: "linear-gradient(45deg, #ff6b35, #f7931e)" }}
-    >
-      💰 Pay with Crypto
-    </button>
-  )}
-</RozoPayButton.Custom>;
-```
-
-### Payment Method Restrictions
-
-```tsx
-<RozoPayButton
-  appId="your-app-id"
-  toAddress="0x..."
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-  toUnits="10"
-  toChain={8453}
-  // Only allow these payment methods
-  paymentOptions={["wallet", "coinbase", "binance"]}
-  // Only allow these EVM chains
-  evmChains={[1, 8453, 137]} // Ethereum, Base, Polygon only
-  // Skip method selection for connected wallets
-  connectedWalletOnly={true}
-/>
-```
-
-### Advanced Event Handling
-
-```tsx
-<RozoPayButton
-  appId="your-app-id"
-  toAddress="0x..."
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-  toUnits="10"
-  toChain={8453}
-  externalId="order_12345" // Your tracking ID
-  onOpen={() => {
-    // Track modal opened
-    analytics.track("payment_modal_opened");
-  }}
-  onClose={() => {
-    // Track modal closed
-    analytics.track("payment_modal_closed");
-  }}
-  onPaymentStarted={(event) => {
-    // Payment initiated - show loading state
-    setPaymentStatus("processing");
-
-    // Track the start with your analytics
-    analytics.track("payment_started", {
-      paymentId: event.paymentId,
-      sourceChain: event.chainId,
-      amount: event.payment.toAmount,
-    });
-  }}
-  onPaymentCompleted={(event) => {
-    // Payment successful - fulfill the order
-    fulfillOrder(event.rozoPaymentId || event.paymentId);
-
-    // Show success message
-    toast.success("Payment completed successfully!");
-
-    // Track completion
-    analytics.track("payment_completed", {
-      paymentId: event.paymentId,
-      txHash: event.txHash,
-      amount: event.payment.toAmount,
-    });
-  }}
-  onPaymentBounced={(event) => {
-    // Payment failed/bounced - handle refund
-    handlePaymentFailure(event.paymentId);
-
-    // Show error message
-    toast.error("Payment failed. You will receive a refund.");
-
-    // Track failure
-    analytics.track("payment_bounced", {
-      paymentId: event.paymentId,
-      reason: "bounced",
-    });
-  }}
-/>
-```
-
-## 🔧 Advanced Configuration
-
-### Custom Wagmi Config
-
-```tsx
-import { createConfig } from "wagmi";
-import { RozoPayProvider } from "@rozoai/intent-pay";
-
+// Custom wagmi config
 const customWagmiConfig = createConfig({
-  // Your custom wagmi configuration
+  // Your custom chains, connectors, etc.
 });
 
 <RozoPayProvider wagmiConfig={customWagmiConfig}>
-  <YourApp />
-</RozoPayProvider>;
-```
+  <App />
+</RozoPayProvider>
 
-### Multiple Payment Buttons & Advanced Usage
-
-```tsx
-// Different products with custom button text
-<RozoPayButton
-  appId="your-app-id"
-  toAddress="0x..."
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"  // USDC
-  toUnits="5"   // $5
-  intent="Buy Basic Plan"  // Custom button text
-  theme="minimal"
-  preferredChains={[8453, 137]}  // Prefer Base and Polygon
-/>
-
-<RozoPayButton
-  appId="your-app-id"
-  toAddress="0x..."
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"  // USDC
-  toUnits="20"  // $20
-  intent="Buy Pro Plan"
-  theme="rounded"
-  closeOnSuccess={true}  // Auto-close modal after payment
-  confirmationMessage="Welcome to Pro! 🎉"
-/>
-
-// Multi-chain support with Solana and Stellar
-<RozoPayButton
-  appId="your-app-id"
-
-  // REQUIRED for Solana/Stellar: Base chain config
-  toChain={8453}  // MUST be Base chain
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"  // MUST be Base USDC
-  toAddress="0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2"  // Any valid EVM address
-
-  toUnits="10"  // $10 USDC
-  intent="Donate"
-  preferredTokens={[
-    { chain: 8453, address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" }, // Base USDC
-    { chain: 137, address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174" },  // Polygon USDC
-  ]}
-  metadata={{
-    orderId: "order_123",
-    userId: "user_456",
-    campaign: "donation_drive_2024"
-  }}
-/>
-
-// Using pre-generated payment ID (from your backend)
-<RozoPayButton
-  payId="pay_abc123xyz"  // Generated via RozoAI API
-  intent="Complete Purchase"
-  onPaymentCompleted={(event) => {
-    // Redirect to success page
-    window.location.href = `/success?payment=${event.paymentId}`;
-  }}
-/>
-```
-
-## 🔍 Testing & Development
-
-### Test Mode
-
-```tsx
-<RozoPayButton
-  appId="test-app-id" // Use test app ID for development
-  // ... other props
-/>
-```
-
-### Local Development
-
-```bash
-git clone https://github.com/rozoai/intent-pay
-cd intent-pay
-pnpm install
-pnpm dev
-
-# Run example app
-cd examples/nextjs-app
-pnpm dev
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**❌ "Payment failed" error**
-
-```tsx
-// Make sure all required fields are properly typed
-toAddress = "0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2" as Address; // Use Address type
-toToken = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as Address; // Use Address type
-```
-
-**❌ "Chain not supported" error**
-
-```tsx
-// Use supported chain IDs
-toChain={8453}  // Base ✅
-toChain={999}   // Unknown chain ❌
-```
-
-**❌ Button not appearing**
-
-```tsx
-// Make sure RozoPayProvider wraps your component
-<RozoPayProvider>
-  <ComponentWithRozoPayButton />
+// Custom API URL (for enterprise)
+<RozoPayProvider payApiUrl="https://your-api.com">
+  <App />
 </RozoPayProvider>
 ```
 
-**❌ "Must specify either payId or appId, not both" error**
+### Production Checklist
 
-```tsx
-// Don't mix payId with appId parameters
-// ✅ Use appId approach:
-<RozoPayButton appId="app_123" toAddress="0x..." toToken="0x..." />
-
-// ✅ OR use payId approach:
-<RozoPayButton payId="pay_abc123" />
-
-// ❌ Don't do this:
-<RozoPayButton appId="app_123" payId="pay_abc123" />
-```
-
-**❌ Button showing wrong text**
-
-```tsx
-// Use 'intent' prop, not 'text'
-<RozoPayButton intent="Purchase Now" />  // ✅
-<RozoPayButton text="Purchase Now" />    // ❌ Won't work
-```
-
-## ⚠️ Important Multi-Chain Notes
-
-### Solana & Stellar Configuration Requirements
-
-When accepting payments to Solana or Stellar addresses, you **must** configure the button with these specific settings:
-
-```tsx
-<RozoPayButton
-  // REQUIRED settings for Solana/Stellar support
-  toChain={8453} // MUST be Base chain (8453)
-  toToken="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // MUST be Base USDC
-  toAddress="0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2" // Any valid EVM address
-  // Your actual destination addresses
-  toSolanaAddress="DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK" // Optional
-  toStellarAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ" // Optional
-  // Other props...
-  appId="your-app-id"
-  toUnits="1"
-  intent="Pay"
-/>
-```
-
-**Why these requirements?**
-
-- RozoAI uses Base chain as the settlement layer for cross-chain payments
-- Base USDC is the canonical token for cross-chain transfers
-- The EVM `toAddress` serves as a fallback/reference address
-- Users can still pay from any supported chain - the restrictions only apply to your configuration
-
-### Debug Mode
-
-```tsx
-<RozoPayProvider debugMode={true}>
-  <YourApp />
-</RozoPayProvider>
-```
-
-## 📱 Mobile Integration
-
-### React Native (Expo)
-
-```tsx
-import { RozoPayProvider, RozoPayButton } from "@rozoai/intent-pay";
-
-// Works the same as web!
-<RozoPayProvider>
-  <RozoPayButton {...props} />
-</RozoPayProvider>;
-```
-
-### Deep Links
-
-The SDK automatically handles wallet deep-linking on mobile devices.
-
-## 🔐 Security & Best Practices
-
-### ✅ Do's
-
-- Always validate payments on your backend
-- Use HTTPS in production
-- Store sensitive data server-side
-- Monitor payment events
-
-### ❌ Don'ts
-
-- Never store private keys in your app
-- Don't rely only on frontend payment confirmation
-- Don't hardcode sensitive configuration
-
-## 📊 Analytics & Monitoring
-
-```tsx
-<RozoPayButton
-  onPaymentStarted={(event) => {
-    // Track payment initiation
-    analytics.track("payment_started", {
-      amount: event.toAmount,
-      chain: event.toChain,
-    });
-  }}
-  onPaymentCompleted={(event) => {
-    // Track successful payments
-    analytics.track("payment_completed", {
-      paymentId: event.paymentId,
-      amount: event.toAmount,
-    });
-  }}
-/>
-```
-
-## 🆘 Support & Resources
-
-- 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
-- 💬 **Discord**: [discord.gg/rozoai](https://discord.gg/rozoai)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
-- 📧 **Email**: support@rozo.ai
-
-## 🚗 Roadmap
-
-- ✅ Multi-chain payments (Done)
-- ✅ Mobile wallet support (Done)
-- 🔄 Fiat on-ramps integration (In Progress)
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
+- [ ] Replace demo app ID with your production app ID
+- [ ] Update wallet addresses to your actual addresses
+- [ ] Set up webhook endpoints for reliable payment tracking
+- [ ] Test on all target chains and wallets
+- [ ] Implement proper error handling and user feedback
+- [ ] Add loading states during payment processing
 
 ---
 
 **Made with ❤️ by the RozoAI team**
 
 _Simplifying crypto payments, one transaction at a time._
+
+## 📞 Support & Resources
+
+- 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
+- 💬 **Discord**: [discord.gg/rozoai](https://discord.gg/rozoai)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
+- 📧 **Email**: support@rozo.ai
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
