@@ -5,7 +5,7 @@ Onboard users from any chain, any coin into your app with one click and maximize
 
 ## Features
 
-- 🌱 Instant cross-chain payments — Accept payment from 1000+ tokens on multiple chains. Payments complete in less than 5 seconds. We handle the swapping
+- 🌱 Cross-chain payments — Accept payments in USDC on Base, Polygon, Solana, Stellar, and USDT on BSC. Payments complete in less than 5 seconds. We handle the swapping
   and bridging so that your customers don't have to.
 - 💡 Pay with a single transaction - No more wallet round-trips to make approval, swap, or bridging transactions. Your customers pay with a single transfer transaction.
 - ⚡️ Fully permissionless - Rozo Pay never custodies funds and funds can never be stuck in a contract. Payments can be permissionlessly completed by anyone.
@@ -34,9 +34,9 @@ Onboard users from any chain, any coin into your app with one click and maximize
 - Solana
 - Stellar
 
-**Full Supported Chain Network:**
+**All Supported Chain Networks:**
 
-- **EVM Chains:** Ethereum (1), Arbitrum (42161), Base (8453), Polygon (137), Optimism (10), BSC (56), Linea (59144), WorldChain (480), Mantle (5000), Celo (42220)
+- **EVM Chains:** Base (8453), Polygon (137), BSC (56)
 - **Non-EVM:** Solana, Stellar
 
 ### Supported Tokens
@@ -49,6 +49,7 @@ Onboard users from any chain, any coin into your app with one click and maximize
 - Solana USDC
 - Stellar USDC
 
-**Full Token Support Per Chain:**
+**Token Support Summary:**
 
-Each supported chain includes native tokens (ETH, MATIC, SOL, XLM), wrapped versions (WETH, WMATIC), stablecoins (USDC, USDT, DAI), and major tokens (WBTC, etc.). The SDK automatically handles token discovery and liquidity routing.
+- USDC on Base, Polygon, Solana, Stellar
+- USDT on BSC

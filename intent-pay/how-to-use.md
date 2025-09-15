@@ -6,20 +6,39 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org/)
 
+## Table of Contents
+
+- [What RozoAI Intent Pay Does](#-what-rozoai-intent-pay-does)
+- [Requirements Checklist](#-requirements-checklist-mandatory)
+- [Complete Working Example](#-complete-working-example-copy--paste-ready)
+- [Quick Customization Patterns](#-quick-customization-patterns)
+- [Common Mistakes to Avoid](#-common-mistakes-to-avoid)
+- [Supported Chains & Tokens](#-supported-chains--tokens)
+- [Payment Methods](#-payment-methods-your-users-can-use)
+- [Single Prompt Hit to Generate](#-single-prompt-hit-to-generate)
+- [Essential API Reference](#-essential-api-reference-ai-services)
+- [Testing Checklist](#-testing-checklist)
+- [Success Examples](#-success-examples)
+- [Additional Resources](#-additional-resources-optional-reading)
+- [Advanced Configuration](#advanced-configuration)
+- [Production Checklist](#production-checklist)
+- [Support & Resources](#-support--resources)
+- [License](#-license)
+
 ## 🤖 For AI Services: Single Prompt Implementation
 
 This guide is optimized for AI services to quickly create working examples from a single prompt. All requirements and patterns are clearly defined below.
 
 ### 🎯 What RozoAI Intent Pay Does
 
-RozoAI Intent Pay SDK is a React component that lets users pay you in crypto **from any blockchain** - whether they have Ethereum, Solana, Polygon, or dozens of other tokens. Your users can pay with their preferred wallet and token, while you receive exactly what you want.
+RozoAI Intent Pay SDK is a React component that lets users pay you in crypto from supported networks — Base, Polygon, Solana, Stellar, and BSC. Your users can pay with their preferred wallet, while you receive exactly what you want.
 
 **Key Benefits:**
 
 - ✅ **One Component** - Add `<RozoPayButton>` and you're done
-- ✅ **Any Chain** - Users can pay from 15+ blockchains
+- ✅ **Supported Chains** - Base, Polygon, Solana, Stellar, BSC
 - ✅ **Any Wallet** - MetaMask, Phantom, Coinbase Wallet, and more
-- ✅ **Any Token** - USDC, ETH, SOL, MATIC, and hundreds more
+- ✅ **Supported Tokens** - USDC on Base/Polygon/Solana/Stellar; USDT on BSC
 - ✅ **Mobile Ready** - Works perfectly on mobile apps
 - ✅ **Zero Config** - Smart defaults, easy customization
 
@@ -348,35 +367,29 @@ toToken={getAddress(baseUSDC.token)}
 
 ### 🔗 Blockchains (AI Services: Use these Chain IDs)
 
-| Chain        | Chain ID | Token Examples    | Usage in Code                   |
-| ------------ | -------- | ----------------- | ------------------------------- |
-| **Ethereum** | 1        | ETH, USDC, USDT   | `toChain={1}`                   |
-| **Base**     | 8453     | ETH, USDC         | `toChain={8453}` ⭐ RECOMMENDED |
-| **Polygon**  | 137      | MATIC, USDC, USDT | `toChain={137}`                 |
-| **Arbitrum** | 42161    | ETH, USDC         | `toChain={42161}`               |
-| **Optimism** | 10       | ETH, USDC         | `toChain={10}`                  |
-| **BSC**      | 56       | BNB, USDC, USDT   | `toChain={56}`                  |
-| **Solana**   | Special  | SOL, USDC         | Use `toSolanaAddress`           |
-| **Stellar**  | Special  | XLM, USDC         | Use `toStellarAddress`          |
+| Chain       | Chain ID | Supported Token | Usage in Code          |
+| ----------- | -------- | --------------- | ---------------------- |
+| **Base**    | 8453     | USDC            | `toChain={8453}`       |
+| **Polygon** | 137      | USDC            | `toChain={137}`        |
+| **BSC**     | 56       | USDT            | `toChain={56}`         |
+| **Solana**  | Special  | USDC            | Use `toSolanaAddress`  |
+| **Stellar** | Special  | USDC            | Use `toStellarAddress` |
 
 ### 💰 Common Token Addresses (Copy-Paste Ready)
 
 ```tsx
 // Base USDC (RECOMMENDED for most use cases)
 import { baseUSDC } from "@rozoai/intent-common";
-toChain={baseUSDC.chainId}      // 8453
+toChain={baseUSDC.chainId}           // 8453
 toToken={getAddress(baseUSDC.token)} // 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
-
-// Ethereum USDC
-toChain={1}
-toToken={getAddress("0xA0b86a33E6B5A6B6B1c8C9C7B7B8C9C8C9C8C9C8")}
 
 // Polygon USDC
 toChain={137}
 toToken={getAddress("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")}
 
-// Native tokens (ETH, MATIC, etc.)
-toToken={getAddress("0x0000000000000000000000000000000000000000")} // Native token
+// BSC USDT
+toChain={56}
+toToken={getAddress("0x55d398326f99059fF775485246999027B3197955")}
 ```
 
 ## 💳 Payment Methods Your Users Can Use
@@ -386,6 +399,7 @@ toToken={getAddress("0x0000000000000000000000000000000000000000")} // Native tok
 - **Desktop**: MetaMask, Coinbase Wallet, Rainbow, Trust Wallet
 - **Mobile**: All wallets via deep-linking
 - **Solana**: Phantom, Backpack, Solflare
+- **Stellar**: Any Stellar wallet compatible with your `toStellarAddress`
 - **Advanced**: Hardware wallets, multisig wallets
 
 ## 🔧 AI SERVICE PROMPT TEMPLATES
@@ -414,11 +428,11 @@ Requirements:
 - Use Base USDC as the payment token
 ```
 
-### Template 3: Multi-Chain Support
+### Template 3: Multi-Chain Support (within supported networks)
 
 ```
 Create a donation component using RozoAI Intent Pay SDK that supports:
-- Base, Polygon, and Solana payments
+- Base, Polygon, Solana, Stellar, and BSC payments (USDT)
 - $20 donation amount
 - Prefer Base and Polygon chains
 - Include Solana address support
@@ -696,10 +710,177 @@ _Simplifying crypto payments, one transaction at a time._
 ## 📞 Support & Resources
 
 - 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
-- 💬 **Discord**: [discord.gg/rozoai](https://discord.gg/rozoai)
+- 💬 **Discord**: [discord.gg/rozoai](https://discord.com/invite/EfWejgTbuU)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
 - 📧 **Email**: support@rozo.ai
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## 🚀 Single Prompt Hit to Generate
+
+Use this copy-ready prompt to generate a minimal Next.js 15 App Router example that shows a payment form and only reveals the `RozoPayButton` when both Address and Amount are filled. The payment uses Base USDC and opens the modal immediately.
+
+### Prompt
+
+```
+You are an expert Next.js + Web3 developer.
+Using the RozoAI Intent Pay SDK documentation, create a minimal Next.js App Router example that implements a Simple and Quick Payment form.
+
+Requirements:
+Use Next.js 15 App Router with TypeScript.
+
+Create a providers.tsx file in app/ that wraps the app with:
+WagmiProvider (using getDefaultConfig)
+QueryClientProvider from @tanstack/react-query
+RozoPayProvider from @rozoai/intent-pay
+
+On app/page.tsx, add two input fields:
+Address (receiver’s wallet address)
+Amount (USDC amount to pay)
+
+Payment should use:
+
+toChain={8453} (Base Mainnet)
+toToken={baseUSDC} (imported from @rozoai/intent-common)
+
+Show the RozoPayButton only when both fields are filled.
+
+Use React state (useState) for form values.
+
+Add defaultOpen so when user clicks Generate Pay Button it shows the modal.
+
+Keep the example short, clean, and production-ready.
+
+Output:
+
+Provide all required code files:
+
+app/providers.tsx
+app/layout.tsx (wrapping with Providers)
+app/page.tsx (payment form with conditional RozoPayButton)
+
+Include necessary imports.
+
+Refer to this docs: [URL of this MD]
+```
+
+### Next.js 15 Example (copy-paste)
+
+```tsx
+// app/providers.tsx
+"use client";
+import { getDefaultConfig, RozoPayProvider } from "@rozoai/intent-pay";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createConfig, WagmiProvider } from "wagmi";
+
+const wagmiConfig = createConfig(getDefaultConfig({ appName: "Rozo Demo" }));
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
+          {children}
+        </RozoPayProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+```tsx
+// app/layout.tsx
+import { Providers } from "./providers";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+```tsx
+// app/page.tsx
+"use client";
+import { useState } from "react";
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC } from "@rozoai/intent-common";
+import { getAddress } from "viem";
+
+export default function Page() {
+  const [address, setAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const canPay = address.trim() !== "" && amount.trim() !== "";
+
+  return (
+    <main style={{ maxWidth: 480, margin: "2rem auto", padding: 16 }}>
+      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16 }}>
+        Quick Payment
+      </h1>
+
+      <label style={{ display: "block", marginBottom: 8 }}>
+        Receiver Address
+      </label>
+      <input
+        placeholder="0x..."
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        style={{ width: "100%", padding: 8, marginBottom: 12 }}
+      />
+
+      <label style={{ display: "block", marginBottom: 8 }}>Amount (USDC)</label>
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="e.g. 5"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        style={{ width: "100%", padding: 8, marginBottom: 16 }}
+      />
+
+      <button
+        onClick={() => setOpen(true)}
+        disabled={!canPay}
+        style={{
+          padding: "10px 14px",
+          borderRadius: 8,
+          background: canPay ? "#111" : "#ccc",
+          color: "#fff",
+          cursor: canPay ? "pointer" : "not-allowed",
+          marginBottom: 12,
+        }}
+      >
+        Generate Pay Button
+      </button>
+
+      {canPay && (
+        <RozoPayButton
+          appId="rozoDemoMP"
+          toChain={baseUSDC.chainId}
+          toAddress={getAddress(address)}
+          toToken={getAddress(baseUSDC.token)}
+          toUnits={amount}
+          intent={`Pay $${amount}`}
+          defaultOpen={open}
+          onPaymentCompleted={() => setOpen(false)}
+          onPaymentBounced={() => setOpen(false)}
+        />
+      )}
+    </main>
+  );
+}
+```
