@@ -64,8 +64,8 @@ When creating examples, AI services MUST follow these requirements:
 ```json
 {
   "dependencies": {
-    "@rozoai/intent-pay": "^0.0.25-beta.6",
-    "@rozoai/intent-common": "^0.0.20",
+    "@rozoai/intent-pay": "latest",
+    "@rozoai/intent-common": "latest",
     "@tanstack/react-query": "^5.51.11",
     "wagmi": "^2.15.6",
     "viem": "^2.31.6",
@@ -217,8 +217,8 @@ export default function App() {
   "name": "rozoai-payment-demo",
   "private": true,
   "dependencies": {
-    "@rozoai/intent-pay": "^0.0.25-beta.6",
-    "@rozoai/intent-common": "^0.0.20",
+    "@rozoai/intent-pay": "latest",
+    "@rozoai/intent-common": "latest",
     "@tanstack/react-query": "^5.51.11",
     "wagmi": "^2.15.6",
     "viem": "^2.31.6",
@@ -720,167 +720,73 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🚀 Single Prompt Hit to Generate
 
-Use this copy-ready prompt to generate a minimal Next.js 15 App Router example that shows a payment form and only reveals the `RozoPayButton` when both Address and Amount are filled. The payment uses Base USDC and opens the modal immediately.
+Use this copy-ready prompt to generate a complete, production-ready Next.js 15 App Router example with TailwindCSS that can be deployed with a single command.
 
-### Prompt
+### 📋 One-Command Prompt
 
-```
+```text
 You are an expert Next.js + Web3 developer.
-Using the RozoAI Intent Pay SDK documentation, create a minimal Next.js App Router example that implements a Simple and Quick Payment form.
+Create a complete Next.js 15 App Router project with RozoAI Intent Pay SDK integration.
 
 Requirements:
-Use Next.js 15 App Router with TypeScript.
+- Next.js 15 App Router with TypeScript
+- TailwindCSS for styling
+- Complete package.json with all dependencies and scripts
+- Payment form with Address and Amount inputs
+- Show RozoPayButton only when both fields are filled
+- "Generate Pay Button" that opens modal immediately with defaultOpen
+- Base USDC payments only (toChain=8453, baseUSDC from @rozoai/intent-common)
+- Modern, responsive UI with proper form validation
+- Production-ready error handling
 
-Create a providers.tsx file in app/ that wraps the app with:
-WagmiProvider (using getDefaultConfig)
-QueryClientProvider from @tanstack/react-query
-RozoPayProvider from @rozoai/intent-pay
+Output exactly these files in order:
+1. package.json (complete with dependencies and scripts)
+2. tailwind.config.js
+3. app/globals.css (with Tailwind directives)
+4. app/providers.tsx (WagmiProvider, QueryClientProvider, RozoPayProvider)
+5. app/layout.tsx (with Providers and TailwindCSS)
+6. app/page.tsx (payment form with Tailwind classes)
 
-On app/page.tsx, add two input fields:
-Address (receiver’s wallet address)
-Amount (USDC amount to pay)
+Include:
+- All necessary dependencies (@rozoai/intent-pay, @rozoai/intent-common, wagmi, viem, etc.)
+- TailwindCSS setup
+- Proper TypeScript types
+- Form validation and UX improvements
+- Mobile-responsive design
 
-Payment should use:
-
-toChain={8453} (Base Mainnet)
-toToken={baseUSDC} (imported from @rozoai/intent-common)
-
-Show the RozoPayButton only when both fields are filled.
-
-Use React state (useState) for form values.
-
-Add defaultOpen so when user clicks Generate Pay Button it shows the modal.
-
-Keep the example short, clean, and production-ready.
-
-Output:
-
-Provide all required code files:
-
-app/providers.tsx
-app/layout.tsx (wrapping with Providers)
-app/page.tsx (payment form with conditional RozoPayButton)
-
-Include necessary imports.
-
-Refer to this docs: [URL of this MD]
+Reference: [URL of this MD]
 ```
 
-### Next.js 15 Example (copy-paste)
+### 🔗 Instant Generation with Lovable
 
-```tsx
-// app/providers.tsx
-"use client";
-import { getDefaultConfig, RozoPayProvider } from "@rozoai/intent-pay";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createConfig, WagmiProvider } from "wagmi";
+**Generate instantly with one click using Lovable's Build with URL:**
 
-const wagmiConfig = createConfig(getDefaultConfig({ appName: "Rozo Demo" }));
-const queryClient = new QueryClient();
+[![Generate with Lovable](https://img.shields.io/badge/Generate%20with-Lovable-FF6B6B?style=for-the-badge&logo=rocket)](<https://lovable.dev/?autosubmit=true#prompt=You%20are%20an%20expert%20Next.js%20%2B%20Web3%20developer.%0ACreate%20a%20complete%20Next.js%2015%20App%20Router%20project%20with%20RozoAI%20Intent%20Pay%20SDK%20integration.%0A%0ARequirements%3A%0A-%20Next.js%2015%20App%20Router%20with%20TypeScript%0A-%20TailwindCSS%20for%20styling%0A-%20Complete%20package.json%20with%20all%20dependencies%20and%20scripts%0A-%20Payment%20form%20with%20Address%20and%20Amount%20inputs%0A-%20Show%20RozoPayButton%20only%20when%20both%20fields%20are%20filled%0A-%20%22Generate%20Pay%20Button%22%20that%20opens%20modal%20immediately%20with%20defaultOpen%0A-%20Base%20USDC%20payments%20only%20(toChain%3D8453%2C%20baseUSDC%20from%20%40rozoai%2Fintent-common)%0A-%20Modern%2C%20responsive%20UI%20with%20proper%20form%20validation%0A-%20Production-ready%20error%20handling%0A%0AOutput%20exactly%20these%20files%20in%20order%3A%0A1.%20package.json%20(complete%20with%20dependencies%20and%20scripts)%0A2.%20tailwind.config.js%0A3.%20app%2Fglobals.css%20(with%20Tailwind%20directives)%0A4.%20app%2Fproviders.tsx%20(WagmiProvider%2C%20QueryClientProvider%2C%20RozoPayProvider)%0A5.%20app%2Flayout.tsx%20(with%20Providers%20and%20TailwindCSS)%0A6.%20app%2Fpage.tsx%20(payment%20form%20with%20Tailwind%20classes)%0A%0AInclude%3A%0A-%20All%20necessary%20dependencies%20(%40rozoai%2Fintent-pay%2C%20%40rozoai%2Fintent-common%2C%20wagmi%2C%20viem%2C%20etc.)%0A-%20TailwindCSS%20setup%0A-%20Proper%20TypeScript%20types%0A-%20Form%20validation%20and%20UX%20improvements%0A-%20Mobile-responsive%20design>)
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RozoPayProvider payApiUrl="https://intentapi.rozo.ai" debugMode>
-          {children}
-        </RozoPayProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-  );
-}
-```
+**How it works:**
 
-```tsx
-// app/layout.tsx
-import { Providers } from "./providers";
+1. Click the "Generate with Lovable" button above
+2. Sign in to Lovable (if not already logged in)
+3. The complete RozoAI payment app will be generated instantly
+4. Deploy to production with one click
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
-}
-```
+**Features of the generated app:**
 
-```tsx
-// app/page.tsx
-"use client";
-import { useState } from "react";
-import { RozoPayButton } from "@rozoai/intent-pay";
-import { baseUSDC } from "@rozoai/intent-common";
-import { getAddress } from "viem";
+- ✅ Complete Next.js 15 setup with TypeScript
+- ✅ TailwindCSS styling and responsive design
+- ✅ Form validation with real-time feedback
+- ✅ RozoAI Intent Pay integration
+- ✅ Production-ready deployment
 
-export default function Page() {
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState("");
-  const [open, setOpen] = useState(false);
+> **Note:** The Lovable integration uses their [Build with URL feature](https://docs.lovable.dev/integrations/build-with-url) to programmatically generate applications with pre-configured prompts.
 
-  const canPay = address.trim() !== "" && amount.trim() !== "";
+### 🚀 Features Included
 
-  return (
-    <main style={{ maxWidth: 480, margin: "2rem auto", padding: 16 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 16 }}>
-        Quick Payment
-      </h1>
-
-      <label style={{ display: "block", marginBottom: 8 }}>
-        Receiver Address
-      </label>
-      <input
-        placeholder="0x..."
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        style={{ width: "100%", padding: 8, marginBottom: 12 }}
-      />
-
-      <label style={{ display: "block", marginBottom: 8 }}>Amount (USDC)</label>
-      <input
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="e.g. 5"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        style={{ width: "100%", padding: 8, marginBottom: 16 }}
-      />
-
-      <button
-        onClick={() => setOpen(true)}
-        disabled={!canPay}
-        style={{
-          padding: "10px 14px",
-          borderRadius: 8,
-          background: canPay ? "#111" : "#ccc",
-          color: "#fff",
-          cursor: canPay ? "pointer" : "not-allowed",
-          marginBottom: 12,
-        }}
-      >
-        Generate Pay Button
-      </button>
-
-      {canPay && (
-        <RozoPayButton
-          appId="rozoDemoMP"
-          toChain={baseUSDC.chainId}
-          toAddress={getAddress(address)}
-          toToken={getAddress(baseUSDC.token)}
-          toUnits={amount}
-          intent={`Pay $${amount}`}
-          defaultOpen={open}
-          onPaymentCompleted={() => setOpen(false)}
-          onPaymentBounced={() => setOpen(false)}
-        />
-      )}
-    </main>
-  );
-}
-```
+- ✅ **Complete Setup** - All files and dependencies included
+- ✅ **TailwindCSS** - Modern, responsive styling
+- ✅ **Form Validation** - Address validation with `isAddress` from viem
+- ✅ **Error Handling** - User-friendly error messages
+- ✅ **Mobile Responsive** - Works perfectly on all devices
+- ✅ **Production Ready** - Proper TypeScript types and error boundaries
+- ✅ **UX Optimized** - Loading states, success feedback, form reset
+- ✅ **One Command Deploy** - Ready for Vercel, Netlify, or any platform
