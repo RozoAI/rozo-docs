@@ -2,6 +2,8 @@
 
 * [🧾 Rozo - Stablecoin Abstraction](README.md)
 * [Rozo - Visa for stablecoins](rozo-visa-for-stablecoins.md)
+* [Rozo - Intent Pay SDK](intent-pay/README.md)
+  * [How to Use](intent-pay/how-to-use.md)
 * [API Doc](api-doc/README.md)
   * [Make a Payment (Sign)](api-doc/make-a-payment-sign.md)
   * [Payment (Cashback Sign)](api-doc/payment-cashback-sign.md)
