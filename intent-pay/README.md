@@ -1,55 +1,89 @@
-# Intent Pay
+# RozoAI Intent Pay SDK
 
-Rozo Intent Pay enables seamless crypto payments for your app.
-Onboard users from any chain, any coin into your app with one click and maximize your conversion.
+> **Cross-chain crypto payments made simple** – Accept payments from any blockchain with a single component
 
-## Features
+[![npm version](https://badge.fury.io/js/@rozoai%2Fintent-pay.svg)](https://badge.fury.io/js/@rozoai%2Fintent-pay)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org/)
 
-- 🌱 Cross-chain payments — Accept payments in USDC on Base, Polygon, Solana, Stellar, and USDT on BSC. Payments complete in less than 5 seconds. We handle the swapping
-  and bridging so that your customers don't have to.
-- 💡 Pay with a single transaction - No more wallet round-trips to make approval, swap, or bridging transactions. Your customers pay with a single transfer transaction.
-- ⚡️ Fully permissionless - Rozo Pay never custodies funds and funds can never be stuck in a contract. Payments can be permissionlessly completed by anyone.
-- 💱 Support for all major wallets and exchanges - Rozo Pay supports payments from browser wallets like MetaMask and Rabby, as well as exchanges like Coinbase and Binance.
-- 💨 Integrate within minutes - Get up and running with Rozo Pay in as little as 10 minutes with little to no code.
+## 🎯 What RozoAI Intent Pay Does
 
-## Supported Infrastructure
+RozoAI Intent Pay SDK is a React component that lets users pay you in crypto from supported networks — Base, Polygon, Solana, Stellar, and BSC. Your users can pay with their preferred wallet, while you receive exactly what you want.
 
-### Supported Wallets
+**Key Benefits:**
 
-**EVM Wallets:** MetaMask, Coinbase Wallet, Trust Wallet, Rainbow Wallet, Family Wallet, Zerion, OKX, Bitget
+- ✅ **One Component** - Add `<RozoPayButton>` and you're done
+- ✅ **Supported Chains** - Base, Polygon, Solana, Stellar, BSC
+- ✅ **Any Wallet** - MetaMask, Phantom, Coinbase Wallet, and more
+- ✅ **Supported Tokens** - USDC on Base/Polygon/Solana/Stellar; USDT on BSC
+- ✅ **Mobile Ready** - Works perfectly on mobile apps
+- ✅ **Zero Config** - Smart defaults, easy customization
 
-**Solana Wallets:** Phantom, Backpack, Solflare
+## 📚 Documentation
 
-**Stellar Wallets:** Via Stellar SDK integration
+| Document                                    | Description                                        |
+| ------------------------------------------- | -------------------------------------------------- |
+| **[Quick Start Guide](quick-start.md)**     | Get up and running in 5 minutes                    |
+| **[Complete Examples](examples.md)**        | Copy-paste ready examples for different frameworks |
+| **[API Reference](api-reference.md)**       | Complete props and configuration reference         |
+| **[Troubleshooting](troubleshooting.md)**   | Common mistakes and how to avoid them              |
+| **[AI Prompts & Templates](ai-prompts.md)** | Templates for AI services to generate code         |
 
-**Mobile Wallets:** All above wallets with mobile app support and deep-linking
+## 🚀 Quick Example
 
-### Supported Chains
+```tsx
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC } from "@rozoai/intent-common";
+import { getAddress } from "viem";
 
-**Currently Active in Wallet Payment Options:**
+<RozoPayButton
+  appId="rozoDemo"
+  toChain={baseUSDC.chainId}
+  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+  toToken={getAddress(baseUSDC.token)}
+  toUnits="10"
+  intent="Pay $10"
+  onPaymentCompleted={() => alert("Payment successful! 🎉")}
+/>;
+```
 
-- Base
-- Polygon
-- BSC
-- Solana
-- Stellar
+## 🔗 Supported Chains & Tokens
 
-**All Supported Chain Networks:**
+| Chain       | Chain ID | Token | Supported |
+| ----------- | -------- | ----- | :-------: |
+| **Base**    | 8453     | USDC  |    ✅     |
+| **Polygon** | 137      | USDC  |    ✅     |
+| **BSC**     | 56       | USDT  |    ✅     |
+| **Solana**  | -        | USDC  |    ✅     |
+| **Stellar** | -        | USDC  |    ✅     |
 
-- **EVM Chains:** Base (8453), Polygon (137), BSC (56)
-- **Non-EVM:** Solana, Stellar
+## 💳 Payment Methods
 
-### Supported Tokens
+Supported wallets:
 
-**Currently Active in Wallet Payment Options:**
+- **Desktop**: MetaMask, Coinbase Wallet, Rainbow, Trust Wallet, Phantom, Albedo, etc.
+- **Mobile**: All wallets via deep-linking
 
-- Base USDC
-- Polygon USDC
-- BSC USDT
-- Solana USDC
-- Stellar USDC
+## 🔧 Installation
 
-**Token Support Summary:**
+```bash
+npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem
+```
 
-- USDC on Base, Polygon, Solana, Stellar
-- USDT on BSC
+## 📞 Support & Resources
+
+- 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
+- 💬 **Discord**: [discord.gg/rozoai](https://discord.com/invite/EfWejgTbuU)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
+- 📧 **Email**: support@rozo.ai
+- 🔗 **Demo**: [demo.rozo.ai](https://demo.rozo.ai/)
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+**Made with ❤️ by the RozoAI team**
+
+_Simplifying crypto payments, one transaction at a time._
