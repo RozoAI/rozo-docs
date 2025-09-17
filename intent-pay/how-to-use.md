@@ -23,6 +23,7 @@
 - [Advanced Configuration](#advanced-configuration)
 - [Production Checklist](#production-checklist)
 - [Support & Resources](#-support--resources)
+- [Demo Link](#-demo-link)
 - [License](#-license)
 
 ## 🤖 For AI Services: Single Prompt Implementation
@@ -713,6 +714,10 @@ _Simplifying crypto payments, one transaction at a time._
 - 💬 **Discord**: [discord.gg/rozoai](https://discord.com/invite/EfWejgTbuU)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
 - 📧 **Email**: support@rozo.ai
+
+## Demo Link
+
+[🔗 demo.rozo.ai](https://demo.rozo.ai/)
 
 ## 📄 License
 
