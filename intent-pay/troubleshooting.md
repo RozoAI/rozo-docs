@@ -111,7 +111,7 @@ If you're still experiencing issues:
    - 🐛 **GitHub Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
 
 3. **Direct Support:**
-   - 📧 **Email**: support@rozo.ai
+   - 📧 **Email**: <support@rozo.ai>
 
 When reporting issues, please include:
 
