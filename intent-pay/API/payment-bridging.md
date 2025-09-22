@@ -209,7 +209,7 @@ async function createCrossChainPayment() {
     // Pay IN from Polygon
     preferredChain: "137",
     preferredToken: "USDC",
-    preferredTokenAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    preferredTokenAddress: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
     externalId: "payment_123",
     metadata: {
       userId: "user_456",
@@ -275,7 +275,7 @@ async function createCrossChainPayment() {
 #### USDC Addresses
 
 - **Base**: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
-- **Polygon**: `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`
+- **Polygon**: `0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359`
 - **Stellar**: `USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN`
 - **Solana**: `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
 

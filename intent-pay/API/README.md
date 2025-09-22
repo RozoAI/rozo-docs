@@ -7,7 +7,7 @@ Backend-focused API documentation for creating, managing, and tracking payments 
 ## Documentation Structure
 
 - [API Endpoints](./endpoints.md) - REST API reference with cURL and fetch examples
-- [Payment Routing](./payment-routing.md) - Cross-chain payment logic and receiving addresses
+- [Payment Bridging](./payment-bridging.md) - Cross-chain payment logic and receiving addresses
 - [Data Types](./types.md) - Interface definitions and data structures
 
 ## Quick Start
