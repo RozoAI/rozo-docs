@@ -16,5 +16,8 @@
     - [OnChain Data Queries with Graph](api-doc/rozo-smart-contract/onchain-data-queries-with-graph.md)
   - [Create Order](api-doc/create-order.md)
 - [How to Use](how-to-use.md)
+- [App](app/tos.md)
+  - [Terms of Service](app/tos.md)
+  - [Privacy Policy](app/privacy.md)
 - [Terms of service](terms-of-service.md)
 - [Privacy Policy](privacy-policy.md)
