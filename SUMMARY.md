@@ -13,6 +13,7 @@
   - [Payment (Cashback Sign)](api-doc/payment-cashback-sign.md)
 - [How to Use](how-to-use.md)
 - [App](app/tos.md)
+  - [Support](app/support.md)
   - [Terms of Service](app/tos.md)
   - [Privacy Policy](app/privacy.md)
 - [Terms of service](terms-of-service.md)
