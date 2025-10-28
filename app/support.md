@@ -21,46 +21,64 @@ We're here to help! Reach out to us through any of the following channels:
 #### 1. Registration
 
 **Step 1: Download the App**
+
 - Download Rozo from the App Store
 - Open the app on your device
 
-**Step 2: Create Your Account**
-- Tap "Sign Up" on the welcome screen
-- Enter your email address
-- Create a secure password (minimum 8 characters)
-- Verify your email through the confirmation link
+**Step 2: Sign in with Privy**
 
-**Step 3: Complete Your Profile**
-- Add your personal information
-- Set up two-factor authentication (recommended)
-- Connect your wallet or create a new one
+- Tap "Sign In" on the welcome screen
+- Enter your email to receive a one-time passcode (OTP)
+- Enter the 6-digit OTP to verify your email
 
-![Registration Flow](../assets/screenshots/registration.png)
+**Step 3: Create or Connect Your Wallet**
+
+- After verifying, Rozo will provision a secure embedded wallet via Privy automatically
+- Optionally, connect an external wallet (e.g., using WalletConnect) if you prefer
+
+| Welcome                                              | Enter Email                                              | Enter OTP                                              |
+| ---------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------ |
+| ![Welcome](../assets/screenshots/registration-1.PNG) | ![Enter Email](../assets/screenshots/registration-2.PNG) | ![Enter OTP](../assets/screenshots/registration-3.PNG) |
 
 ---
 
 #### 2. Depositing Funds
 
-**Step 1: Navigate to Deposit**
-- Open the app and tap "Deposit" on the home screen
-- Select the cryptocurrency or stablecoin you want to deposit
+**Step 1: Navigate to Balance**
 
-**Step 2: Choose Your Network**
-- Select the blockchain network (Ethereum, Polygon, Arbitrum, etc.)
-- The app will display the appropriate deposit address
+- Open the app and tap "Balance" on the home screen
+- Select the asset you want to deposit
 
-**Step 3: Transfer Funds**
-- Copy your unique deposit address
-- Send funds from your external wallet to this address
-- Wait for blockchain confirmation (typically 1-5 minutes)
+**Step 2: Tap Receive**
 
-**Step 4: Confirmation**
+- Tap the "Receive" button for the selected asset
+
+**Step 3: Enter Deposit Amount**
+
+- Input the amount you intend to deposit
+- Review any displayed minimums or limits
+
+**Step 4: Scan QR or Use Payment Link**
+
+- Scan the displayed QR code with your external wallet
+- Or tap/copy the "Payment" link to open in a compatible wallet
+
+**Step 5: Choose Deposit Method**
+
+- Select your preferred method (e.g., on-chain transfer, supported rails)
+- Follow the prompts in your wallet to complete the payment
+
+**Confirmation**
+
 - You'll receive a notification when funds arrive
-- Check your balance in the app's wallet section
+- Check your updated balance in the wallet section
 
-![Deposit Process](../assets/screenshots/deposit.png)
+| Balance                                         | Enter Amount                                         | QR / Payment Link                                          | Choose Method                                         |
+| ----------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| ![Balance](../assets/screenshots/deposit-1.PNG) | ![Enter Amount](../assets/screenshots/deposit-2.PNG) | ![QR or Payment Link](../assets/screenshots/deposit-3.PNG) | ![Choose Method](../assets/screenshots/deposit-4.PNG) |
 
 **Important Notes:**
+
 - Always double-check the network before sending
 - Minimum deposit amounts may apply
 - Network fees are paid separately from your deposit amount
@@ -69,51 +87,50 @@ We're here to help! Reach out to us through any of the following channels:
 
 #### 3. Withdrawing Funds
 
-**Step 1: Access Withdrawal**
-- Tap "Withdraw" from the main menu
-- Select the asset you want to withdraw
+**Step 1: Open Balance**
 
-**Step 2: Enter Details**
+- Go to the "Balance" page in the app
+
+**Step 2: Tap Withdraw**
+
+- Tap the "Withdraw" button for the asset you want to send out
+
+**Step 3: Enter Withdrawal Details**
+
 - Input the destination wallet address
-- Specify the amount to withdraw
-- Select the destination network
+- Enter the amount to withdraw
+- Confirm to submit the withdrawal
 
-**Step 3: Review & Confirm**
-- Review transaction details carefully
-- Check the network fee
-- Confirm the withdrawal
-
-**Step 4: Security Verification**
-- Enter your 2FA code if enabled
-- Confirm via email verification link
-- Wait for processing (typically 5-20 minutes)
-
-![Withdrawal Process](../assets/screenshots/withdraw.png)
+| Balance                                          | Withdraw Modal                                    |
+| ------------------------------------------------ | ------------------------------------------------- |
+| ![Balance](../assets/screenshots/withdraw-1.PNG) | ![Withdraw](../assets/screenshots/withdraw-2.PNG) |
 
 **Security Tips:**
+
 - Always verify the destination address
 - Start with a small test transaction for new addresses
-- Keep your 2FA device secure
+- Ensure the destination address supports the Base network before sending
 
 ---
 
 #### 4. Making Payments
 
 **Step 1: Initiate Payment**
+
 - Tap "Pay" or scan a merchant QR code
 - Enter the payment amount
 
 **Step 2: Select Payment Method**
+
 - Choose which stablecoin to use
 - The app automatically finds the best route
 - Review the exchange rate and fees
 
 **Step 3: Confirm Transaction**
+
 - Review payment details
 - Tap "Confirm Payment"
 - Transaction completes in seconds
-
-![Payment Flow](../assets/screenshots/payment.png)
 
 ---
 
@@ -125,18 +142,20 @@ Rozo is a stablecoin wallet and payment app that makes it easy to self manage yo
 
 ### 2. How do I register for a Rozo account?
 
-Registration is simple:
-- Download the app from the App Store
-- Tap "Sign Up" and enter your email
-- Create a secure password
-- Verify your email address
-- Complete your profile setup
+Getting started is quick with Privy (Email + OTP only):
 
-The entire process takes less than 2 minutes!
+- Download the app from the App Store
+- Tap "Continue", enter your email, and request a one-time passcode (OTP)
+- Enter the 6-digit OTP to verify your email
+- Your secure embedded wallet is created automatically via Privy
+- Optionally connect an external wallet and enable biometric lock
+
+Takes about 1–2 minutes.
 
 ### 3. What cryptocurrencies can I deposit?
 
 Rozo currently supports popular stablecoins including:
+
 - USDC (USD Coin).
 - Additional tokens coming soon
 
@@ -145,6 +164,7 @@ You can deposit these on multiple networks including Base and Stellar
 ### 4. How long does a deposit take?
 
 Deposit times vary by network:
+
 - **Fast networks** (Base, Stellar): 2-5 seconds
 
 You'll receive a notification as soon as your deposit is confirmed.
@@ -156,6 +176,7 @@ Rozo does not charge fees for deposits. However, you'll need to pay the blockcha
 ### 6. How do I withdraw funds from my Rozo wallet?
 
 To withdraw:
+
 1. Tap "Withdraw" in the app
 2. Select the asset and network
 3. Enter the destination address and amount
@@ -165,10 +186,10 @@ To withdraw:
 Withdrawals typically process within 2-5 seconds.
 ncel" if the option is available.
 
-
 ### 7. What should I do if I sent funds to the wrong address?
 
 Unfortunately, blockchain transactions are irreversible. If you sent funds to an incorrect address:
+
 - Double-check the transaction on a blockchain explorer
 - If you control the destination wallet, you can access the funds there
 - If it was sent to someone else's address, contact them directly
@@ -176,14 +197,14 @@ Unfortunately, blockchain transactions are irreversible. If you sent funds to an
 
 Always verify addresses before confirming transactions!
 
-
 ### 8. Can I use Rozo in my country?
 
-Rozo is available in most countries worldwide. However, we cannot provide services to residents of certain restricted jurisdictions due to regulatory requirements. 
+Rozo is available in most countries worldwide. However, we cannot provide services to residents of certain restricted jurisdictions due to regulatory requirements.
 
 ### 15. How do I contact customer support?
 
 You can reach us through:
+
 - **Support Form**: [forms.gle/iRcUc44a3Pzj2KpP7](https://forms.gle/iRcUc44a3Pzj2KpP7)
 - **Email**: hi@rozo.ai
 
@@ -200,4 +221,3 @@ If you couldn't find the answer to your question, please don't hesitate to reach
 **Email Us**: [hi@rozo.ai](mailto:hi@rozo.ai)
 
 **Join Our Community**: Connect with other Rozo users on [Discord](https://discord.com/invite/EfWejgTbuU) or follow us on [X](https://twitter.com/rozoai)
-
