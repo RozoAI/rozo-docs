@@ -152,7 +152,7 @@ Getting started is quick with Privy (Email + OTP only):
 
 Takes about 1–2 minutes.
 
-### 3. What cryptocurrencies can I deposit?
+### 3. What stablecoins can I use?
 
 Rozo currently supports popular stablecoins including:
 
