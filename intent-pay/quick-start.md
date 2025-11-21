@@ -5,7 +5,7 @@ Get up and running with RozoAI Intent Pay SDK in 5 minutes.
 ## 🚀 Installation
 
 ```bash
-npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem
+npm install @rozoai/intent-pay@latest @rozoai/intent-common@latest @tanstack/react-query wagmi viem
 ```
 
 ## 📁 Basic Setup

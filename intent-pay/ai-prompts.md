@@ -4,8 +4,30 @@
 
 Use this prompt with any AI service to generate a complete RozoAI Intent Pay implementation:
 
-```
-Create a React component with RozoAI Intent Pay SDK for crypto payments. Use demo app ID "rozoDemo" for testing, accept Base USDC payments (chain ID 8453), and include all required providers (WagmiProvider, QueryClientProvider, RozoPayProvider) in proper nesting order. IMPORTANT: Use getDefaultConfig from @rozoai/intent-pay (NOT createConfig from wagmi) to create the wagmiConfig. Add payment event handlers (onPaymentStarted, onPaymentCompleted, onPaymentBounced) with console logging and user-friendly alerts. Use TypeScript with proper types, include form validation if creating input fields, and ensure mobile-responsive design with TailwindCSS. Import baseUSDC from @rozoai/intent-common and wrap addresses with getAddress() from viem. Refer to this Guide Docs: https://docs.rozo.ai/intent-pay/quick-start.md
+```text
+Create a React component with RozoAI Intent Pay SDK for crypto payments.
+Use demo app ID "rozoDemo" for testing, accept Base USDC payments
+(chain ID 8453), and include all required providers
+(WagmiProvider, QueryClientProvider, RozoPayProvider)
+in proper nesting order.
+
+IMPORTANT:
+- Use getDefaultConfig from @rozoai/intent-pay
+  (NOT createConfig from wagmi) to create the wagmiConfig.
+- Ensure the code imports packages from the latest SDK release, not from
+  deprecated or older versions. Use @rozoai/intent-pay@latest and @rozoai/intent-common@latest
+
+Add payment event handlers (onPaymentStarted, onPaymentCompleted,
+onPaymentBounced) with console logging and user-friendly alerts.
+
+Use TypeScript with proper types, include form validation if creating
+input fields, and ensure mobile-responsive design with TailwindCSS.
+
+Import baseUSDC from @rozoai/intent-common and wrap addresses
+with getAddress() from viem.
+
+Refer to this Guide Docs:
+https://docs.rozo.ai/intent-pay/quick-start.md
 ```
 
 ## 🚀 One-Click Generation
