@@ -7,24 +7,32 @@
 ***
 
 * [Rozo - Visa for stablecoins](rozo-visa-for-stablecoins.md)
-* [Rozo - Intent Pay SDK](intent-pay/README.md)
-  * [Quick Start Guide](intent-pay/quick-start.md)
-  * [Complete Examples](intent-pay/examples.md)
-  * [API Reference](intent-pay/api-reference.md)
-  * [Troubleshooting](intent-pay/troubleshooting.md)
-  * [AI Prompts](intent-pay/ai-prompts.md)
-* [API Doc](api-doc/README.md)
-  * [Make a Payment (Sign)](api-doc/make-a-payment-sign.md)
-  * [Payment (Cashback Sign)](api-doc/payment-cashback-sign.md)
-* [How to Use](how-to-use.md)
-* [App](app/tos.md)
-  * [Support](app/support.md)
-  * [Terms of Service](app/tos.md)
-  * [Privacy Policy](app/privacy.md)
-* [Terms of service](terms-of-service.md)
-* [Privacy Policy](privacy-policy.md)
+
+## API & SDKS INTEGRATION <a href="#integration" id="integration"></a>
+
+* [ROZO Intent Pay SDK](integration/rozointentpay/README.md)
+  * [Quick Start Guide](integration/rozointentpay/quick-start.md)
+  * [Complete Examples](integration/rozointentpay/examples.md)
+  * [API Reference](integration/rozointentpay/api-reference.md)
+  * [Troubleshooting](integration/rozointentpay/troubleshooting.md)
+  * [AI Prompts](integration/rozointentpay/ai-prompts.md)
+* [ROZO Intent Pay API](integration/api-doc/README.md)
+  * [API](integration/api-doc/api.md)
+
+***
+
+* [PRODUCTS](products.md)
+* [Intent Based Bridge](intent-based-bridge.md)
+* [Mobile App](mobile-app/README.md)
+  * [Support](mobile-app/support.md)
+  * [Privacy Policy](mobile-app/privacy.md)
+  *
 
 ## CONTACT US <a href="#contact" id="contact"></a>
 
+* [Contact us](contact/contact-us/README.md)
+  * [Terms of service](contact/contact-us/terms-of-service.md)
+  * [Privacy Policy](contact/contact-us/privacy-policy.md)
 * [Twitter](https://x.com/ROZOai)
 * [Discord](https://discord.com/invite/EfWejgTbuU)
+* [Github](https://github.com/rozoai)
