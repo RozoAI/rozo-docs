@@ -1,8 +1,14 @@
-# 🧾 ROZO - Stablecoin Abstraction
+# 🧾 ROZO Lite Paper
 
 ### Overview
 
 Rozo is building the Visa for crypto-native payments — enabling users to tap and pay with stablecoins as effortlessly as using Apple Pay. By abstracting away the complexity of blockchains, wallets, gas fees, and token types, Rozo delivers a frictionless experience for both users and merchants, online and in the real world.
+
+#### ROZO Intents
+
+We hide the complexity, and it's referred as ROZO Intents (intent bsed) or stablecoin abstractions.
+
+Intents based is the way to transact with others focusing on outcomes not processes.  As the user, you only need to declare an end result without stating how to accomplish it.
 
 ### 1. 🎯 The Problem: Fragmented Stablecoin Payments
 

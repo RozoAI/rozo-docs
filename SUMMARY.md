@@ -3,7 +3,8 @@
 ## GETTING STARTED <a href="#start" id="start"></a>
 
 * [Welcome to ROZO](README.md)
-* [🧾 ROZO - Stablecoin Abstraction](<README (1).md>)
+* [ROZO Pledge](start/rozo-pledge.md)
+* [🧾 ROZO Lite Paper](<README (1).md>)
 
 ***
 
