@@ -1,3 +1,7 @@
+---
+icon: messages
+---
+
 # Contact us
 
 We're here to help! Reach out to us through any of the following channels:

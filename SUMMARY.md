@@ -6,10 +6,6 @@
 * [Vision and Missions](start/vision-and-missions.md)
 * [🧾 ROZO Lite Paper](<README (1).md>)
 
-***
-
-* [Rozo - Visa for stablecoins](rozo-visa-for-stablecoins.md)
-
 ## API & SDKS INTEGRATION <a href="#integration" id="integration"></a>
 
 * [ROZO Intent Pay SDK](integration/rozointentpay/README.md)

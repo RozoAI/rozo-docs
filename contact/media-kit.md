@@ -1,3 +1,7 @@
+---
+icon: images
+---
+
 # Media Kit
 
 ### About
