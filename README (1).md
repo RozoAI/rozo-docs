@@ -1,4 +1,4 @@
-# 🧾 Rozo - Stablecoin Abstraction
+# 🧾 ROZO - Stablecoin Abstraction
 
 ### Overview
 
@@ -31,8 +31,6 @@ Core components:
 * Intent Addresses: Deterministically generated smart contracts (via CREATE2 on EVM, PDA on Solana) that encode payment parameters.
 * Liquidity Solvers: Third parties who observe incoming payments and instantly settle to the merchant, recovering funds via cross-chain bridges or swaps.
 
-
-
 ### 3. 🧱 Architecture Overview
 
 a. Intent Address Layer
@@ -62,11 +60,11 @@ Rozo powers stablecoin payments across both online platforms and physical storef
 * Suited for indie hackers, no-code tools, and global creators who need permissionless monetization.
 * Use cases like OpenRouter, Creatify.ai
 
-**🧠 MCP & AI Services**&#x20;
+**🧠 MCP & AI Services**
 
 Rozo is compatible with the emerging x402 payment protocol launched by Coinbase, which enables instant stablecoin payments over HTTP. This allows Rozo-integrated services — including APIs, SaaS apps, and AI agents — to monetize through standard web infrastructure without wallets or subscriptions. Developers can embed Rozo’s intent-based payment system directly into HTTP 402 flows, enabling seamless microtransactions for API access, software features, or metered compute. Rozo aligns with this standard to support the next generation of agent-native commerce and programmable internet value transfer.
 
-#### B.  IRL (In-Real-Life) Use Cases
+#### B. IRL (In-Real-Life) Use Cases
 
 **☕️ Cafés & Restaurants, Spas, Wellness & Lifestyle Vendors**
 
@@ -77,11 +75,8 @@ Rozo is compatible with the emerging x402 payment protocol launched by Coinbase,
 
 * IRL businesses are listed on Rozo’s Web App, discoverable by crypto-paying users nearby.
 
-#### C.  Privacy
+#### C. Privacy
 
 Rozo is built with privacy as a core principle Instead of tying payments to identity, Rozo uses single-use intent addresses and ephemeral data flows to minimize metadata leakage. Merchants receive funds without knowing a payer’s wallet history, and users transact without exposing their holdings, device info, or behavioral patterns. For off-chain flows, Rozo supports anonymous top-ups and proxy checkout layers that resemble the privacy of handing over physical cash — giving users control over when and how they reveal information, if ever.
 
-
-
-Join us in building the “Apple Pay for Stablecoins.”
-
+Join us in building the “Visa for for Stablecoins” with Tap to Pay experience.
