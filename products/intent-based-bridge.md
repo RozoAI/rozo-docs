@@ -29,5 +29,5 @@ versus Traditional bridges require users  to perform two separate actions: autho
 
 
 
-<figure><img src=".gitbook/assets/Screenshot 2025-11-29 at 1.43.05 PM.png" alt="" width="375"><figcaption><p>ROZO Intents</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/Screenshot 2025-11-29 at 1.43.05 PM.png" alt="" width="375"><figcaption><p>ROZO Intents</p></figcaption></figure>
 

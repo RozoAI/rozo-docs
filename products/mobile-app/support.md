@@ -36,9 +36,9 @@ We're here to help! Reach out to us through any of the following channels:
 * After verifying, Rozo will provision a secure embedded wallet via Privy automatically
 * Optionally, connect an external wallet (e.g., using WalletConnect) if you prefer
 
-| Welcome                                           | Enter Email                                           | Enter OTP                                           |
-| ------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
-| ![Welcome](../.gitbook/assets/registration-1.PNG) | ![Enter Email](../.gitbook/assets/registration-2.PNG) | ![Enter OTP](../.gitbook/assets/registration-3.PNG) |
+| Welcome                                              | Enter Email                                              | Enter OTP                                              |
+| ---------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------ |
+| ![Welcome](../../.gitbook/assets/registration-1.PNG) | ![Enter Email](../../.gitbook/assets/registration-2.PNG) | ![Enter OTP](../../.gitbook/assets/registration-3.PNG) |
 
 ***
 
@@ -73,9 +73,9 @@ We're here to help! Reach out to us through any of the following channels:
 * You'll receive a notification when funds arrive
 * Check your updated balance in the wallet section
 
-| Balance                                      | Enter Amount                                      | QR / Payment Link                                       | Choose Method                                      |
-| -------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
-| ![Balance](../.gitbook/assets/deposit-1.PNG) | ![Enter Amount](../.gitbook/assets/deposit-2.PNG) | ![QR or Payment Link](../.gitbook/assets/deposit-3.PNG) | ![Choose Method](../.gitbook/assets/deposit-4.PNG) |
+| Balance                                         | Enter Amount                                         | QR / Payment Link                                          | Choose Method                                         |
+| ----------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| ![Balance](../../.gitbook/assets/deposit-1.PNG) | ![Enter Amount](../../.gitbook/assets/deposit-2.PNG) | ![QR or Payment Link](../../.gitbook/assets/deposit-3.PNG) | ![Choose Method](../../.gitbook/assets/deposit-4.PNG) |
 
 **Important Notes:**
 
@@ -101,9 +101,9 @@ We're here to help! Reach out to us through any of the following channels:
 * Enter the amount to withdraw
 * Confirm to submit the withdrawal
 
-| Balance                                       | Withdraw Modal                                 |
-| --------------------------------------------- | ---------------------------------------------- |
-| ![Balance](../.gitbook/assets/withdraw-1.PNG) | ![Withdraw](../.gitbook/assets/withdraw-2.PNG) |
+| Balance                                          | Withdraw Modal                                    |
+| ------------------------------------------------ | ------------------------------------------------- |
+| ![Balance](../../.gitbook/assets/withdraw-1.PNG) | ![Withdraw](../../.gitbook/assets/withdraw-2.PNG) |
 
 **Security Tips:**
 

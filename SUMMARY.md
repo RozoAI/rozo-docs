@@ -17,14 +17,17 @@
 * [ROZO Intent Pay API](integration/api-doc/README.md)
   * [API](integration/api-doc/api.md)
 
+## PRODUCTS
+
+* [Intent Based Bridge](products/intent-based-bridge.md)
+* [Mobile App](products/mobile-app/README.md)
+  * [Support](products/mobile-app/support.md)
+  * [Privacy Policy](products/mobile-app/privacy.md)
+  *
+
 ***
 
-* [PRODUCTS](products.md)
-* [Intent Based Bridge](intent-based-bridge.md)
-* [Mobile App](mobile-app/README.md)
-  * [Support](mobile-app/support.md)
-  * [Privacy Policy](mobile-app/privacy.md)
-  *
+* [PRODUCTS](products-1.md)
 
 ## CONTACT US <a href="#contact" id="contact"></a>
 
