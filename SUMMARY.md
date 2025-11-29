@@ -3,7 +3,7 @@
 ## GETTING STARTED <a href="#start" id="start"></a>
 
 * [Welcome to ROZO](README.md)
-* [ROZO Pledge](start/rozo-pledge.md)
+* [Vision and Missions](start/vision-and-missions.md)
 * [🧾 ROZO Lite Paper](<README (1).md>)
 
 ***
