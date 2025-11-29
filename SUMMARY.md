@@ -30,9 +30,10 @@
 
 ## CONTACT US <a href="#contact" id="contact"></a>
 
+* [Media Kit](contact/media-kit.md)
 * [Contact us](contact/contact-us/README.md)
+  * [Discord](https://discord.com/invite/EfWejgTbuU)
+  * [Github](https://github.com/rozoai)
   * [Terms of service](contact/contact-us/terms-of-service.md)
   * [Privacy Policy](contact/contact-us/privacy-policy.md)
 * [Twitter](https://x.com/ROZOai)
-* [Discord](https://discord.com/invite/EfWejgTbuU)
-* [Github](https://github.com/rozoai)
