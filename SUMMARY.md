@@ -2,7 +2,8 @@
 
 ## GETTING STARTED <a href="#start" id="start"></a>
 
-* [🧾 Rozo - Stablecoin Abstraction](README.md)
+* [Welcome to ROZO](README.md)
+* [🧾 ROZO - Stablecoin Abstraction](<README (1).md>)
 
 ***
 
