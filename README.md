@@ -4,7 +4,9 @@ icon: hand-wave
 
 # Welcome to ROZO
 
-Our story starts summer in San Francisco, 2025, at a small boba shop that accepts USDC. I scanned the QR code with my mobile USDC app but it did not work.
+Our story begins in the summer of 2025, in a small boba shop in San Francisco that accepted USDC.
+
+I scanned their QR code with my mobile USDC wallet, but my app showed error.
 
 <figure><img src=".gitbook/assets/Screenshot 2025-11-29 at 5.27.36 PM.png" alt="" width="173"><figcaption></figcaption></figure>
 
@@ -26,3 +28,6 @@ We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we 
 
 
 
+Welcome to ROZO.&#x20;
+
+Let's hide the wires and use a new way of transacting.
