@@ -20,11 +20,11 @@ To pay for a coffee, why do we need to understand 29 chains, different stablecoi
 
 We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we are building the stablecoin abstrations.  You only need to think in _intents._
 
-> “I want to pay $3.25 for boba.”
+> “I want to pay $3.25 for boba with 10% tips.”
 >
-> “I want to swap $100 to BTC.”
+> “I want to buy $100 BTC.”
 >
-> “I want to earn 10% APY in a $10M pool.”
+> “I want to earn 10% APY with a pool with $10M+ TVL.”
 
 
 
