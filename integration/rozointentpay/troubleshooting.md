@@ -24,34 +24,111 @@ toToken={getAddress(baseUSDC.token)}
 
 **Why it happens:** TypeScript requires proper Address types from viem.
 
-### ❌ Wrong Solana/Stellar Configuration
+### ❌ Wrong Stellar Configuration
 
 **Problem:**
 
 ```tsx
-// ❌ DON'T DO THIS - Wrong chain/token for Solana/Stellar
+// ❌ DON'T DO THIS - Wrong chain/token for Stellar payout
 <RozoPayButton
   appId="rozoDemo"
-  toChain={1} // ❌ Wrong chain
-  toToken={getAddress("0xA0b86a33...")} // ❌ Wrong token
-  toSolanaAddress="DYw8jCTf..."
+  toChain={8453} // ❌ Wrong chain for Stellar
+  toToken={getAddress(baseUSDC.token)} // ❌ Wrong token for Stellar
+  toAddress={getAddress("GABC123...")} // ❌ Don't use getAddress() for Stellar
 />
 ```
 
 **Solution:**
 
 ```tsx
-// ✅ DO THIS - Correct Base chain config
+// ✅ DO THIS - Correct Stellar config
+import { rozoStellarUSDC } from "@rozoai/intent-common";
+
 <RozoPayButton
   appId="rozoDemo"
-  toChain={8453} // ✅ Base chain
-  toToken={getAddress(baseUSDC.token)} // ✅ Base USDC
-  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
-  toSolanaAddress="DYw8jCTf..."
+  toChain={rozoStellarUSDC.chainId} // ✅ Stellar chain (1500)
+  toToken={rozoStellarUSDC.token} // ✅ Stellar USDC token
+  toAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ" // ✅ Stellar address (no getAddress)
+/>;
+```
+
+**Why it happens:** Stellar payouts require Stellar chain ID (1500) and Stellar token format. Stellar addresses should not be wrapped with `getAddress()`.
+
+### ❌ Not Calling resetPayment() When Payment Params Change
+
+**Problem:**
+
+```tsx
+// ❌ DON'T DO THIS - Payment params change but resetPayment() not called
+function PaymentComponent() {
+  const [amount, setAmount] = useState("10");
+
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d...")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits={amount} // ❌ Changed but resetPayment() not called
+    />
+  );
+}
+```
+
+**Solution:**
+
+```tsx
+// ✅ DO THIS - Call resetPayment() when params change
+import { useRozoPayUI } from "@rozoai/intent-pay";
+
+function PaymentComponent() {
+  const { resetPayment } = useRozoPayUI();
+  const [amount, setAmount] = useState("10");
+
+  useEffect(() => {
+    resetPayment({
+      toChain: baseUSDC.chainId,
+      toAddress: getAddress("0x742d..."),
+      toToken: getAddress(baseUSDC.token),
+      toUnits: amount, // ✅ resetPayment() called when amount changes
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount]);
+
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d...")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits={amount}
+    />
+  );
+}
+```
+
+**Why it happens:** You **must** call `resetPayment()` from `useRozoPayUI()` hook whenever `toChain`, `toAddress`, `toToken`, or `toUnits` values change to update the payment state.
+
+### ❌ Using parseFloat() for toUnits
+
+**Problem:**
+
+```tsx
+// ❌ DON'T DO THIS - Using parseFloat() unnecessarily
+const amount = parseFloat("10"); // ❌ Not needed
+<RozoPayButton toUnits={amount.toString()} />;
+```
+
+**Solution:**
+
+```tsx
+// ✅ DO THIS - Use human-readable string directly
+<RozoPayButton
+  toUnits="10" // ✅ Human-readable amount as string
 />
 ```
 
-**Why it happens:** Solana/Stellar payments require Base chain as settlement layer.
+**Why it happens:** The `toUnits` prop accepts human-readable amounts as strings (e.g., `"10"` for 10 USDC). No `parseFloat()` conversion is needed.
 
 ## 🐛 Debugging Tools
 
@@ -88,13 +165,14 @@ This will log:
 
 ### Common Error Messages
 
-| Error                    | Cause                   | Solution                            |
-| ------------------------ | ----------------------- | ----------------------------------- |
-| `Provider not found`     | Missing RozoPayProvider | Wrap app with providers             |
-| `Invalid address format` | Raw string address      | Use `getAddress()` wrapper          |
-| `Chain not supported`    | Wrong chain ID          | Use supported chain (8453, 137, 56) |
-| `Token not found`        | Wrong token address     | Verify token address for chain      |
-| `Wallet not connected`   | No wallet connection    | User needs to connect wallet        |
+| Error                    | Cause                   | Solution                               |
+| ------------------------ | ----------------------- | -------------------------------------- |
+| `Provider not found`     | Missing RozoPayProvider | Wrap app with providers                |
+| `Invalid address format` | Raw string address      | Use `getAddress()` wrapper             |
+| `Chain not supported`    | Wrong chain ID          | Use supported chain (8453, 137, 56)    |
+| `Token not found`        | Wrong token address     | Verify token address for chain         |
+| `Wallet not connected`   | No wallet connection    | User needs to connect wallet           |
+| `Payment not updating`   | Missing resetPayment()  | Call resetPayment() when params change |
 
 ## 📞 Getting Help
 
@@ -111,7 +189,7 @@ If you're still experiencing issues:
    - 🐛 **GitHub Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
 
 3. **Direct Support:**
-   - 📧 **Email**: support@rozo.ai
+   - 📧 **Email**: [support@rozo.ai](mailto:support@rozo.ai)
 
 When reporting issues, please include:
 

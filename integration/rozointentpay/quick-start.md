@@ -5,7 +5,7 @@ Get up and running with RozoAI Intent Pay SDK in 5 minutes.
 ## 🚀 Installation
 
 ```bash
-npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem
+npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem @creit.tech/stellar-wallets-kit @stellar/stellar-sdk
 ```
 
 ## 📁 Basic Setup
@@ -54,6 +54,12 @@ export default function App() {
 
 ### 3. Add Payment Button with Dynamic Form
 
+**Important Notes:**
+
+- `toUnits` prop accepts human-readable amounts as strings (e.g., `"10"` for 10 USDC, no `parseFloat` needed)
+- You **must** call `resetPayment()` whenever `toChain`, `toAddress`, `toToken`, or `toUnits` values change
+- Use `useRozoPayUI()` hook to access the `resetPayment` function
+
 ```tsx
 "use client";
 
@@ -79,17 +85,18 @@ function PaymentDemo() {
     formData.amount &&
     parseFloat(formData.amount) > 0;
 
-  // Reset payment when form data changes
+  // IMPORTANT: Must call resetPayment() whenever toChain, toAddress, toToken, or toUnits changes
+  // toUnits is a human-readable amount as string (e.g., "10" for 10 USDC, no parseFloat needed)
   useEffect(() => {
     if (canShowButton) {
       resetPayment({
         toChain: baseUSDC.chainId,
         toAddress: getAddress(formData.recipientAddress),
         toToken: getAddress(formData.tokenAddress),
-        toUnits: formData.amount,
+        toUnits: formData.amount, // Human-readable amount as string
       });
     }
-  }, [formData, canShowButton, resetPayment]);
+  }, [formData, canShowButton]);
 
   return (
     <div className="p-8 max-w-md mx-auto">
@@ -151,7 +158,7 @@ function PaymentDemo() {
           toChain={baseUSDC.chainId} // Base chain (8453)
           toAddress={getAddress(formData.recipientAddress)} // Your wallet
           toToken={getAddress(formData.tokenAddress)} // USDC on Base
-          toUnits={formData.amount} // Amount in USDC
+          toUnits={formData.amount} // Human-readable amount as string (e.g., "10" for 10 USDC)
           intent={`Pay $${formData.amount}`} // Button text
           onPaymentStarted={(event) => {
             console.log("✅ Payment started!", event.paymentId);
@@ -179,21 +186,21 @@ function PaymentDemo() {
 
 ## 🎯 Quick Customization
 
-### Solana/Stellar Support
+### Stellar Payout Support
+
+For Stellar USDC payouts, use `rozoStellarUSDC` from `@rozoai/intent-common`:
 
 ```tsx
+import { rozoStellarUSDC } from "@rozoai/intent-common";
+
 <RozoPayButton
   appId="rozoDemo"
-  // REQUIRED: Base chain config (settlement layer)
-  toChain={8453}
-  toToken={getAddress(baseUSDC.token)}
-  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
-  // Your actual destinations
-  toSolanaAddress="DYw8jCTfwHNRJhhmFcbXvVDTqWMEVFBX6ZKUmG5CNSKK"
-  toStellarAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ"
+  toChain={rozoStellarUSDC.chainId} // Stellar chain (1500)
+  toToken={rozoStellarUSDC.token} // Stellar USDC token
+  toAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ" // Stellar address (no getAddress needed)
   toUnits="15"
-  intent="Multi-Chain Payment"
-/>
+  intent="Pay $15"
+/>;
 ```
 
 ## 📖 Next Steps
