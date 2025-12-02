@@ -16,7 +16,9 @@
   * [AI Prompts](integration/rozointentpay/ai-prompts.md)
 * [ROZO Intent Pay API](integration/api-doc/README.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
-  * [API](integration/api-doc/api.md)
+  * [API Doc (POSTMAN)](https://apidoc.rozo.ai/)
+  * [API Quick Start](integration/api-doc/api-quick-start.md)
+  * [Page](integration/api-doc/page.md)
 
 ## PRODUCTS
 
