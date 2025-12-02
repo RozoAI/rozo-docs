@@ -15,10 +15,10 @@
   * [Troubleshooting](integration/rozointentpay/troubleshooting.md)
   * [AI Prompts](integration/rozointentpay/ai-prompts.md)
 * [ROZO Intent Pay API](integration/api-doc/README.md)
-  * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
+  * [ROZO Intents Tech Design](integration/api-doc/rozo-intents-tech-design.md)
   * [API Doc (POSTMAN)](https://apidoc.rozo.ai/)
   * [API Quick Start](integration/api-doc/api-quick-start.md)
-  * [Page](integration/api-doc/page.md)
+  * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
 
 ## PRODUCTS
 
