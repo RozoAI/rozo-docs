@@ -146,7 +146,8 @@ function EcommerceCheckout() {
       toToken: getAddress(baseUSDC.token),
       toUnits: selectedProduct.price,
     });
-  }, [selectedProduct, resetPayment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProduct]);
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
@@ -217,7 +218,8 @@ function DonationComponent() {
         toUnits: finalAmount,
       });
     }
-  }, [finalAmount, resetPayment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalAmount]);
 
   return (
     <div className="p-8 max-w-md mx-auto">
@@ -280,6 +282,32 @@ function DonationComponent() {
         </div>
       )}
     </div>
+  );
+}
+```
+
+### Stellar Payout Example
+
+```tsx
+"use client";
+
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { rozoStellarUSDC } from "@rozoai/intent-common";
+
+export default function StellarPayment() {
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={rozoStellarUSDC.chainId} // Stellar chain (1500)
+      toToken={rozoStellarUSDC.token} // Stellar USDC token
+      toAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ" // Stellar address
+      toUnits="25"
+      intent="Pay $25 to Stellar"
+      onPaymentCompleted={(event) => {
+        console.log("Stellar payment completed!", event.txHash);
+        alert("Payment successful! 🎉");
+      }}
+    />
   );
 }
 ```

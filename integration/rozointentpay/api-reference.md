@@ -26,10 +26,10 @@ Complete reference for RozoAI Intent Pay SDK props, configuration, and customiza
 
 ### Semi-Optional Props
 
-| Prop      | Type     | Description                                     | Default |
-| --------- | -------- | ----------------------------------------------- | ------- |
-| `toUnits` | `string` | Amount to send (if not provided, user prompted) | -       |
-| `intent`  | `string` | Button text/payment verb                        | `"Pay"` |
+| Prop      | Type     | Description                                                                                                         | Default |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
+| `toUnits` | `string` | Human-readable amount as string (e.g., `"10"` for 10 USDC, no `parseFloat` needed). If not provided, user prompted. | -       |
+| `intent`  | `string` | Button text/payment verb                                                                                            | `"Pay"` |
 
 ## 🎯 Event Handlers (RECOMMENDED)
 
@@ -108,26 +108,29 @@ interface TokenPreference {
 }
 ```
 
-### Multi-Chain Destinations
+### Stellar Payout Support
+
+For Stellar USDC payouts, use `rozoStellarUSDC` from `@rozoai/intent-common`:
 
 ```tsx
+import { rozoStellarUSDC } from "@rozoai/intent-common";
+
 <RozoPayButton
-  // ... required props (MUST use Base chain config)
-  toChain={8453} // MUST be Base chain
-  toToken={getAddress(baseUSDC.token)} // MUST be Base USDC
-  toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
-  // Your actual destinations
-  toSolanaAddress="DYw8jCTf..." // Solana wallet
-  toStellarAddress="GABC123..." // Stellar wallet
-/>
+  appId="rozoDemo"
+  toChain={rozoStellarUSDC.chainId} // Stellar chain (1500)
+  toToken={rozoStellarUSDC.token} // Stellar USDC token
+  toAddress="GABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZ" // Stellar address (no getAddress needed)
+  toUnits="15"
+  intent="Pay $15"
+/>;
 ```
 
-| Prop               | Type     | Description            |
-| ------------------ | -------- | ---------------------- |
-| `toSolanaAddress`  | `string` | Solana wallet address  |
-| `toStellarAddress` | `string` | Stellar wallet address |
+**Available Payout Options:**
 
-**⚠️ CRITICAL:** When using `toSolanaAddress` or `toStellarAddress`, you MUST set `toChain` to Base Chain (8453) and `toToken` to Base USDC.
+- **Base USDC**: Use `baseUSDC.chainId` (8453), `baseUSDC.token`, and Base address with `getAddress()`
+- **Stellar USDC**: Use `rozoStellarUSDC.chainId` (1500), `rozoStellarUSDC.token`, and Stellar address (no `getAddress()` needed)
+
+For a complete list of supported payout chains and tokens, see [Supported Tokens and Chains](../api-doc/supported-tokens-and-chains.md).
 
 ### UI Customization
 
@@ -337,9 +340,7 @@ interface RozoPayButtonProps {
   toUnits?: string;
   intent?: string;
 
-  // Optional destinations
-  toSolanaAddress?: string;
-  toStellarAddress?: string;
+  // Optional
   toCallData?: Hex;
 
   // Preferences
@@ -402,6 +403,47 @@ interface CustomTheme {
   fontFamily?: string;
 }
 ```
+
+## 🔄 Dynamic Payment Updates
+
+### Using resetPayment() Hook
+
+When payment parameters (`toChain`, `toAddress`, `toToken`, or `toUnits`) change dynamically, you **must** call `resetPayment()` from the `useRozoPayUI()` hook:
+
+```tsx
+import { useRozoPayUI } from "@rozoai/intent-pay";
+
+function PaymentComponent() {
+  const { resetPayment } = useRozoPayUI();
+  const [amount, setAmount] = useState("10");
+
+  useEffect(() => {
+    resetPayment({
+      toChain: baseUSDC.chainId,
+      toAddress: getAddress("0x742d..."),
+      toToken: getAddress(baseUSDC.token),
+      toUnits: amount, // Human-readable string (e.g., "10" for 10 USDC)
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount]); // Call resetPayment() when amount changes
+
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d...")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits={amount}
+    />
+  );
+}
+```
+
+**Important Notes:**
+
+- `toUnits` accepts human-readable amounts as strings (e.g., `"10"` for 10 USDC, no `parseFloat` needed)
+- You **must** call `resetPayment()` whenever `toChain`, `toAddress`, `toToken`, or `toUnits` values change
+- Use `useRozoPayUI()` hook to access the `resetPayment` function
 
 ## 📖 Next Steps
 
