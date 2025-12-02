@@ -8,7 +8,9 @@ Stellar chain ID: `1500`
 
 App ID (please join our discord)
 
+API Host : https://intentapiv4.rozo.ai/functions/v1
 
+<figure><img src="../../.gitbook/assets/Screenshot 2025-12-02 at 10.38.32 AM.png" alt=""><figcaption></figcaption></figure>
 
 ### Request
 
