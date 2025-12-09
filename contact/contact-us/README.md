@@ -11,6 +11,6 @@ We're here to help! Reach out to us through any of the following channels:
 * **X (Twitter)**: [@rozoai](https://x.com/rozoai)
 * **Discord**: [Join our Discord Community](https://discord.com/invite/EfWejgTbuU)
 * **GitHub**: [Rozo on GitHub](https://github.com/rozoai)
-* Website: [https://www.rozo.ai/](https://www.rozo.ai/)
+* **Website**: [https://www.rozo.ai/](https://www.rozo.ai/)
 
 ***
