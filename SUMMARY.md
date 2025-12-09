@@ -26,7 +26,6 @@
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
-  *
 
 ***
 
@@ -41,4 +40,4 @@
   * [Twitter](https://x.com/ROZOai)
 * [Terms of service](contact/contact-us/terms-of-service.md)
 * [Privacy Policy](contact/contact-us/privacy-policy.md)
-* [FAQs](contact/contact-us/privacy-policy.md)
+* [FAQs](contact/faqs.md)
