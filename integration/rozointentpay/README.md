@@ -2,7 +2,10 @@
 
 > **Cross-chain crypto payments made simple** – Accept payments from any blockchain with a single component
 
-[![npm version](https://badge.fury.io/js/@rozoai%2Fintent-pay.svg)](https://badge.fury.io/js/@rozoai%2Fintent-pay) [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/) [![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://reactjs.org/)
+| Package                                                                  | npm                                                                   |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| [@rozoai/intent-pay](https://npmjs.org/package/@rozoai/intent-pay)       | ![NPM](https://nodei.co/npm/@rozoai%2Fintent-pay.png?compact=true)    |
+| [@rozoai/intent-common](https://npmjs.org/package/@rozoai/intent-common) | ![NPM](https://nodei.co/npm/@rozoai%2Fintent-common.png?compact=true) |
 
 ## 🎯 What RozoAI Intent Pay Does
 
@@ -10,12 +13,12 @@ RozoAI Intent Pay SDK is a React component that lets users pay you in crypto fro
 
 **Key Benefits:**
 
-* ✅ **One Component** - Add `<RozoPayButton>` and you're done
-* ✅ **Supported Chains** - Base, Polygon, Solana, Stellar, BSC
-* ✅ **Any Wallet** - MetaMask, Phantom, Coinbase Wallet, and more
-* ✅ **Supported Tokens** - USDC on Base/Polygon/Solana/Stellar; USDT on BSC
-* ✅ **Mobile Ready** - Works perfectly on mobile apps
-* ✅ **Zero Config** - Smart defaults, easy customization
+- ✅ **One Component** - Add `<RozoPayButton>` and you're done
+- ✅ **Supported Chains** - Base, Polygon, Solana, Stellar, BSC
+- ✅ **Any Wallet** - MetaMask, Phantom, Coinbase Wallet, and more
+- ✅ **Supported Tokens** - USDC on Base/Polygon/Solana/Stellar; USDT on BSC
+- ✅ **Mobile Ready** - Works perfectly on mobile apps
+- ✅ **Easy Configuration** - Smart defaults, easy customization
 
 ## 📚 Documentation
 
@@ -47,40 +50,30 @@ import { getAddress } from "viem";
 
 ## 🔗 Supported Chains & Tokens
 
-| Chain       | Chain ID | Token | Supported |
-| ----------- | -------- | ----- | :-------: |
-| **Base**    | 8453     | USDC  |     ✅     |
-| **Polygon** | 137      | USDC  |     ✅     |
-| **BSC**     | 56       | USDT  |     ✅     |
-| **Solana**  | -        | USDC  |     ✅     |
-| **Stellar** | -        | USDC  |     ✅     |
+For a full list of supported chains and tokens, see the [Supported Tokens and Chains](../api-doc/supported-tokens-and-chains.md) page.
 
 ## 💳 Payment Methods
 
 Supported wallets:
 
-* **Desktop**: MetaMask, Coinbase Wallet, Rainbow, Trust Wallet, Phantom, Albedo, etc.
-* **Mobile**: All wallets via deep-linking
+- **Desktop**: MetaMask, Coinbase Wallet, Rainbow, Trust Wallet, Phantom, Albedo, etc.
+- **Mobile**: All wallets via deep-linking
 
 ## 🔧 Installation
 
 ```bash
-npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem
+npm install @rozoai/intent-pay @rozoai/intent-common @tanstack/react-query wagmi viem @creit.tech/stellar-wallets-kit @stellar/stellar-sdk
 ```
 
 ## 📞 Support & Resources
 
-* 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
-* 💬 **Discord**: [discord.gg/rozoai](https://discord.com/invite/EfWejgTbuU)
-* 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
-* 📧 **Email**: support@rozo.ai
-* 🔗 **Demo**: [demo.rozo.ai](https://demo.rozo.ai/)
+- 📖 **Documentation**: [docs.rozo.ai](https://docs.rozo.ai)
+- 💬 **Discord**: [discord.gg/rozoai](https://discord.com/invite/EfWejgTbuU)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/rozoai/intent-pay/issues)
+- 📧 **Email**: support@rozo.ai
+- 🔗 **Demo**: [demo.rozo.ai](https://demo.rozo.ai/)
 
-## 📄 License
-
-MIT License - see [LICENSE](../../intent-pay/LICENSE/) for details.
-
-***
+---
 
 **Made with ❤️ by the RozoAI team**
 
