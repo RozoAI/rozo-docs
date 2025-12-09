@@ -26,7 +26,6 @@
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
-  *
 
 ***
 
@@ -38,6 +37,7 @@
 * [Contact us](contact/contact-us/README.md)
   * [Discord](https://discord.com/invite/EfWejgTbuU)
   * [Github](https://github.com/rozoai)
-  * [Terms of service](contact/contact-us/terms-of-service.md)
-  * [Privacy Policy](contact/contact-us/privacy-policy.md)
-* [Twitter](https://x.com/ROZOai)
+  * [Twitter](https://x.com/ROZOai)
+* [Terms of service](contact/contact-us/terms-of-service.md)
+* [Privacy Policy](contact/contact-us/privacy-policy.md)
+* [FAQs](contact/faqs.md)
