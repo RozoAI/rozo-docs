@@ -1,6 +1,6 @@
 # Supported Tokens and Chains
 
-Pay In Tokens and Chains
+### Pay In Tokens and Chains
 
 **USDC Support (More chains coming soon)**
 
@@ -15,3 +15,14 @@ Pay In Tokens and Chains
 **USDC Support (More chains coming soon)**
 
 <table><thead><tr><th width="118.76953125">Chain ID</th><th width="119.1953125">Chain Name</th><th width="407.73828125">USDC Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td><code>0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48</code></td><td>6</td></tr><tr><td><code>8453</code></td><td>Base</td><td><code>0x833589fcd6edb6e08f4c7c32d4f71b54bda02913</code></td><td>6</td></tr><tr><td><code>137</code></td><td>Polygon</td><td><code>0x3c499c542cef5e3811e1192ce70d8cc03d5c3359</code></td><td>6</td></tr><tr><td><code>900</code></td><td>Solana</td><td><code>EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</code></td><td>6</td></tr><tr><td><code>1500</code></td><td>Stellar</td><td><code>USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN</code></td><td>7</td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody></table>
+
+
+
+### Coming soon (EURC)
+
+### EURC PayIn  & PayOut
+
+(Base and Stellar network)
+
+<table><thead><tr><th width="109.328125">Chain ID</th><th width="119.1953125">Chain Name</th><th width="455.8515625">USDC Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td>0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c</td><td>6</td></tr><tr><td><code>8453</code></td><td>Base</td><td>0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42</td><td>6</td></tr><tr><td><code>1500</code></td><td>Stellar</td><td>EURC:GAKNDFRRWA3RPWNL7CO7H6ZZJZ7RLGK7WPHUEDGJ6S6GJ3A6K6T4RZ3H</td><td>7</td></tr></tbody></table>
+
