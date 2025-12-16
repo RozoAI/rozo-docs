@@ -24,5 +24,5 @@
 
 (Base and Stellar network)
 
-<table><thead><tr><th width="109.328125">Chain ID</th><th width="119.1953125">Chain Name</th><th width="455.8515625">USDC Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td>0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c</td><td>6</td></tr><tr><td><code>8453</code></td><td>Base</td><td>0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42</td><td>6</td></tr><tr><td><code>1500</code></td><td>Stellar</td><td>EURC:GAKNDFRRWA3RPWNL7CO7H6ZZJZ7RLGK7WPHUEDGJ6S6GJ3A6K6T4RZ3H</td><td>7</td></tr></tbody></table>
+<table><thead><tr><th width="109.328125">Chain ID</th><th width="119.1953125">Chain Name</th><th width="455.8515625">USDC Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td>0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c</td><td>6</td></tr><tr><td><code>8453</code></td><td>Base</td><td>0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42</td><td>6</td></tr><tr><td><code>1500</code></td><td>Stellar</td><td>EURC:GDHU6WRG4IEQXM5NZ4BMPKOXHW76MZM4Y2IEMFDVXBSDP6SJY4ITNPP2</td><td>7</td></tr></tbody></table>
 
