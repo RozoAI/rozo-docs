@@ -195,7 +195,7 @@ function EcommerceCheckout() {
 "use client";
 
 import { RozoPayButton, useRozoPayUI } from "@rozoai/intent-pay";
-import { baseUSDC } from "@rozoai/intent-common";
+import { baseUSDC, TokenSymbol } from "@rozoai/intent-common";
 import { getAddress } from "viem";
 import { useState, useEffect } from "react";
 
@@ -270,6 +270,7 @@ function DonationComponent() {
           toUnits={finalAmount}
           intent={`Donate $${finalAmount}`}
           preferredChains={[8453, 137]} // Prefer Base and Polygon
+          preferredSymbol={[TokenSymbol.USDC, TokenSymbol.USDT]} // Prioritize USDC and USDT
           onPaymentCompleted={() => {
             alert(`Thank you for your $${finalAmount} donation! 🙏`);
           }}
@@ -307,6 +308,61 @@ export default function StellarPayment() {
         console.log("Stellar payment completed!", event.txHash);
         alert("Payment successful! 🎉");
       }}
+    />
+  );
+}
+```
+
+### Token Symbol Preference Example
+
+```tsx
+"use client";
+
+import { RozoPayButton } from "@rozoai/intent-pay";
+import { baseUSDC, TokenSymbol } from "@rozoai/intent-common";
+import { getAddress } from "viem";
+
+// Default behavior (no prop needed) - prioritizes USDC and USDT
+export default function DefaultPayment() {
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits="10"
+      intent="Pay $10"
+    />
+  );
+}
+
+// Prioritize USDC and USDT across all chains
+export function PreferredSymbolsPayment() {
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+      toToken={getAddress(baseUSDC.token)}
+      toUnits="10"
+      intent="Pay $10"
+      preferredSymbol={[TokenSymbol.USDC, TokenSymbol.USDT]}
+    />
+  );
+}
+
+// Prioritize EURC only
+// Note: EURC can only be sent to EURC - ensure toToken is an EURC token address
+export function EURCPayment() {
+  return (
+    <RozoPayButton
+      appId="rozoDemo"
+      toChain={baseUSDC.chainId}
+      toAddress={getAddress("0x742d35Cc6634C0532925a3b8D454A3fE1C11C4e2")}
+      toToken={getAddress(baseUSDC.token)} // Must be EURC token address
+      toUnits="10"
+      intent="Pay $10"
+      preferredSymbol={[TokenSymbol.EURC]}
     />
   );
 }

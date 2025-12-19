@@ -12,6 +12,7 @@ Complete reference for RozoAI Intent Pay SDK props, configuration, and customiza
   toToken={getAddress(baseUSDC.token)} // USDC token
   toUnits="10" // $10 USDC (optional)
   intent="Pay Now" // Button text (optional)
+  preferredSymbol={[TokenSymbol.USDC, TokenSymbol.USDT]} // Optional: prioritize token symbols
 />
 ```
 
@@ -93,20 +94,28 @@ interface PaymentBouncedEvent {
     // Prefer specific tokens
     { chain: 8453, address: getAddress(baseUSDC.token) },
   ]}
+  preferredSymbol={[TokenSymbol.USDC, TokenSymbol.USDT]} // Prioritize USDC and USDT across all chains
 />
 ```
 
-| Prop              | Type                | Description                         |
-| ----------------- | ------------------- | ----------------------------------- |
-| `preferredChains` | `number[]`          | Preferred chain IDs in order        |
-| `preferredTokens` | `TokenPreference[]` | Preferred tokens with chain/address |
+| Prop              | Type                | Description                                                                                                                         | Default        |
+| ----------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `preferredChains` | `number[]`          | Preferred chain IDs in order                                                                                                        | -              |
+| `preferredTokens` | `TokenPreference[]` | Preferred tokens with chain/address                                                                                                 | -              |
+| `preferredSymbol` | `TokenSymbol[]`     | Prioritizes token symbols across all supported chains in token selection UI. If `preferredTokens` is provided, it takes precedence. | `[USDC, USDT]` |
 
 ```tsx
+import { TokenSymbol } from "@rozoai/intent-common";
+
 interface TokenPreference {
   chain: number;
   address: Address;
 }
 ```
+
+**Note:** `preferredSymbol` automatically finds matching tokens across all chains (Base, Polygon, Ethereum, Solana, Stellar). Only `USDC`, `USDT`, and `EURC` are supported values. Invalid symbols are filtered with a console warning.
+
+**Important:** EURC can only be sent to EURC. When using `TokenSymbol.EURC`, ensure your `toToken` is also an EURC token address.
 
 ### Stellar Payout Support
 
@@ -327,6 +336,7 @@ For complete UI control, use the Custom variant with a render prop:
 
 ```tsx
 import type { Address, Hex } from "viem";
+import { TokenSymbol } from "@rozoai/intent-common";
 
 // Main component props (using appId)
 interface RozoPayButtonProps {
@@ -346,6 +356,7 @@ interface RozoPayButtonProps {
   // Preferences
   preferredChains?: number[];
   preferredTokens?: TokenPreference[];
+  preferredSymbol?: TokenSymbol[];
   evmChains?: number[];
 
   // UI
