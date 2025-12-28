@@ -18,8 +18,9 @@
   * [ROZO Intents Tech Design](integration/api-doc/rozo-intents-tech-design.md)
   * [API Doc (POSTMAN)](https://apidoc.rozo.ai/)
   * [API Quick Start](integration/api-doc/api-quick-start.md)
-  * [Wallet Top-up (Any Amount)](integration/api-doc/wallet-topup.md)
-  * [Stellar Contract Payments](integration/api-doc/stellar-contract-payments.md)
+  * [API for Advanced Used](integration/api-doc/api-for-advanced-used/README.md)
+    * [Wallet Top-up (Any Amount)](integration/api-doc/api-for-advanced-used/wallet-topup.md)
+    * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
   * [Stellar Earn](integration/api-doc/stellar-earn.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
 
