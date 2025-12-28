@@ -20,6 +20,7 @@
   * [API Quick Start](integration/api-doc/api-quick-start.md)
   * [Wallet Top-up (Any Amount)](integration/api-doc/wallet-topup.md)
   * [Stellar Contract Payments](integration/api-doc/stellar-contract-payments.md)
+  * [Stellar Earn](integration/api-doc/stellar-earn.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
 
 ## PRODUCTS
