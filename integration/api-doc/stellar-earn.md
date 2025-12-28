@@ -36,12 +36,12 @@ Deposit from any chain and receive dTokens on Stellar.
 ### Request
 
 ```bash
-curl -X POST https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/payment-api/payments \
+curl -X POST https://intentapiv4.rozo.ai/functions/v1/payment-api/payments \
   -H "Content-Type: application/json" \
   -d '{
     "appId": "your-app-id",
     "orderId": "order-123",
-    "type": "exactIn",
+    "type": "anyAmount",
     "intent": "stellar_earn_deposit",
     "display": {
       "title": "Deposit to Earn",
@@ -49,8 +49,7 @@ curl -X POST https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/payment-api/p
     },
     "source": {
       "chainId": "8453",
-      "tokenSymbol": "USDC",
-      "amount": "100.00"
+      "tokenSymbol": "USDC"
     },
     "destination": {
       "chainId": "1500",
@@ -97,7 +96,7 @@ Pay with dTokens on Stellar and receive USDC on any chain.
 ### Request
 
 ```bash
-curl -X POST https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/payment-api/payments \
+curl -X POST https://intentapiv4.rozo.ai/functions/v1/payment-api/payments \
   -H "Content-Type: application/json" \
   -d '{
     "appId": "your-app-id",
