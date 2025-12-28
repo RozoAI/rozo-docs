@@ -1,5 +1,9 @@
 # Wallet Top-up (Any Amount)
 
+The API is for wallet topup. If the wallet is on Base or Stellar, users can top up with USDC on other chains. For example, deposit from Ethereum, Solana, Base to your Stellar wallets.
+
+
+
 The `anyAmount` payment type allows users to send any amount without specifying it upfront. The system automatically detects the received amount and calculates the output dynamically.
 
 **API Host**: `https://intentapiv4.rozo.ai/functions/v1`
@@ -8,15 +12,15 @@ The `anyAmount` payment type allows users to send any amount without specifying 
 
 ## Use Cases
 
-- Wallet top-up flows
-- Donation payments
-- Flexible payment amounts
+* Wallet top-up flows
+* Donation payments
+* Flexible payment amounts
 
 ## Supported Amount Range
 
-| Limit | Value |
-|-------|-------|
-| Minimum | $0.02 USDC |
+| Limit   | Value       |
+| ------- | ----------- |
+| Minimum | $0.02 USDC  |
 | Maximum | $3,000 USDC |
 
 Amounts outside this range will be rejected with `amountTooLow` or `amountTooHigh` error codes. For custom limits, please contact us.
@@ -144,16 +148,14 @@ The payment record is updated:
 
 ## Error Codes
 
-| Error Code | Description |
-|------------|-------------|
-| `amountTooLow` | Received amount is below $0.02 USDC |
-| `amountTooHigh` | Received amount exceeds $3,000 USDC |
+| Error Code              | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| `amountTooLow`          | Received amount is below $0.02 USDC              |
+| `amountTooHigh`         | Received amount exceeds $3,000 USDC              |
 | `insufficientLiquidity` | Destination chain lacks liquidity for the payout |
 
 ## Best Practices
 
 1. **Use Pusher for real-time updates**: Subscribe to payment status changes instead of polling.
-
 2. **Handle bounced payments**: If amount is outside range or liquidity is insufficient, payment will be marked as `payment_bounced` with appropriate error code.
-
 3. **Check payment status**: Poll `GET /payments/{id}` or use Pusher to monitor status transitions.
