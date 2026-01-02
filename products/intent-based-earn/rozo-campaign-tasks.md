@@ -43,29 +43,34 @@ Daily Points = √(Daily Minimum Balance)
 | $5,000 | 70.71 |
 | $10,000 | 100.00 (cap) |
 
-### 2. One-Time Task Points
+### 2. One-Time Task Points (New User Only)
 
-| Task | Points | Trigger Condition |
-|------|--------|-------------------|
-| First Deposit | +20 | Deposit ≥ $1 |
-| Bind Twitter | +15 | Complete OAuth Authorization |
-| Bind Discord | +15 | Complete OAuth Authorization |
-| First Successful Referral | +20 | Invite 1 person to deposit ≥ $1 |
+These are claimed **ONCE per user** in their first participating week:
 
-**Maximum One-Time Task Points: 70**
+| Task | Points | Trigger Condition | Frequency |
+|------|--------|-------------------|-----------|
+| First Deposit | +20 | Deposit ≥ $1 | Once per user |
+| Bind Twitter | +15 | Complete OAuth Authorization | Once per user |
+| Bind Discord | +15 | Complete OAuth Authorization | Once per user |
+| First Successful Referral | +20 | Invite 1 person to deposit ≥ $1 | Once per user |
 
-### 3. Referral Bonus
+**Maximum One-Time Task Points: 70** (only in your first week)
+
+### 3. Referral Bonus (Recalculated Weekly)
 
 ```
-Referral Bonus = Σ(Referred User's Balance Points × 20%)
+Referral Bonus = Σ(Referred User's Weekly Balance Points × 20%)
 ```
 
-**Notes**:
-- Only counts referred user's **balance points**, not one-time task points
-- Based on referred user's actual weekly points, recalculated weekly
+**What contributes to referrer's points:**
+
+| Counts ✓ | Does NOT Count ✗ |
+|----------|------------------|
+| Referred user's balance points (√balance × days) | Referred user's one-time task points (+70) |
+| | Referred user's own referral bonus |
 
 **Cap Rules**:
-- If you have deposits: Cap = Your own points
+- If you have deposits: Cap = Your own total points
 - If you have no deposits: Cap = 100 points
 
 ---
@@ -76,9 +81,9 @@ Referral Bonus = Σ(Referred User's Balance Points × 20%)
 
 | Point Type | Cycle | Description |
 |------------|-------|-------------|
-| **One-time Tasks** | Only once | Claimed in Week 1, not available after |
-| **Daily Balance Points** | Recalculated weekly | Resets to zero each week |
-| **Referral Bonus** | Recalculated weekly | Follows weekly points |
+| **One-time Tasks** | Once per user | Claimed in user's first participating week only |
+| **Daily Balance Points** | Weekly | Resets to zero each week, recalculated |
+| **Referral Bonus** | Weekly | Based on referred users' weekly balance points |
 
 **Draw Announcement Time**: Every Monday 00:00 UTC
 - Singapore/Hong Kong: Monday 08:00

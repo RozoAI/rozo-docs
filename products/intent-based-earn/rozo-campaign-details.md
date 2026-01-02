@@ -108,28 +108,32 @@ Daily Points = √(Minimum Balance at UTC 00:00 Snapshot)
 
 ---
 
-## 5. Beginner Task System (Simple & Easy)
+## 5. Task System
 
-### A. One-Time Tasks (Can Only Be Claimed Once)
+### A. One-Time Tasks (New User Only - Claimed Once Per User)
 
-| Task | Points | Condition |
-|------|--------|-----------|
-| First Deposit | **+20 pts** | Deposit ≥ $1 |
-| Bind Twitter | +15 pts | OAuth Authorization |
-| Bind Discord | +15 pts | OAuth Authorization |
-| First Successful Referral | +20 pts | Invite 1 person who deposits ≥ $1 |
+These tasks can only be completed **ONCE per user**, in their **first week of participation**. If you join in Week 3, you get these bonuses in Week 3.
 
-**Total One-Time Task Bonus: Up to 70 points**
+| Task | Points | Condition | When |
+|------|--------|-----------|------|
+| First Deposit | **+20 pts** | Deposit ≥ $1 | Once per user |
+| Bind Twitter | +15 pts | OAuth Authorization | Once per user |
+| Bind Discord | +15 pts | OAuth Authorization | Once per user |
+| First Successful Referral | +20 pts | Invite 1 person who deposits ≥ $1 | Once per user |
 
-### B. Daily Tasks (Recalculated Weekly)
+**Total One-Time Task Bonus: Up to 70 points** (only in your first participating week)
+
+### B. Weekly Recurring Tasks (Every Week)
 
 | Task | Point Calculation | Frequency | Condition |
 |------|-------------------|-----------|-----------|
-| Balance Points | √(Daily Minimum Balance) | Daily Snapshot | Balance ≥ $1 |
+| Balance Points | √(Daily Minimum Balance) | Daily Snapshot at UTC 00:00 | Balance ≥ $1 |
 
-**Important Rule**: Daily points are calculated based on **minimum balance that day** (prevents flash deposits).
+**Weekly Balance Points** = Sum of 7 daily snapshots = √(balance) × 7 (if balance stays constant)
 
-### C. Referral Bonus (Recalculated Weekly)
+**Important Rule**: Daily points use **minimum balance that day** (prevents flash deposits).
+
+### C. Referral Bonus (Recalculated Every Week)
 
 | Type | Bonus | Condition |
 |------|-------|-----------|
@@ -137,19 +141,22 @@ Daily Points = √(Minimum Balance at UTC 00:00 Snapshot)
 
 **Referral Bonus Formula**:
 ```
-Referral Bonus = Σ(Referred User's Balance Points × 20%)
+Referral Bonus = Σ(Referred User's Weekly Balance Points × 20%)
 ```
 
-**Notes**:
-- Only counts referred user's **balance points**, not one-time task points
-- Based on referred user's actual weekly points, recalculated weekly
+**What counts toward referrer's bonus:**
+| Counts | Does NOT Count |
+|--------|----------------|
+| Referred user's **balance points** (√balance × days) | Referred user's one-time task points |
+| | Referred user's own referral bonus |
 
 **Cap Rules**:
-- If you have deposits: Cap = Your own points
+- If you have deposits: Cap = Your own total points (balance + tasks)
 - If you have no deposits: Cap = 100 points
 
 **Example**:
-- User A (no deposits) refers new User B ($50 deposit, 49.49 balance points)
+- User A (no deposits) refers new User B ($50 deposit for 7 days)
+- B's weekly balance points = √50 × 7 = 49.49 pts
 - A's referral bonus = min(49.49 × 20%, 100) = **9.9 points**
 - If A refers 10 people (each with 50 balance points), theoretical 100 pts, actual cap **100 points**
 
