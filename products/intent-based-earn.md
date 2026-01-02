@@ -26,7 +26,7 @@ Earn yield across chains. No need to understand the underlying blockchains or ma
 - [11. Is this non-custodial?](#faq-11)
 - [12. My USDC is on Base/Solana — how can I earn Stellar yields?](#faq-12)
 - [13. What are the deposit limits and confirmation time?](#faq-13)
-- [14. What is Rozo building long-term?](#faq-14)
+- [14. What is ROZO?](#faq-14)
 
 ---
 
@@ -268,12 +268,24 @@ All bridging is handled automatically. You just deposit and withdraw.
 
 ---
 
-### 14. What is Rozo building long-term? <a href="#faq-14" id="faq-14"></a>
+### 14. What is ROZO? <a href="#faq-14" id="faq-14"></a>
 
-Rozo's long-term focus:
-- **PayFi** (Pay to Earn)
+**ROZO promotes economic freedom.**
 
-> Assets used for payments can continuously generate yield.
+We build infrastructure that lets anyone earn yield and make payments — without needing to understand complex blockchain systems.
+
+**Long-term focus:**
+- **PayFi** (Pay to Earn) — Assets used for payments can continuously generate yield
+
+**Supported by:**
+- [Stellar Community Fund](https://communityfund.stellar.org/)
+- [Base Grants](https://base.org/)
+- [Draper University](https://www.draperuniversity.com/)
+- Circle Alliance
+
+**Try ROZO:**
+- [ROZO Earn](https://earn.rozo.ai) — Earn yield on USDC
+- [ROZO Bridge](https://intents.rozo.ai/bridge) — Cross-chain bridging
 
 ---
 
