@@ -1,4 +1,4 @@
-# ROZO Earn Campaign 激励规则文档
+# [草稿] ROZO Earn Campaign 激励规则文档
 
 > 版本：v9.0
 > 更新日期：2026/01/03

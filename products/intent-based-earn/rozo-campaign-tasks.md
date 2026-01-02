@@ -1,4 +1,4 @@
-# ROZO Earn Points Calculation Rules & User Simulations
+# [Draft] ROZO Earn Points Calculation Rules & User Simulations
 
 > Version: v4.0
 > Updated: 2026/01/03

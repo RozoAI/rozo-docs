@@ -1,0 +1,305 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 350,
+      "y": 30,
+      "width": 600,
+      "height": 40,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "groupIds": [],
+      "text": "Using Stellar Directly vs Using Rozo",
+      "fontSize": 28,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "baseline": 26
+    },
+
+    {
+      "id": "without_rozo_label",
+      "type": "text",
+      "x": 120,
+      "y": 110,
+      "width": 260,
+      "height": 30,
+      "text": "Without Rozo (Manual)",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "verticalAlign": "middle"
+    },
+
+    {
+      "id": "with_rozo_label",
+      "type": "text",
+      "x": 620,
+      "y": 110,
+      "width": 260,
+      "height": 30,
+      "text": "With Rozo (Abstracted)",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "verticalAlign": "middle"
+    },
+
+    {
+      "id": "w1",
+      "type": "rectangle",
+      "x": 120,
+      "y": 160,
+      "width": 260,
+      "height": 50,
+      "backgroundColor": "#ffffff",
+      "strokeColor": "#000000"
+    },
+    {
+      "id": "w1t",
+      "type": "text",
+      "x": 130,
+      "y": 172,
+      "width": 240,
+      "height": 30,
+      "text": "Download Stellar wallet",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w2",
+      "type": "rectangle",
+      "x": 120,
+      "y": 230,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w2t",
+      "type": "text",
+      "x": 130,
+      "y": 242,
+      "width": 240,
+      "height": 30,
+      "text": "Write down seed phrase",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w3",
+      "type": "rectangle",
+      "x": 120,
+      "y": 300,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w3t",
+      "type": "text",
+      "x": 130,
+      "y": 312,
+      "width": 240,
+      "height": 30,
+      "text": "Get XLM for gas fees",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w4",
+      "type": "rectangle",
+      "x": 120,
+      "y": 370,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w4t",
+      "type": "text",
+      "x": 130,
+      "y": 382,
+      "width": 240,
+      "height": 30,
+      "text": "Add USDC trustline",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w5",
+      "type": "rectangle",
+      "x": 120,
+      "y": 440,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w5t",
+      "type": "text",
+      "x": 130,
+      "y": 452,
+      "width": 240,
+      "height": 30,
+      "text": "Bridge USDC to Stellar",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w6",
+      "type": "rectangle",
+      "x": 120,
+      "y": 510,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w6t",
+      "type": "text",
+      "x": 130,
+      "y": 522,
+      "width": 240,
+      "height": 30,
+      "text": "Connect to Blend / DeFindex",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "w7",
+      "type": "rectangle",
+      "x": 120,
+      "y": 580,
+      "width": 260,
+      "height": 50
+    },
+    {
+      "id": "w7t",
+      "type": "text",
+      "x": 130,
+      "y": 592,
+      "width": 240,
+      "height": 30,
+      "text": "Deposit & start earning",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "r1",
+      "type": "rectangle",
+      "x": 620,
+      "y": 220,
+      "width": 260,
+      "height": 60,
+      "strokeColor": "#2563eb",
+      "backgroundColor": "#eff6ff"
+    },
+    {
+      "id": "r1t",
+      "type": "text",
+      "x": 635,
+      "y": 238,
+      "width": 230,
+      "height": 40,
+      "text": "Connect existing wallet\n(Base / Solana / others)",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "r2",
+      "type": "rectangle",
+      "x": 620,
+      "y": 320,
+      "width": 260,
+      "height": 60,
+      "strokeColor": "#2563eb",
+      "backgroundColor": "#eff6ff"
+    },
+    {
+      "id": "r2t",
+      "type": "text",
+      "x": 635,
+      "y": 340,
+      "width": 230,
+      "height": 40,
+      "text": "One-click deposit",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "r3",
+      "type": "rectangle",
+      "x": 620,
+      "y": 420,
+      "width": 260,
+      "height": 70,
+      "strokeColor": "#2563eb",
+      "backgroundColor": "#eff6ff"
+    },
+    {
+      "id": "r3t",
+      "type": "text",
+      "x": 635,
+      "y": 438,
+      "width": 230,
+      "height": 50,
+      "text": "Rozo handles:\nbridging, gas,\ntrustlines",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "r4",
+      "type": "rectangle",
+      "x": 620,
+      "y": 540,
+      "width": 260,
+      "height": 60,
+      "strokeColor": "#16a34a",
+      "backgroundColor": "#ecfdf5"
+    },
+    {
+      "id": "r4t",
+      "type": "text",
+      "x": 635,
+      "y": 560,
+      "width": 230,
+      "height": 40,
+      "text": "Start earning\n(~30 seconds)",
+      "fontSize": 16,
+      "fontFamily": 1
+    },
+
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 250,
+      "y": 680,
+      "width": 520,
+      "height": 40,
+      "text": "Rozo is optional. You can always interact with the underlying protocols directly.",
+      "fontSize": 14,
+      "fontFamily": 1,
+      "textAlign": "center"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

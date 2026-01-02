@@ -1,4 +1,4 @@
-# Reglas de Cálculo de Puntos ROZO Earn y Simulaciones de Usuario
+# [Borrador] Reglas de Cálculo de Puntos ROZO Earn y Simulaciones de Usuario
 
 > Versión: v4.0
 > Actualizado: 2026/01/03

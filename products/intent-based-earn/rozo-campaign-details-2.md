@@ -1,4 +1,4 @@
-# Documento de Reglas de Incentivos de la Campaña ROZO Earn
+# [Borrador] Documento de Reglas de Incentivos de la Campaña ROZO Earn
 
 > Versión: v9.0
 > Actualizado: 2026/01/03
