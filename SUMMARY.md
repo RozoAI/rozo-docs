@@ -28,12 +28,6 @@
 
 * [Intent Based Bridge](products/intent-based-bridge.md)
 * [Intent Based Earn](products/intent-based-earn.md)
-  * [Draft - Growth Campaign (Jan 2026)](products/intent-based-earn/rozo-campaign-details.md)
-  * [Draft - Points & Tasks](products/intent-based-earn/rozo-campaign-tasks.md)
-  * [草稿 - 活动详情 (中文)](products/intent-based-earn/rozo-campaign-details-1.md)
-  * [草稿 - 积分计算 (中文)](products/intent-based-earn/rozo-campaign-tasks-1.md)
-  * [Borrador - Detalles (Español)](products/intent-based-earn/rozo-campaign-details-2.md)
-  * [Borrador - Puntos (Español)](products/intent-based-earn/rozo-campaign-tasks-2.md)
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
