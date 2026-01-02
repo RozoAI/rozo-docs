@@ -7,9 +7,9 @@ icon: seedling
 
 # Intent Based Earn
 
-Earn yield across chains. No need to understand the underlying blockchains or manage multiple wallets.
+No need to understand the underlying blockchains or manage multiple wallets.
 
-<figure><img src="../.gitbook/assets/earn-comparison.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/earn-comparison.png" alt=""><figcaption></figcaption></figure>
 
 ***
 
