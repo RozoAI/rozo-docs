@@ -27,6 +27,7 @@
 ## PRODUCTS
 
 * [Intent Based Bridge](products/intent-based-bridge.md)
+* [Intent Based Earn](products/intent-based-earn.md)
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
