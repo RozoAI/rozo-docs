@@ -28,6 +28,12 @@
 
 * [Intent Based Bridge](products/intent-based-bridge.md)
 * [Intent Based Earn](products/intent-based-earn.md)
+  * [Growth Campaign (Jan 2026)](products/growth-campaign/en/ROZO-Campaign-Details.md)
+    * [Points & Tasks](products/growth-campaign/en/ROZO-Campaign-Tasks.md)
+    * [活动详情 (中文)](products/growth-campaign/zh/ROZO-Campaign-Details.md)
+    * [积分计算 (中文)](products/growth-campaign/zh/ROZO-Campaign-Tasks.md)
+    * [Detalles (Español)](products/growth-campaign/es/ROZO-Campaign-Details.md)
+    * [Puntos (Español)](products/growth-campaign/es/ROZO-Campaign-Tasks.md)
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
