@@ -261,16 +261,16 @@ All bridging is handled automatically. You just deposit and withdraw.
 
 **During Beta:**
 
-|                 | Amount         |
-| --------------- | -------------- |
-| Minimum deposit | **0.5 USDC**   |
-| Maximum deposit | **3,000 USDC** |
+|                             | Amount         |
+| --------------------------- | -------------- |
+| Fast earn suggested minimum | **0.5 USDC**   |
+| Fast earn suggested maximum | **3,000 USDC** |
 
 **Confirmation time:**
 
 * Most deposits confirm within **\~30 seconds**
-* Larger amounts may take a few more minutes
-* We're continuously improving speed (faster processing coming mid-Jan 2025)
+* Larger amounts ($5000+) still work, and may take a few more minutes
+* We're continuously improving speed and capacity (faster processing coming mid-Jan 2025)
 
 ***
 
