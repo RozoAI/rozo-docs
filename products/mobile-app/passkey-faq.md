@@ -12,15 +12,15 @@ Everything you need to know about passkeys—a modern, secure way to sign in wit
 
 After creating your account with a passkey, you should:
 
-- [ ] **Connect a Stellar wallet** — Go to Security settings on the web app and connect your Stellar wallet (Freighter, Lobstr, xBull). This is your backup if you lose passkey access.
+- [ ] **Connect a backup wallet** — Go to Security settings on the web app and connect your wallet. This is your backup if you lose passkey access.
 - [ ] **Add passkeys on other devices** — If you use both iPhone and Android, add a passkey on each device.
-- [ ] **Verify your backup works** — Sign out and try signing in with your Stellar wallet to confirm it's set up correctly.
+- [ ] **Verify your backup works** — Sign out and try signing in with your connected wallet to confirm it's set up correctly.
 
 | Sign-in Method | Where to Set Up | Purpose |
 |----------------|-----------------|---------|
 | Passkey | Created during signup | Primary sign-in (biometrics) |
 | Additional passkeys | Security settings | Access from other devices |
-| Stellar wallet | Security settings (web only) | Backup recovery method |
+| Connected wallet | Security settings (web only) | Backup recovery method |
 
 ---
 
@@ -201,15 +201,15 @@ For seamless cross-ecosystem access, use a password manager that supports passke
 
 If your passkeys are synced to a cloud service (iCloud, Google), you can recover them by signing into a new device with the same account.
 
-**If you lose access to your passkey entirely**, you can still recover your account using a connected Stellar wallet:
+**If you lose access to your passkey entirely**, you can still recover your account using a connected wallet:
 
 1. Open the web app on any device
-2. Select "Sign in with Stellar Wallet"
-3. Connect your Stellar wallet (Freighter, Lobstr, xBull, etc.)
+2. Select "Sign in with Wallet"
+3. Connect your wallet and approve the sign-in
 4. Once signed in, go to **Security** and add a new passkey
 
 {% hint style="warning" %}
-**No connected wallet?** If you haven't connected a Stellar wallet and lose all passkey access, account recovery may not be possible. Always set up a backup sign-in method.
+**No connected wallet?** If you haven't connected a wallet and lose all passkey access, account recovery may not be possible. Always set up a backup sign-in method.
 {% endhint %}
 
 ---
@@ -222,29 +222,23 @@ This is a critical scenario. If you lose access to your iCloud or Google account
 
 | Backup Method | How It Helps |
 |---------------|--------------|
-| Connect a Stellar wallet | Sign in from any device, independent of passkeys |
+| Connect a wallet | Sign in from any device, independent of passkeys |
 | Passkeys on multiple ecosystems | iPhone + Android = two independent backups |
 | Recovery keys for cloud accounts | Regain access to iCloud/Google if locked out |
 
 ---
 
-### How do I connect a Stellar wallet for backup?
+### How do I connect a wallet for backup?
 
 1. Sign in to your account (using passkey)
 2. Open the **web app** (wallet connection is only available on web)
 3. Go to **Security** settings
-4. Click "Connect Stellar Wallet"
-5. Choose your wallet (Freighter, Lobstr, xBull, etc.)
+4. Click "Connect Wallet"
+5. Choose your wallet
 6. Approve the connection in your wallet
 
-**Supported Stellar wallets:**
-- Freighter (browser extension)
-- Lobstr (mobile & web)
-- xBull (browser extension & mobile)
-- Other WalletConnect-compatible Stellar wallets
-
 {% hint style="info" %}
-Your Stellar wallet becomes an alternative sign-in method. You can use it to access your account even if all your passkeys are lost.
+Your connected wallet becomes an alternative sign-in method. You can use it to access your account even if all your passkeys are lost.
 {% endhint %}
 
 ---
@@ -255,7 +249,7 @@ Your Stellar wallet becomes an alternative sign-in method. You can use it to acc
 
 Your backup options are:
 - **Cloud sync**: iCloud Keychain (Apple) or Google Password Manager (Android)
-- **Connected Stellar wallet**: Independent backup sign-in method
+- **Connected wallet**: Independent backup sign-in method
 - **Multiple passkeys**: Register on multiple devices/ecosystems
 
 ---
@@ -265,13 +259,13 @@ Your backup options are:
 | Recovery Method | Availability | Notes |
 |-----------------|--------------|-------|
 | Multiple passkeys | ✅ Supported | Add passkeys on different devices |
-| Stellar wallet connection | ✅ Supported | Set up in Security settings (web only) |
+| Wallet connection | ✅ Supported | Set up in Security settings (web only) |
 | QR code cross-device auth | ✅ Supported | Use another device's passkey to sign in |
 | Email recovery | ❌ Not available | — |
 | Phone/SMS recovery | ❌ Not available | — |
 
 {% hint style="danger" %}
-**Critical:** Since we don't support email or phone recovery, connecting a Stellar wallet is the **only way** to recover your account if you lose all passkey access. Set this up immediately after creating your account.
+**Critical:** Since we don't support email or phone recovery, connecting a wallet is the **only way** to recover your account if you lose all passkey access. Set this up immediately after creating your account.
 {% endhint %}
 
 ---
@@ -350,13 +344,13 @@ Since passkeys don't sync between Google Password Manager and iCloud Keychain, y
 9. Authenticate with Face ID / Touch ID on iPhone
 10. Done! New passkey saved to iCloud Keychain
 
-**Method 2: Using your connected Stellar wallet (if you don't have your Android)**
+**Method 2: Using your connected wallet (if you don't have your Android)**
 
-If you've already connected a Stellar wallet (like Freighter, Lobstr, or xBull) to your account:
+If you've already connected a wallet to your account:
 
 1. Open the web app on your iPhone browser
-2. Tap "Sign in" → Select "Sign in with Stellar Wallet"
-3. Connect your Stellar wallet and approve the sign-in
+2. Tap "Sign in" → Select "Sign in with Wallet"
+3. Connect your wallet and approve the sign-in
 4. Once signed in, go to **Security** settings
 5. Tap "Add passkey"
 6. Authenticate with Face ID / Touch ID on iPhone
@@ -365,10 +359,10 @@ If you've already connected a Stellar wallet (like Freighter, Lobstr, or xBull) 
 **Now you have multiple sign-in methods:**
 - Original passkey on Android (Google Password Manager)
 - New passkey on iPhone (iCloud Keychain)
-- Connected Stellar wallet (works anywhere)
+- Connected wallet (works anywhere)
 
 {% hint style="warning" %}
-**Important:** We strongly recommend connecting a Stellar wallet as a backup sign-in method. This allows you to recover your account even if you lose access to all your passkey devices.
+**Important:** We strongly recommend connecting a wallet as a backup sign-in method. This allows you to recover your account even if you lose access to all your passkey devices.
 {% endhint %}
 
 ---
@@ -389,11 +383,11 @@ The process is the same in reverse:
 8. Authenticate with fingerprint / PIN on Android
 9. Done! New passkey saved to Google Password Manager
 
-**Method 2: Using your connected Stellar wallet**
+**Method 2: Using your connected wallet**
 
 1. Open the web app on your Android browser
-2. Tap "Sign in" → Select "Sign in with Stellar Wallet"
-3. Connect your Stellar wallet and approve the sign-in
+2. Tap "Sign in" → Select "Sign in with Wallet"
+3. Connect your wallet and approve the sign-in
 4. Go to **Security** settings → tap "Add passkey"
 5. Authenticate with fingerprint / PIN
 6. Done!
@@ -406,7 +400,7 @@ The process is the same in reverse:
 
 1. ✅ Create passkey on iPhone → saved to iCloud Keychain
 2. ✅ Add passkey on Android → saved to Google Password Manager  
-3. ✅ Connect a Stellar wallet → works on any device as backup
+3. ✅ Connect a wallet → works on any device as backup
 
 This way, you're protected even if you lose one device or switch ecosystems.
 
@@ -416,13 +410,13 @@ This way, you're protected even if you lose one device or switch ecosystems.
 
 | Scenario | Method 1 (Have original device) | Method 2 (No original device) |
 |----------|--------------------------------|-------------------------------|
-| Created on Android, need on iPhone | Sign in via QR code → Add passkey | Sign in with Stellar wallet → Add passkey |
-| Created on iPhone, need on Android | Sign in via QR code → Add passkey | Sign in with Stellar wallet → Add passkey |
-| Lost all passkey devices | — | Sign in with Stellar wallet → Add new passkeys |
+| Created on Android, need on iPhone | Sign in via QR code → Add passkey | Sign in with wallet → Add passkey |
+| Created on iPhone, need on Android | Sign in via QR code → Add passkey | Sign in with wallet → Add passkey |
+| Lost all passkey devices | — | Sign in with wallet → Add new passkeys |
 | New device, same ecosystem | Passkey syncs automatically | No action needed |
 
 {% hint style="success" %}
-**Pro tip:** Connect a Stellar wallet to your account immediately after signup. This is your safety net if you ever lose access to your passkey devices.
+**Pro tip:** Connect a wallet to your account immediately after signup. This is your safety net if you ever lose access to your passkey devices.
 {% endhint %}
 
 ---
