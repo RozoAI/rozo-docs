@@ -9,4 +9,5 @@ Bienvenido al Blog de ROZO. Aquí encontrarás nuestros últimos pensamientos so
 ## Artículos
 
 * [Por Qué Construimos](20260101-why-we-build.md) - 1 de enero de 2026
-* [Diseño de Producto](20260114-product-design.md) - 14 de enero de 2026
+* [Lo Que Falta](20260114-whats-missing.md) - 14 de enero de 2026
+* [Preguntas Frecuentes](faq.md)

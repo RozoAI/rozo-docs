@@ -51,4 +51,5 @@
 
 * [Blog](blogs/en/README.md)
   * [Why We Build](blogs/en/20260101-why-we-build.md)
-  * [Product Design](blogs/en/20260114-product-design.md)
+  * [What's Missing](blogs/en/20260114-whats-missing.md)
+  * [FAQ](blogs/en/faq.md)
