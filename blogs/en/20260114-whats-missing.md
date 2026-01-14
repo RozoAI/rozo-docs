@@ -1,10 +1,10 @@
 # What's Missing
-## Why Crypto Is Still Too Hard, Too Risky, and Too Far From Daily Life
+## Why Crypto Is Still Too Hard, Too Complex, and Too Far From Daily Life
 
 *January 14, 2026*
 
-> This is not a feature list.
-> This is an honest look at **what's broken** in the current crypto experience, and why it's keeping most people out.
+> Think about what's missing in this world.
+> This is not a feature list, but an honest look at **what's broken** in the current crypto experience.
 
 ---
 
@@ -78,6 +78,21 @@ This is the onboarding experience for self-custody.
 
 Real security should be structural, built into the system, not dependent on users never making mistakes.
 
+### Problem 6: No privacy
+
+All your transactions are on-chain, visible to anyone.
+
+- What you bought
+- Who you paid
+- How much you have
+- Where your money came from
+
+**Your financial life is an open book.**
+
+In traditional finance, at least your bank records are private. On-chain, every transaction is permanently public.
+
+**True sovereignty should include choosing who can see your financial information.**
+
 ---
 
 ## 3. What Needs to Change
@@ -133,6 +148,77 @@ What's missing is **someone building it the right way**, putting user experience
 
 > **Sovereignty shouldn't require a PhD in cryptography.**
 > **It should just work.**
+
+---
+
+## 6. What We're Building: Intent-based Everything
+
+We don't make users learn the system. We let users express intent.
+
+What users really want usually comes down to three things:
+- I want to store my money well (not idle, preferably earning)
+- I want to spend money (payments should be as natural as breathing)
+- I want to make fewer mistakes (I don't want technical details to ruin everything)
+
+Therefore, we adopt an **Intent-based** product approach:
+
+> Users only need to say "what I want."
+> The system handles "how to do it best."
+
+---
+
+### Intent-based Pay
+
+Payment is how sovereignty enters daily life.
+
+Imagine this: at a restaurant that accepts Bitcoin, you pull out your phone, scan with stablecoins, and pay in seconds.
+
+**You just state intent:** "I want to pay X amount to Y"
+
+The system handles everything else:
+- Routing and settlement
+- Network differences
+- Chain selection and bridging
+- Gas fees
+
+**Experience must be minimal:** As natural as Apple Pay, but you still control your assets.
+
+---
+
+### Intent-based Earn
+
+In a world of continuous inflation, leaving money idle is itself a loss.
+
+**You just state intent:** "I want to save this money and generate yield."
+
+The system executes:
+- Automatically selects suitable strategies under current conditions
+- Keeps yield and risk within sustainable ranges
+- Asset ownership always belongs to you
+
+And you can always choose not to deposit. That choice itself is sovereignty.
+
+---
+
+## 7. The Path Forward
+
+We don't believe in getting there in one step. But our mission stays the same: **reduce friction, not add system complexity.**
+
+Truly successful sovereignty migration must be gradual:
+
+1. **Easy to use, hard to fail**
+   Users can get started, use it daily, with structural security and recoverable failures
+
+2. **Daily behavior becomes the default**
+   Earn, Pay, Reward become part of everyday life
+
+3. **Gradually enhance sovereignty**
+   BTC payments, Lightning Network, more chains—assets flow freely, permissionlessly
+
+Users don't need to be forced to upgrade. They can choose how far to go at their own pace.
+
+> **Independence is not the starting point.**
+> **Independence is the result.**
 
 ---
 

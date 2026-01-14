@@ -1,10 +1,10 @@
 # Lo Que Falta
-## Por Qué las Criptomonedas Siguen Siendo Demasiado Difíciles, Demasiado Riesgosas y Demasiado Lejos de la Vida Diaria
+## Por Qué las Criptomonedas Siguen Siendo Demasiado Difíciles, Demasiado Complejas y Demasiado Lejos de la Vida Diaria
 
 *14 de enero de 2026*
 
-> Esto no es una lista de funciones.
-> Es una mirada honesta a **lo que está roto** en la experiencia cripto actual, y por qué mantiene a la mayoría de la gente afuera.
+> Piensa en lo que falta en este mundo.
+> Esto no es una lista de funciones, sino una mirada honesta a **lo que está roto** en la experiencia cripto actual.
 
 ---
 
@@ -78,6 +78,21 @@ Esta es la experiencia de incorporación para la auto-custodia.
 
 La seguridad real debe ser estructural, incorporada en el sistema, no dependiente de que los usuarios nunca cometan errores.
 
+### Problema 6: Sin privacidad
+
+Todas tus transacciones están en la cadena, visibles para cualquiera.
+
+- Qué compraste
+- A quién pagaste
+- Cuánto tienes
+- De dónde vino tu dinero
+
+**Tu vida financiera es un libro abierto.**
+
+En las finanzas tradicionales, al menos tus registros bancarios son privados. En la cadena, cada transacción es permanentemente pública.
+
+**La verdadera soberanía debería incluir elegir quién puede ver tu información financiera.**
+
 ---
 
 ## 3. Lo Que Necesita Cambiar
@@ -133,6 +148,77 @@ Lo que falta es **alguien construyéndolo de la manera correcta**, poniendo la e
 
 > **La soberanía no debería requerir un doctorado en criptografía.**
 > **Simplemente debería funcionar.**
+
+---
+
+## 6. Lo Que Estamos Construyendo: Intent-based Everything
+
+No hacemos que los usuarios aprendan el sistema. Dejamos que los usuarios expresen su intención.
+
+Lo que los usuarios realmente quieren generalmente se reduce a tres cosas:
+- Quiero guardar bien mi dinero (que no esté ocioso, preferiblemente ganando)
+- Quiero gastar dinero (los pagos deben ser tan naturales como respirar)
+- Quiero cometer menos errores (no quiero que los detalles técnicos arruinen todo)
+
+Por lo tanto, adoptamos un enfoque de producto **Intent-based (basado en intención)**:
+
+> Los usuarios solo necesitan decir "lo que quiero."
+> El sistema maneja "cómo hacerlo mejor."
+
+---
+
+### Intent-based Pay (Pago Basado en Intención)
+
+El pago es cómo la soberanía entra en la vida diaria.
+
+Imagina esto: en un restaurante que acepta Bitcoin, sacas tu teléfono, escaneas con stablecoins y pagas en segundos.
+
+**Solo expresas tu intención:** "Quiero pagar X cantidad a Y"
+
+El sistema maneja todo lo demás:
+- Enrutamiento y liquidación
+- Diferencias de red
+- Selección de cadena y puentes
+- Tarifas de gas
+
+**La experiencia debe ser mínima:** Tan natural como Apple Pay, pero sigues controlando tus activos.
+
+---
+
+### Intent-based Earn (Ganancias Basadas en Intención)
+
+En un mundo de inflación continua, dejar el dinero ocioso es en sí mismo una pérdida.
+
+**Solo expresas tu intención:** "Quiero guardar este dinero y generar rendimiento."
+
+El sistema ejecuta:
+- Selecciona automáticamente estrategias adecuadas bajo las condiciones actuales
+- Mantiene el rendimiento y el riesgo dentro de rangos sostenibles
+- La propiedad de los activos siempre te pertenece
+
+Y siempre puedes elegir no depositar. Esa elección en sí misma es soberanía.
+
+---
+
+## 7. El Camino Hacia Adelante
+
+No creemos en llegar de un solo paso. Pero nuestra misión sigue siendo la misma: **reducir la fricción, no agregar complejidad al sistema.**
+
+La migración exitosa de soberanía debe ser gradual:
+
+1. **Fácil de usar, difícil de fallar**
+   Los usuarios pueden comenzar, usarlo diariamente, con seguridad estructural y fallos recuperables
+
+2. **El comportamiento diario se convierte en el predeterminado**
+   Earn, Pay, Reward se convierten en parte de la vida cotidiana
+
+3. **Mejorar gradualmente la soberanía**
+   Pagos BTC, Lightning Network, más cadenas—los activos fluyen libremente, sin permisos
+
+Los usuarios no necesitan ser forzados a actualizar. Pueden elegir hasta dónde llegar a su propio ritmo.
+
+> **La independencia no es el punto de partida.**
+> **La independencia es el resultado.**
 
 ---
 
