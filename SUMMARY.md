@@ -46,3 +46,9 @@
 * [Terms of service](contact/contact-us/terms-of-service.md)
 * [Privacy Policy](contact/contact-us/privacy-policy.md)
 * [FAQs](contact/faqs.md)
+
+## BLOG
+
+* [Blog](blogs/en/README.md)
+  * [Why We Build](blogs/en/20260101-why-we-build.md)
+  * [Product Design](blogs/en/20260114-product-design.md)
