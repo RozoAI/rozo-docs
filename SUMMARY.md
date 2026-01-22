@@ -39,6 +39,7 @@
 ## CONTACT US <a href="#contact" id="contact"></a>
 
 * [Media Kit](contact/media-kit.md)
+* [Design Prompt](contact/design-prompt.md)
 * [Contact us](contact/contact-us/README.md)
   * [Discord](https://discord.com/invite/EfWejgTbuU)
   * [Github](https://github.com/rozoai)
