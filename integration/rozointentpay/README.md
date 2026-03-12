@@ -22,12 +22,13 @@ RozoAI Intent Pay SDK is a React component that lets users pay you in crypto fro
 
 ## Demo Video
 
-<!-- markdownlint-disable MD033 -->
-| Demo | Video |
-| --- | --- |
-| **Pay with Stellar to Base** | <video controls playsinline preload="metadata" width="100%" style="max-height: 360px; height: auto;"><source src="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-paystellar.MP4" type="video/mp4" />Your browser does not support the video tag.</video><br/>[Open video](https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-paystellar.MP4) |
-| **Pay with Base to Solana** | <video controls playsinline preload="metadata" width="100%" style="max-height: 360px; height: auto;"><source src="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-basetosol.MP4" type="video/mp4" />Your browser does not support the video tag.</video><br/>[Open video](https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-basetosol.MP4) |
-<!-- markdownlint-enable MD033 -->
+### Pay with Stellar to Base
+
+{% embed url="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-paystellar.MP4" %}
+
+### Pay with Base to Solana
+
+{% embed url="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-basetosol.MP4" %}
 
 ## 📚 Documentation
 
