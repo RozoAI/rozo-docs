@@ -28,13 +28,10 @@
 
 * [Intent Based Bridge](products/intent-based-bridge.md)
 * [Intent Based Earn](products/intent-based-earn.md)
+* [Intent Based Payment & Transfer](products/intent-based-payment-transfer.md)
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
-
-***
-
-* [PRODUCTS](products-1.md)
 
 ## CONTACT US <a href="#contact" id="contact"></a>
 
