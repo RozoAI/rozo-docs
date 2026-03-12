@@ -14,11 +14,20 @@ RozoAI Intent Pay SDK is a React component that lets users pay you in crypto fro
 **Key Benefits:**
 
 - ✅ **One Component** - Add `<RozoPayButton>` and you're done
-- ✅ **Supported Chains** - Base, Polygon, Solana, Stellar, BSC
+- ✅ **Supported Chains** - Ethereum, Base, Polygon, BSC, Solana, and Stellar
 - ✅ **Any Wallet** - MetaMask, Phantom, Coinbase Wallet, and more
 - ✅ **Supported Tokens** - USDC on Base/Polygon/Solana/Stellar; USDT on BSC
 - ✅ **Mobile Ready** - Works perfectly on mobile apps
 - ✅ **Easy Configuration** - Smart defaults, easy customization
+
+## Demo Video
+
+<!-- markdownlint-disable MD033 -->
+| Demo | Video |
+| --- | --- |
+| **Pay with Stellar to Base** | <video controls playsinline preload="metadata" width="100%" style="max-height: 360px; height: auto;"><source src="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-paystellar.MP4" type="video/mp4" />Your browser does not support the video tag.</video><br/>[Open video](https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-paystellar.MP4) |
+| **Pay with Base to Solana** | <video controls playsinline preload="metadata" width="100%" style="max-height: 360px; height: auto;"><source src="https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-basetosol.MP4" type="video/mp4" />Your browser does not support the video tag.</video><br/>[Open video](https://rozo-videos-cdn.s3.us-east-2.amazonaws.com/rozo-video-basetosol.MP4) |
+<!-- markdownlint-enable MD033 -->
 
 ## 📚 Documentation
 
@@ -29,6 +38,12 @@ RozoAI Intent Pay SDK is a React component that lets users pay you in crypto fro
 | [**API Reference**](api-reference.md)       | Complete props and configuration reference         |
 | [**Troubleshooting**](troubleshooting.md)   | Common mistakes and how to avoid them              |
 | [**AI Prompts & Templates**](ai-prompts.md) | Templates for AI services to generate code         |
+
+## 🎬 Demo
+
+{% embed url="../../assets/videos/pay-with-stellar-demo.MOV" %}
+Pay with Stellar Demo
+{% endembed %}
 
 ## 🚀 Quick Example
 
