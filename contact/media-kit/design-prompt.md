@@ -1,3 +1,7 @@
+---
+icon: palette
+---
+
 # Design Prompt
 
 ✅ Monochrome-First Color Template
