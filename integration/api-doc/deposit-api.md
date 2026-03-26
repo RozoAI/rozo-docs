@@ -1,6 +1,16 @@
-# Deposit API
+# Wallet Deposit API
 
-Create a deposit address to receive USDC on Stellar.
+Generate a unique deposit address to receive funds on the **Stellar network**.
+
+## Supported Network
+
+| Chain ID | Chain Name |
+| -------- | ---------- |
+| `1500`   | Stellar    |
+
+## Supported Tokens
+
+Same as [Pay In Tokens and Chains](supported-tokens-and-chains.md#pay-in-tokens-and-chains).
 
 ## API Host
 
@@ -27,7 +37,7 @@ curl 'https://intentapiv4.rozo.ai/functions/v1/deposit-api/create' \
 
 | Parameter         | Type   | Required | Description                                              |
 | ----------------- | ------ | -------- | -------------------------------------------------------- |
-| `stellar_address` | string | Yes      | Your Stellar address that will receive the deposited USDC |
+| `stellar_address` | string | Yes      | Your Stellar address that will receive the deposited funds |
 | `app_id`          | string | Yes      | Your application identifier (join our Discord to get one) |
 
 ### Response
