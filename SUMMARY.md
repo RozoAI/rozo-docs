@@ -22,6 +22,7 @@
     * [Wallet Top-up (Any Amount)](integration/api-doc/api-for-advanced-used/wallet-topup.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
   * [Stellar Earn](integration/api-doc/stellar-earn.md)
+  * [Deposit API](integration/api-doc/deposit-api.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
 
 ## PRODUCTS
@@ -29,6 +30,7 @@
 * [Intent Based Bridge](products/intent-based-bridge.md)
 * [Intent Based Earn](products/intent-based-earn.md)
 * [Intent Based Payment & Transfer](products/intent-based-payment-transfer.md)
+* [Intent Based Deposit](products/intent-based-deposit.md)
 * [Mobile App](products/mobile-app/README.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
