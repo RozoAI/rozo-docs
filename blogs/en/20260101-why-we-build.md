@@ -1,4 +1,4 @@
-# Why We Build
+# Why We Build ROZO
 ## On Sovereignty, Individual Assets, and the Future We Are Building Toward
 
 *January 1, 2026*
