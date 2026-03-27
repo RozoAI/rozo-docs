@@ -19,19 +19,9 @@ Users can deposit from any of the following tokens and chains:
 | Base     | Yes  | —    |
 | BSC      | Yes  | Yes  |
 | Polygon  | Yes  | Yes  |
-| Solana   | Yes  | Yes  |
-| Stellar  | Yes  | —    |
-
-## Supported Deposit Tokens
-
-Funds are deposited to your Stellar address in the following tokens:
-
-| Token | Supported |
-| ----- | --------- |
-| USDC  | Yes       |
-| USDT  | Yes       |
 
 For full token addresses and decimals, see [Supported Tokens and Chains](supported-tokens-and-chains.md).
+More chains and tokens coming soon, e.g. USDT on Tron, USDC / USDT on Solana.
 
 ## API Host
 
@@ -70,4 +60,4 @@ curl 'https://intentapiv4.rozo.ai/functions/v1/deposit-api/create' \
 }
 ```
 
-> **Note:** The response schema above is illustrative. Refer to the [API Doc (POSTMAN)](https://apidoc.rozo.ai/) for the full response format.
+> **Note:** Please contact with ROZO team to get the app_id.
