@@ -8,9 +8,30 @@ Generate a unique deposit address to receive funds on the **Stellar network**.
 | -------- | ---------- |
 | `1500`   | Stellar    |
 
-## Supported Tokens
+## Supported Pay In Tokens
 
-Same as [Pay In Tokens and Chains](supported-tokens-and-chains.md#pay-in-tokens-and-chains).
+Users can deposit from any of the following tokens and chains:
+
+| Chain    | USDC | USDT |
+| -------- | ---- | ---- |
+| Ethereum | Yes  | Yes  |
+| Arbitrum | Yes  | Yes  |
+| Base     | Yes  | —    |
+| BSC      | Yes  | Yes  |
+| Polygon  | Yes  | Yes  |
+| Solana   | Yes  | Yes  |
+| Stellar  | Yes  | —    |
+
+## Supported Deposit Tokens
+
+Funds are deposited to your Stellar address in the following tokens:
+
+| Token | Supported |
+| ----- | --------- |
+| USDC  | Yes       |
+| USDT  | Yes       |
+
+For full token addresses and decimals, see [Supported Tokens and Chains](supported-tokens-and-chains.md).
 
 ## API Host
 
