@@ -1,14 +1,14 @@
 # Wallet Top-up (Any Amount)
 
-The API is for wallet topup. If the wallet is on Base or Stellar, users can top up with USDC on other chains. For example, deposit from Ethereum, Solana, Base to your Stellar wallets.
-
-
+## Wallet Top-up v1 (Any Amount) for Base
 
 The `anyAmount` payment type allows users to send any amount without specifying it upfront. The system automatically detects the received amount and calculates the output dynamically.
 
 **API Host**: `https://intentapiv4.rozo.ai/functions/v1`
 
 **Supported Routes**: Currently only **Base ↔ Stellar** is supported.
+
+> Check out the [Wallet Deposit API](../deposit-api.md) for multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon).
 
 ## Use Cases
 
@@ -21,7 +21,7 @@ The `anyAmount` payment type allows users to send any amount without specifying 
 | Limit   | Value       |
 | ------- | ----------- |
 | Minimum | $0.02 USDC  |
-| Maximum | $3,000 USDC |
+| Maximum | $10,000 USDC |
 
 Amounts outside this range will be rejected with `amountTooLow` or `amountTooHigh` error codes. For custom limits, please contact us.
 
@@ -108,7 +108,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 Once the user sends USDC to the `source.receiverAddress`, the system:
 
 1. Detects the payment amount on-chain
-2. Validates the amount is within the allowed range ($0.02 - $3,000)
+2. Validates the amount is within the allowed range ($0.02 - $10,000)
 3. Calculates the fee based on your app tier
 4. Updates the payment with actual amounts
 5. Triggers the payout to the destination
@@ -142,7 +142,7 @@ The payment record is updated:
        │                   │                   │                   │
        ▼                   ▼                   ▼                   ▼
   Deposit address      Any amount          Validates         Funds sent
-  is generated         [$0.02-$3000]       amount range       to user's
+  is generated         [$0.02-$10000]       amount range       to user's
   and returned         is accepted         and liquidity      destination
 ```
 
@@ -151,7 +151,7 @@ The payment record is updated:
 | Error Code              | Description                                      |
 | ----------------------- | ------------------------------------------------ |
 | `amountTooLow`          | Received amount is below $0.02 USDC              |
-| `amountTooHigh`         | Received amount exceeds $3,000 USDC              |
+| `amountTooHigh`         | Received amount exceeds $10,000 USDC              |
 | `insufficientLiquidity` | Destination chain lacks liquidity for the payout |
 
 ## Best Practices

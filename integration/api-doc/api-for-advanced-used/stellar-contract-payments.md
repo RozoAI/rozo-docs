@@ -107,7 +107,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 }'
 ```
 
-When using `anyAmount` with contract payments, any amount between $0.02 - $3,000 USDC is accepted.
+When using `anyAmount` with contract payments, any amount between $0.02 - $10,000 USDC is accepted.
 
 ## Register Transaction Hash (Optional)
 

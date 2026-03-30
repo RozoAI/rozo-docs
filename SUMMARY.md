@@ -20,6 +20,7 @@
   * [API Quick Start](integration/api-doc/api-quick-start.md)
   * [API for Advanced Used](integration/api-doc/api-for-advanced-used/README.md)
     * [Wallet Top-up (Any Amount)](integration/api-doc/api-for-advanced-used/wallet-topup.md)
+    * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
   * [Stellar Earn](integration/api-doc/stellar-earn.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
