@@ -1,4 +1,4 @@
-# Wallet Top-up (Any Amount)
+# Wallet Top-up
 
 ## Wallet Top-up v1 (Any Amount) for Base
 
@@ -8,7 +8,9 @@ The `anyAmount` payment type allows users to send any amount without specifying 
 
 **Supported Routes**: Currently only **Base ↔ Stellar** is supported.
 
-> Check out the [Wallet Deposit API](../deposit-api.md) for multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon).
+## Wallet Top-up v2 (Fixed address, Any amount)
+
+For multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon) with a fixed deposit address, see the [Wallet Deposit API](../deposit-api.md).
 
 ## Use Cases
 
