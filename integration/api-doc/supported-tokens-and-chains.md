@@ -20,8 +20,6 @@
 
 <table><thead><tr><th width="103.88671875">Chain ID</th><th width="149.35546875">Chain Name</th><th width="408.99609375">USDT Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td><code>0xdac17f958d2ee523a2206206994597c13d831ec7</code></td><td>6</td></tr><tr><td><code>42161</code></td><td>Arbitrum</td><td><code>0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9</code></td><td>6</td></tr><tr><td><code>56</code></td><td>BSC</td><td><code>0x55d398326f99059ff775485246999027b3197955</code></td><td>18</td></tr><tr><td><code>137</code></td><td>Polygon</td><td><code>0xc2132d05d31c914a87c6611c10748aeb04b58e8f</code></td><td>6</td></tr></tbody></table>
 
-### Coming soon (EURC)
-
 ### EURC PayIn  & PayOut
 
 (Base and Stellar network)
