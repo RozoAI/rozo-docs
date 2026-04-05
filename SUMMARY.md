@@ -33,6 +33,7 @@
 * [Intent Based Payment & Transfer](products/intent-based-payment-transfer.md)
 * [Intent Based Deposit](products/intent-based-deposit.md)
 * [Mobile App](products/mobile-app/README.md)
+  * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
 
