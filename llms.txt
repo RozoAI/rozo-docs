@@ -8,7 +8,6 @@ ROZO abstracts stablecoin payments across Ethereum, Arbitrum, Base, BSC, Polygon
 
 - [Welcome to ROZO](https://docs.rozo.ai/start/): The origin story and what ROZO solves — fragmented USDC across 29 chains.
 - [Vision and Missions](https://docs.rozo.ai/start/vision-and-missions): SOFT principles — Simple, Open, Frictionless, Trustless.
-- [ROZO Lite Paper](https://docs.rozo.ai/readme-1): High-level protocol overview.
 
 ## API & SDK Integration
 
@@ -26,7 +25,6 @@ ROZO abstracts stablecoin payments across Ethereum, Arbitrum, Base, BSC, Polygon
 - [Get Fees](https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/get-fees): Quote fees before submitting an intent.
 - [Stellar Smart Account Payments](https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/stellar-contract-payments): Stellar Soroban contract payment flow.
 - [Supported Tokens and Chains](https://docs.rozo.ai/integration/api-doc/supported-tokens-and-chains): USDC/USDT availability per chain.
-- [Wallet Deposit API](https://docs.rozo.ai/integration/api-doc/deposit-api): Generate deposit addresses for app users.
 
 ## Products
 
@@ -45,12 +43,6 @@ ROZO abstracts stablecoin payments across Ethereum, Arbitrum, Base, BSC, Polygon
 - [Terms of Service](https://docs.rozo.ai/contact/contact-us/terms-of-service)
 - [Privacy Policy](https://docs.rozo.ai/contact/contact-us/privacy-policy)
 - [FAQs](https://docs.rozo.ai/contact/faqs): Common questions about ROZO.
-
-## Blog
-
-- [Blog Index](https://docs.rozo.ai/blogs/en/): Engineering and product posts.
-- [Why We Build](https://docs.rozo.ai/blogs/en/20260101-why-we-build): Founding motivation.
-- [What's Missing](https://docs.rozo.ai/blogs/en/20260114-whats-missing): Gaps in today's stablecoin UX.
 
 ## Optional
 
