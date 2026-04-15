@@ -5,7 +5,7 @@ description: >-
 icon: credit-card
 ---
 
-# Intent Based Payment & Transfer
+# Intent Based Payment
 
 Accept crypto payments and transfers from users on supported chains, while you receive the token and chain you want.
 
@@ -34,7 +34,7 @@ Accept crypto payments and transfers from users on supported chains, while you r
 
 ## Related docs
 
-* [ROZO Intent Pay SDK](../integration/rozointentpay/)
-* [ROZO Intent Pay API](../integration/api-doc/)
-* [Intent Based Bridge](intent-based-bridge.md)
-* [Intent Based Earn](intent-based-earn.md)
+* [ROZO Intent Pay SDK](../../integration/rozointentpay/)
+* [ROZO Intent Pay API](../../integration/api-doc/)
+* [Intent Based Bridge](../intent-based-bridge/intent-based-bridge.md)
+* [Intent Based Earn](../intent-based-earn.md)

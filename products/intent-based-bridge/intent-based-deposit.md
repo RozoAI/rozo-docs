@@ -8,8 +8,8 @@ redirect: https://rozo.ai/deposit
 
 # Wallet Deposit for Apps
 
-<figure><img src="../assets/deposits/depositdemo.png" alt="" width="300"><figcaption></figcaption></figure>
+<figure><img src="../../assets/deposits/depositdemo.png" alt="" width="300"><figcaption></figcaption></figure>
 
-<figure><img src="../assets/deposits/depositchains.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../assets/deposits/depositchains.png" alt=""><figcaption></figcaption></figure>
 
 {% embed url="https://rozo.ai/deposit" %}

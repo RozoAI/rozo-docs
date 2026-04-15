@@ -111,5 +111,5 @@ MPP Router is the agentic payments rail that lets ROZO's Stellar-native wallets 
 
 - MPP Router: [https://www.mpprouter.dev](https://www.mpprouter.dev)
 - Live service catalog: [https://apiserver.mpprouter.dev/v1/services/catalog](https://apiserver.mpprouter.dev/v1/services/catalog)
-- Stellar Soroban smart-account payments: [Stellar Smart Account Payments](../integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
+- Stellar Soroban smart-account payments: [Stellar Smart Account Payments](../../integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
 - `stellar-agent-wallet` plugin skills: `discover`, `pay-per-call`, `bridge`, `send-payment`, `check-balance`
