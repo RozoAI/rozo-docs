@@ -1,0 +1,59 @@
+# ROZO
+
+> ROZO is the Visa for Stablecoins — an intent-based payment, bridge, and earn protocol that hides the complexity of 29+ chains and multiple stablecoins behind a single user intent ("I want to pay $3.25 for boba"). Developers integrate via the Rozo Intent Pay SDK and API to send USDC/USDT cross-chain, accept payments, onramp EURC, and route deposits.
+
+ROZO abstracts stablecoin payments across Ethereum, Arbitrum, Base, BSC, Polygon, Solana, and Stellar. Users and developers express intents; ROZO handles routing, bridging, fees, and settlement.
+
+## Getting Started
+
+- [Welcome to ROZO](https://docs.rozo.ai/start/): The origin story and what ROZO solves — fragmented USDC across 29 chains.
+- [Vision and Missions](https://docs.rozo.ai/start/vision-and-missions): SOFT principles — Simple, Open, Frictionless, Trustless.
+- [ROZO Lite Paper](https://docs.rozo.ai/readme-1): High-level protocol overview.
+
+## API & SDK Integration
+
+- [ROZO Intent Pay SDK](https://docs.rozo.ai/integration/rozointentpay/): Drop-in SDK for cross-chain stablecoin payments.
+- [SDK Quick Start Guide](https://docs.rozo.ai/integration/rozointentpay/quick-start): Get a payment flow live in minutes.
+- [SDK Complete Examples](https://docs.rozo.ai/integration/rozointentpay/examples): End-to-end integration samples.
+- [SDK API Reference](https://docs.rozo.ai/integration/rozointentpay/api-reference): Full SDK method and parameter reference.
+- [SDK Troubleshooting](https://docs.rozo.ai/integration/rozointentpay/troubleshooting): Common errors and resolutions.
+- [AI Prompts](https://docs.rozo.ai/integration/rozointentpay/ai-prompts): Prompts for AI agents calling the SDK.
+- [ROZO Intent Pay API](https://docs.rozo.ai/integration/api-doc/): REST API for intents, payments, and quotes.
+- [Intents Tech Design](https://docs.rozo.ai/integration/api-doc/rozo-intents-tech-design): Architecture of the intent system.
+- [API Doc (Postman)](https://apidoc.rozo.ai/): Live API reference.
+- [API Quick Start](https://docs.rozo.ai/integration/api-doc/api-quick-start): First API call walkthrough.
+- [Wallet Top-up](https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/wallet-topup): Programmatically fund wallets.
+- [Get Fees](https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/get-fees): Quote fees before submitting an intent.
+- [Stellar Smart Account Payments](https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/stellar-contract-payments): Stellar Soroban contract payment flow.
+- [Supported Tokens and Chains](https://docs.rozo.ai/integration/api-doc/supported-tokens-and-chains): USDC/USDT availability per chain.
+- [Wallet Deposit API](https://docs.rozo.ai/integration/api-doc/deposit-api): Generate deposit addresses for app users.
+
+## Products
+
+- [Intent Based Bridge](https://docs.rozo.ai/products/intent-based-bridge): Cross-chain stablecoin bridging via intents.
+- [Intent Based Earn](https://docs.rozo.ai/products/intent-based-earn): Yield routing through high-TVL pools.
+- [Intent Based Payment & Transfer](https://docs.rozo.ai/products/intent-based-payment-transfer): P2P and merchant payments.
+- [Wallet Deposit for Apps](https://docs.rozo.ai/products/intent-based-deposit): Embedded deposit flow for third-party apps.
+- [EURC Onramp and Bridge](https://docs.rozo.ai/products/eurc-onramp/): Bank transfer onramp to EURC plus bridge from Base.
+- [Mobile App](https://docs.rozo.ai/products/mobile-app/): ROZO consumer mobile wallet.
+- [dApp Integration](https://docs.rozo.ai/products/mobile-app/dapp-integration): Connecting dApps to the ROZO mobile wallet.
+
+## Contact & Legal
+
+- [Contracts & Audits](https://docs.rozo.ai/contact/contracts-and-audits): Deployed contract addresses and audit reports.
+- [Media Kit](https://docs.rozo.ai/contact/media-kit/): Brand assets and design prompts.
+- [Terms of Service](https://docs.rozo.ai/contact/contact-us/terms-of-service)
+- [Privacy Policy](https://docs.rozo.ai/contact/contact-us/privacy-policy)
+- [FAQs](https://docs.rozo.ai/contact/faqs): Common questions about ROZO.
+
+## Blog
+
+- [Blog Index](https://docs.rozo.ai/blogs/en/): Engineering and product posts.
+- [Why We Build](https://docs.rozo.ai/blogs/en/20260101-why-we-build): Founding motivation.
+- [What's Missing](https://docs.rozo.ai/blogs/en/20260114-whats-missing): Gaps in today's stablecoin UX.
+
+## Optional
+
+- [Discord](https://discord.com/invite/EfWejgTbuU)
+- [GitHub](https://github.com/rozoai)
+- [Twitter / X](https://x.com/ROZOai)
