@@ -1,0 +1,10 @@
+---
+description: >-
+  ROZO EURC Onramp and Bridge. Buy EURC and bridge across chains in one flow.
+icon: euro-sign
+redirect: https://wallet.rozo.ai/onramp?currency=EURC
+---
+
+# EURC Onramp and Bridge
+
+{% embed url="https://wallet.rozo.ai/onramp?currency=EURC" %}

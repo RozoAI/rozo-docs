@@ -24,14 +24,15 @@
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
   * [Stellar Earn](integration/api-doc/stellar-earn.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
-* [Wallet Deposit API](integration/api-doc/deposit-api.md)
 
 ## PRODUCTS
 
 * [Intent Based Bridge](products/intent-based-bridge.md)
 * [Intent Based Earn](products/intent-based-earn.md)
 * [Intent Based Payment & Transfer](products/intent-based-payment-transfer.md)
-* [Intent Based Deposit](products/intent-based-deposit.md)
+* [Wallet Deposit for Apps](products/intent-based-deposit.md)
+  * [Wallet Deposit API](integration/api-doc/deposit-api.md)
+* [EURC Onramp and Bridge](products/eurc-onramp-and-bridge.md)
 * [Mobile App](products/mobile-app/README.md)
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)

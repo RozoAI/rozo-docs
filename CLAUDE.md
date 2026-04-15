@@ -1,0 +1,1 @@
+Always commit AND push changes after completing edits. Do not wait for the user to ask for a push - if the work is done, push it.
