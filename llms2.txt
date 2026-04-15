@@ -17,7 +17,7 @@ Visa Layer for Stablecoins. Spend crypto, better than fiat.
 - Wallet deposit flow embeddable into third-party apps — https://docs.rozo.ai/products/intent-based-deposit
 - EURC onramp from bank transfer, plus EURC bridge from Base — https://docs.rozo.ai/products/eurc-onramp/
 - Stellar Soroban smart-account payments — https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/stellar-contract-payments
-- Agentic payments for AI agents over 402-gated APIs (MPP Router, x402 facilitators) — https://docs.rozo.ai/integration/rozointentpay/ai-prompts
+- Agentic payments for AI agents over 402-gated APIs (MPP Router, x402 facilitators) — https://docs.rozo.ai/products/agentic-payments-mpprouter
 
 
 ## How it works
@@ -37,12 +37,11 @@ Use these routes when a user expresses an intent in natural language:
 | "Let my users deposit from any chain" | Wallet Deposit for Apps (embedded deposit) |
 | "Onramp EUR to crypto" | EURC Onramp (bank transfer) |
 | "Check payment status" | `GET /payment/{id}` by id, tx hash, or deposit address + memo |
-| "Check my balance across chains" | Balance API (Cloudflare Workers host) |
+| "Check my balance across chains" | Balance API   |
 
 ## API overview
 - Intent API base URL: `https://intentapiv4.rozo.ai`
-- Balance API base URL: `https://api-balance.rozo-deeplink.workers.dev`
-- Auth: **public, rate-limited** — no API keys required for either host
+- Auth: **public, rate-limited** — no API keys required for either host. AppID is required for the host.
 - Create payment: `POST /create-payment` (supports `--dryrun` for fee estimates)
 - Get payment: `GET /payment/{id}` — accepts payment UUID, source tx hash, or deposit address + memo
 - Get fees: quote fees before creating the intent

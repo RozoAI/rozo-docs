@@ -32,6 +32,7 @@
 * [Wallet Deposit for Apps](products/intent-based-deposit.md)
   * [Wallet Deposit API](integration/api-doc/deposit-api.md)
 * [EURC Onramp and Bridge](products/eurc-onramp/README.md)
+* [Agentic Payments with MPP Router](products/agentic-payments-mpprouter.md)
 * [Mobile App](products/mobile-app/README.md)
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
