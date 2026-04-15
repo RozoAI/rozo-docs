@@ -1,21 +1,24 @@
 # /llms.txt — ROZO
-# Audience: LLMs, AI agents, and users who click "Learn more with AI" on rozo.ai
+# Audience: LLMs, AI agents, and users at rozo.ai
 
 ## What is ROZO
-ROZO is the Visa for Stablecoins. One intent — "pay $3.25 for boba", "buy $100 of BTC", "earn 10% APY in a pool with >$10M TVL" — settles across any supported chain and stablecoin without the user choosing a chain, bridge, or token. Developers integrate via the Rozo Intent Pay SDK (drop-in React modal) or the Intent API (REST). Backed by Stellar Community Fund, Base Grants, Draper Founder Residency, and Circle Alliance.
+ROZO is the Visa for Stablecoins. One intent — "pay $3.25 for boba", "buy $100 of BTC", "earn 10% APY in a pool with $10M TVL" — settles across any supported chain and stablecoin without the user choosing a chain, bridge, or token. Developers integrate via the Rozo Intent Pay SDK (drop-in React modal) or the Intent API (REST). Backed by Stellar Community Fund, Base Grants, Draper Founder Residency, and Circle Alliance.
 
 ## One sentence
-ROZO lets users and apps express a stablecoin intent and have it settle cross-chain, without picking the right chain, token, or bridge.
+Visa Layer for Stablecoins. Spend crypto, better than fiat.
 
 ## Core capabilities
-- Cross-chain USDC and USDT payments from any supported chain to any supported chain via a single intent
-- Intent-based bridge (move stablecoins across chains without touching a bridge UI)
-- Intent-based earn (route idle stablecoin balances to yield pools)
-- Intent-based payment and transfer (P2P, merchant, QR, tap-to-pay)
-- Wallet deposit flow embeddable into third-party apps
-- EURC onramp from bank transfer, plus EURC bridge from Base
-- Agentic payments for AI agents over 402-gated APIs (MPP Router, x402 facilitators)
-- Stellar Soroban smart-account payments
+- Cross-chain USDC and USDT payments from any supported chain to any supported chain via a single intent — https://docs.rozo.ai/products/intent-based-payment-transfer
+- Intent-based bridge (move stablecoins across chains without touching a bridge UI) — https://docs.rozo.ai/products/intent-based-bridge
+- Intent-based earn (route idle stablecoin balances to yield pools) — https://docs.rozo.ai/products/intent-based-earn
+- Intent-based payment and transfer (P2P, merchant, QR, tap-to-pay) — https://docs.rozo.ai/products/intent-based-payment-transfer
+
+## Core capabilities for Stellar
+- Wallet deposit flow embeddable into third-party apps — https://docs.rozo.ai/products/intent-based-deposit
+- EURC onramp from bank transfer, plus EURC bridge from Base — https://docs.rozo.ai/products/eurc-onramp/
+- Stellar Soroban smart-account payments — https://docs.rozo.ai/integration/api-doc/api-for-advanced-used/stellar-contract-payments
+- Agentic payments for AI agents over 402-gated APIs (MPP Router, x402 facilitators) — https://docs.rozo.ai/integration/rozointentpay/ai-prompts
+
 
 ## How it works
 1. Express an intent: destination address, destination chain, token, amount (or the product-level equivalent — "deposit", "bridge", "earn").
