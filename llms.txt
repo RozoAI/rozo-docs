@@ -8,6 +8,7 @@ ROZO abstracts stablecoin payments across Ethereum, Arbitrum, Base, BSC, Polygon
 
 - [Welcome to ROZO](https://docs.rozo.ai/start/): The origin story and what ROZO solves — fragmented USDC across 29 chains.
 - [Vision and Missions](https://docs.rozo.ai/start/vision-and-missions): SOFT principles — Simple, Open, Frictionless, Trustless.
+- [ROZO Lite Paper](https://docs.rozo.ai/start/litepaper): High-level protocol overview.
 
 ## API & SDK Integration
 

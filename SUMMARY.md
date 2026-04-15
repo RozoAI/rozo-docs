@@ -4,7 +4,7 @@
 
 * [Welcome to ROZO](README.md)
 * [Vision and Missions](start/vision-and-missions.md)
-* [🧾 ROZO Lite Paper](<README (1).md>)
+* [🧾 ROZO Lite Paper](start/litepaper.md)
 
 ## API & SDKS INTEGRATION <a href="#integration" id="integration"></a>
 
