@@ -11,6 +11,8 @@ redirect: https://wallet.rozo.ai/onramp?currency=EURC
 
 We support both bank transfer and bridging from Base.
 
+> Need USDC instead? The same onramp and bridge flow is available at [wallet.rozo.ai/onramp?currency=USDC](https://wallet.rozo.ai/onramp?currency=USDC).
+
 ## Bank Transfer
 
 {% embed url="https://youtu.be/sCDMDkK6nDE" %}
