@@ -22,7 +22,6 @@
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
     * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
-  * [Stellar Earn](integration/api-doc/stellar-earn.md)
   * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
 
 ## PRODUCTS
