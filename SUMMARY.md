@@ -30,7 +30,6 @@
 * [Intent Based Earn](products/intent-based-earn.md)
 * [Intent Based Payment & Transfer](products/intent-based-payment-transfer.md)
 * [Wallet Deposit for Apps](products/intent-based-deposit.md)
-  * [Wallet Deposit API](integration/api-doc/deposit-api.md)
 * [EURC Onramp and Bridge](products/eurc-onramp/README.md)
 * [Agentic Payments with MPP Router](products/agentic-payments-mpprouter.md)
 * [Mobile App](products/mobile-app/README.md)
@@ -50,10 +49,3 @@
 * [Terms of service](contact/contact-us/terms-of-service.md)
 * [Privacy Policy](contact/contact-us/privacy-policy.md)
 * [FAQs](contact/faqs.md)
-
-## BLOG
-
-* [Blog](blogs/en/README.md)
-  * [Why We Build](blogs/en/20260101-why-we-build.md)
-  * [What's Missing](blogs/en/20260114-whats-missing.md)
-  * [FAQ](blogs/en/faq.md)
