@@ -33,8 +33,6 @@
 * [Wallet Deposit for Apps](products/intent-based-deposit.md)
   * [Wallet Deposit API](integration/api-doc/deposit-api.md)
 * [EURC Onramp and Bridge](products/eurc-onramp/README.md)
-  * [Bank Transfer](products/eurc-onramp/bank-transfer.md)
-  * [Bridge from Base](products/eurc-onramp/bridge-from-base.md)
 * [Mobile App](products/mobile-app/README.md)
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
