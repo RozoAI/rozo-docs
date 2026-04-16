@@ -4,51 +4,27 @@ icon: crystal-ball
 
 # Vision and Missions
 
+Visa was a breakthrough for the last generation of payments. It made digital commerce work at global scale.
+
+But it was built for a world of closed networks, intermediaries, and opaque risk systems — not for a world where users directly control their own money. That is why payments still fail, accounts still get frozen, and users still do not fully control how money moves.
+
+We believe payments can be rebuilt from first principles: user-controlled funds, open infrastructure, and fewer hidden steps between intent and settlement.
+
+## One-line thesis
+
+Not another layer on top of old payment rails — a rebuild of payments themselves.
+
 ## Vision
 
-Promote Economic Freedom
+Promote economic freedom.
 
+## Mission
 
+Build a frictionless, non-custodial, open payment network.
 
-## Mission (SOFT)
+## Values
 
-**Simple. Open. Frictionless. Trustless**
-
-
-
-**Simple:**&#x20;
-
-One tap. As easy as a CEX — without introducing new risks.
-
-Users should _never_ lose funds due to wrong chains, wrong tokens, or wrong memos.
-
-
-
-**Frictionless**
-
-It should be frictionless.  We believe crypto payments should be more frictionless than the traditional card system.  That's why we think crypto debit cards are meaningless. It's build on top of visa card network and make the money flow more complicated
-
-
-
-**Open**
-
-A building block that works across UI, API and smart contracts.
-
-Composable. Permissionless. Developer-friendly.
-
-
-
-**Trustless**
-
-Users always control their funds.
-
-No custody. No lock-in.
-
-
-
-
-
-
-
-
-
+* Users control their own funds
+* Payments should not depend on black boxes and layers of intermediaries
+* Open systems are better than closed networks
+* Protect users through mechanisms, not promises
