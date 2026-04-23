@@ -18,9 +18,13 @@ Not another layer on top of old payment rails — a rebuild of payments themselv
 
 Promote economic freedom.
 
+For users: a peer-to-peer payment network — money that moves directly between people, without middlemen deciding whether it can.
+
 ## Mission
 
 Build a frictionless, non-custodial, open payment network.
+
+For users: one click, one tap, one second — payments that feel as simple as sending a message.
 
 ## Values
 
