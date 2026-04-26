@@ -5,7 +5,7 @@
 
 ROZO Intents is a permissionless payment layer that lets a Stellar USDC holder pay for any AI service tokens of Claude (Anthropic), Gemini (Google), ChatGPT (OpenAI) via OpenRouter, and 485+ other agentic-economy services on Tempo and adjacent networks — without leaving the Stellar ecosystem and without any AI provider needing to integrate Stellar.
 
-The system extends ROZO's SCF #38 stack (Stablecoin Abstraction API, Hacken-audited with 1,032 users, $7.39M+ volume on Stellar) with three new components:
+The system extends ROZO's Stablecoin Abstraction API (Hacken-audited with 1,032 users, $7.39M+ volume on Stellar) with three new components:
 
 - Hacken security audit: https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/
 - Dune dashboard (live): https://dune.com/rozointents/stellar
@@ -80,20 +80,20 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
                                      └────────────────────────────────────┘
 ```
 
-### 2.2 What's Existing (SCF #38) vs. What's New (SCF #43)
+### 2.2 What's Completed vs. What's New
 
-| Component | Status | Built In |
-|---|---|---|
-| Stablecoin Abstraction API (Stellar↔Base sub-second settlement) | ✅ Production, Hacken-audited | SCF #38 |
-| Soroban PayIn / PayOut contracts | ✅ Production | SCF #38 |
-| Passkey C-address wallet | ✅ Production | SCF #38 |
-| Solver / liquidity routing | ✅ Production | SCF #38 |
-| Public Dune dashboard + Hacken audit report | ✅ Live | SCF #38 |
-| Wallet + ecosystem partners shipped (LOBSTR, Freighter, StellarExpert; Mykobo, Defindex, Soroswap) | ✅ Live | SCF #38 |
-| Intent Extraction Layer | 🆕 To build | SCF #43 |
-| Settlement Adapter (Coinbase Commerce path) | 🆕 To build | SCF #43 |
-| On-chain Rewards token + redemption flow | 🆕 To build | SCF #43 |
-| Wallet-embedded AI purchase flow (LOBSTR, Freighter, +) | 🆕 To build | SCF #43 |
+| Component | Status |
+|---|---|
+| Stablecoin Abstraction API (Stellar↔Base sub-second settlement) | ✅ Production, Hacken-audited |
+| Soroban PayIn / PayOut contracts | ✅ Production |
+| Passkey C-address wallet | ✅ Production |
+| Solver / liquidity routing | ✅ Production |
+| Public Dune dashboard + Hacken audit report | ✅ Live |
+| Wallet + ecosystem partners shipped (LOBSTR, Freighter, StellarExpert; Mykobo, Defindex, Soroswap) | ✅ Live |
+| Intent Extraction Layer | 🆕 To build |
+| Settlement Adapter (Coinbase Commerce path) | 🆕 To build |
+| On-chain Rewards token + redemption flow | 🆕 To build |
+| Wallet-embedded AI purchase flow (LOBSTR, Freighter, +) | 🆕 To build |
 
 The grant funds three components, not the whole stack. Most of the heavy lifting (cross-chain settlement, audit, partner network) is already in production.
 
