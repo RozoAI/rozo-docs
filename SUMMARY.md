@@ -8,6 +8,7 @@
 
 ## API & SDKS INTEGRATION <a href="#integration" id="integration"></a>
 
+* [ROZO Intent Pay Tech Doc](rozo-intentpay-techdoc.md)
 * [ROZO Intent Pay SDK](integration/rozointentpay/README.md)
   * [Quick Start Guide](integration/rozointentpay/quick-start.md)
   * [Complete Examples](integration/rozointentpay/examples.md)
