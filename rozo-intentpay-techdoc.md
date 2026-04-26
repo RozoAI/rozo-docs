@@ -9,8 +9,8 @@ ROZO Intents is a permissionless payment layer that lets Stellar USDC users pay 
 
 The system extends ROZO's Stablecoin Abstraction API (Hacken-audited with 1,032 users, $7.39M+ volume on Stellar) with three new components:
 
-- Hacken security audit: https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/
-- Dune dashboard (live): https://dune.com/rozointents/stellar
+- [Hacken security audit](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
+- [Dune dashboard (live)](https://dune.com/rozointents/stellar)
 
 
 1. Intent Extraction Layer — parses AI provider invoices/checkout flows into a structured Stellar payment intent
@@ -203,12 +203,12 @@ The new Tranche 3 components (Rewards issuer + redemption) will be submitted to 
 
 ## 8. References
 
-- ROZO production data (live): https://dune.com/rozointents/stellar
-- Hacken security audit (March 2026): https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/
-- ROZO website: https://rozo.ai/
-- ROZO GitHub: https://github.com/rozoai
-- SCF #38 award page: https://communityfund.stellar.org/projects/recN7Zf3kGBRIHVQy
-- Coinbase Commerce documentation: https://commerce.coinbase.com/docs
-- Stellar Asset Sandbox: https://www.stellar.org/asset-sandbox
+- [ROZO production data (live)](https://dune.com/rozointents/stellar)
+- [Hacken security audit (March 2026)](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
+- [ROZO website](https://rozo.ai/)
+- [ROZO GitHub](https://github.com/rozoai)
+- [SCF #38 award page](https://communityfund.stellar.org/projects/recN7Zf3kGBRIHVQy)
+- [Coinbase Commerce documentation](https://commerce.coinbase.com/docs)
+- [Stellar Asset Sandbox](https://www.stellar.org/asset-sandbox)
 
 ---
