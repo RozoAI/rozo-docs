@@ -64,7 +64,7 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 
 ## 3. Why This Architecture Is Permissionless
 
-The unlock: OpenRouter and most AI providers already accept crypto via Coinbase Commerce. Their checkout flow exposes a payable address + amount + memo on a chain Coinbase Commerce supports. They don't care who pays or how, as long as the funds settle.
+The unlock: OpenRouter and most AI providers already accept crypto via Coinbase Commerce. Their checkout flow exposes a unique pay-to address + amount on a chain Coinbase Commerce supports — the address itself is what correlates the payment to the order. They don't care who pays or how, as long as the funds settle to that address.
 
 What ROZO does:
 - Parse the Coinbase Commerce checkout (or the invoice URL the user pastes) into a structured intent
@@ -100,19 +100,19 @@ interface PaymentIntent {
 ```
 
 Extraction sources:
-1. **URL paste** — fetch the public Coinbase Commerce charge, extract `{dest, amount, memo}`, verify `NEW` status
+1. **URL paste** — fetch the public Coinbase Commerce charge, extract `{payTo, amount, chain}`, verify `NEW` status
 2. **Natural-language** — LLM parses to a known provider's top-up; structured intent always shown for human confirmation before signing
 3. **Wallet deeplink** — partner SDK constructs the intent client-side, no parsing needed
 
-Safety: provider allowlist (hash-pinned), per-tx ceiling ($1,000 default), charge-status check, memo preserved end-to-end. On expiry / 4xx / mis-parse / user edit → re-validate and re-confirm.
+Safety: provider allowlist (hash-pinned), per-tx ceiling ($1,000 default), charge-status check, exact pay-to address preserved end-to-end. On expiry / 4xx / mis-parse / user edit → re-validate and re-confirm.
 
 ### 4.2 Settlement Adapter
 
-After the user signs on Stellar, deliver USDC to the AI provider's Coinbase Commerce endpoint with the exact amount + memo.
+After the user signs on Stellar, the solver makes an ERC-20 USDC `transfer()` call to the AI provider's unique Coinbase Commerce pay-to address on the destination chain, exact amount.
 
 ```
-User signs → USDC locked in Soroban PayIn → solver dispatches USDC on Base
-with memo → Coinbase Commerce confirms PAID → provider credits user →
+User signs → USDC locked in Soroban PayIn → solver calls USDC.transfer(payTo, amount)
+on Base → Coinbase Commerce confirms PAID → provider credits user →
 ROZO mints Rewards on Stellar → solver liquidity rebalanced
 ```
 
@@ -147,10 +147,10 @@ Extends the existing #38 SDK with `payAiService(intent)`, a wallet-side UI primi
 
 ```
 t=0     User pastes OpenRouter Coinbase Commerce charge URL
-t=0.2s  ROZO parses charge → { dest, chain: base, USDC, $100, memo }
+t=0.2s  ROZO parses charge → { payTo, chain: base, USDC, $100 }
 t=0.4s  UI shows intent: "Pay $100 USDC → OpenRouter, earn 500 Rewards (5%)"
 t=Xs    User signs Stellar tx → USDC locked in Soroban PayIn
-t=X+2s  Solver dispatches $100 USDC on Base with memo
+t=X+2s  Solver calls USDC.transfer(payTo, $100) on Base
 t=X+5s  Coinbase Commerce sees PAID → OpenRouter credits user
 t=X+6s  ROZO mints 500 Rewards to user on Stellar
 t=X+7s  UI: "Done. $100 credited. 500 Rewards added."
