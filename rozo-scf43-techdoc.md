@@ -45,6 +45,8 @@ Two practical consequences:
 
 ## 3. System Architecture
 
+![Permissionless Pay architecture](assets/permissionlesspay.png)
+
 ### 3.1 Component Overview
 
 ```
