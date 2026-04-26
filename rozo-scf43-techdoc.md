@@ -3,7 +3,9 @@
 
 ## 1. Summary
 
-ROZO Intents is a permissionless payment layer that lets a Stellar USDC holder pay for any AI service tokens of Claude (Anthropic), Gemini (Google), ChatGPT (OpenAI) via OpenRouter, and 485+ other agentic-economy services on Tempo and adjacent networks — without leaving the Stellar ecosystem and without any AI provider needing to integrate Stellar.
+Today, Stellar users cannot easily pay for AI tokens — there is no direct path from Stellar USDC to OpenRouter, Claude, Gemini, ChatGPT, or other AI providers. Users have to bridge to another chain, swap to another asset, and figure out the destination provider's checkout themselves. This is the friction ROZO Intents removes.
+
+ROZO Intents is a permissionless payment layer that lets Stellar USDC users pay for any AI service tokens of Claude (Anthropic), Gemini (Google), ChatGPT (OpenAI) via OpenRouter, and 485+ other agentic-economy services on Tempo and adjacent networks — without leaving the Stellar ecosystem and without any AI provider needing to integrate Stellar.
 
 The system extends ROZO's Stablecoin Abstraction API (Hacken-audited with 1,032 users, $7.39M+ volume on Stellar) with three new components:
 
