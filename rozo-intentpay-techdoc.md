@@ -24,6 +24,7 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 ## 2. System Architecture
 
 ![Permissionless Pay architecture](assets/permissionlesspay.png)
+*Diagram updated 2026-04-27*
 
 ### 2.1 Component Overview
 
@@ -120,18 +121,13 @@ ROZO mints Rewards on Stellar → solver liquidity rebalanced
 - **Liquidity:** reuses existing #38 solver pool — no new LP capital needed for Tranche 1 / 2
 - **Risk:** ROZO is exposed between Stellar lock and EVM confirmation; mitigated by per-tx ceiling + circuit breaker (existing #38 infra, Hacken-audited)
 
-### 4.3 On-Chain Rewards Token
+### 4.3 Rewards
 
-Stellar Classic asset with a Soroban-controlled issuer for programmatic mint/burn — visible by default in any Stellar wallet via trustline, tradeable on Stellar DEX with no wrapping.
+A Stellar Classic asset with a Soroban-controlled issuer for programmatic mint/burn — visible by default in any Stellar wallet via trustline, tradeable on Stellar DEX with no wrapping.
 
 **Mint:** on confirmed purchase, mint `floor(purchaseUsd × rewardsBps / 10000)` to user; event emits `purchaseId` for the dashboard.
 
-**Redeem:** at checkout, user opts to use Rewards. Burn `min(balance, purchaseUsd)`, discount the USDC settled to Coinbase Commerce, ROZO covers the gap from referral revenue (Phase B) or treasury (Phase A).
-
-**Economic backing:**
-- Phase A (~30 days): treasury bootstrap, hard-capped at $2,000 — validates the redemption loop
-- Phase B (steady state): 100% funded by AI-provider referral commissions; sustainable as long as referral revenue/purchase > redemption discount/purchase. Tracked on the public dashboard.
-- Compliance: utility-token only (redeemable for service discount), no public sale, external counsel review before mainnet.
+**Redeem:** at checkout, user opts to use Rewards. Burn `min(balance, purchaseUsd)`, discount the USDC settled to Coinbase Commerce, ROZO covers the gap from referral revenue.
 
 **Sybil resistance:** per-purchase rate (not per-account), $1 minimum purchase, redemption binds to a real purchase, dashboard abuse monitoring.
 
