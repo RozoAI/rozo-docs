@@ -28,58 +28,21 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 ### 2.1 Component Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                            User on Stellar                              │
-│         (Stellar wallet: LOBSTR / Freighter / StellarExpert / etc.)     │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │ paste invoice URL  /  open AI shortcut
-                                 ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    ROZO Intents — UI / Chat Interface                   │
-│  • Natural-language input ("buy $50 of OpenRouter credit for ...")      │
-│  • Invoice URL paste                                                    │
-│  • Wallet integration (SDK; embedded inside partner wallets)            │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    Intent Extraction Layer (NEW — SCF #43)              │
-│  • Parses AI provider invoice / Coinbase Commerce checkout              │
-│  • Extracts {destination, amount, chain, asset, memo, expiry}           │
-│  • Validates target is a known AI provider (allowlist + heuristic)      │
-│  • Returns structured Intent object to UI for user confirmation         │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │ user confirms + signs once
-                                 ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│           ROZO Stablecoin Abstraction API (SCF #38 — existing)          │
-│  • Soroban PayIn contract on Stellar (locks user's USDC)                │
-│  • Cross-chain settler (sub-second Stellar↔Base; existing prod)         │
-│  • Solver / liquidity routing                                           │
-│  • Hacken-audited, 1,032 users, $7.39M+ volume                          │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    Settlement Adapter (NEW — SCF #43)                   │
-│  • Pays Coinbase Commerce endpoint on destination chain (Base/ETH)      │
-│  • Uses provider-required asset (USDC) and exact amount + memo          │
-│  • Watches Coinbase Commerce settlement webhook / on-chain confirmation │
-│  • Triggers credit delivery + Rewards mint                              │
-└────────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                ┌────────────────┴─────────────────┐
-                ▼                                  ▼
-┌─────────────────────────────┐      ┌────────────────────────────────────┐
-│   AI provider account       │      │  Rewards Issuer (NEW — SCF #43)    │
-│   credited (OpenRouter,     │      │  • Soroban contract on Stellar     │
-│   Anthropic, OpenAI, etc.)  │      │  • Mints Stellar-native Rewards    │
-│   — provider-side, public   │      │    token to user                   │
-│     Coinbase Commerce path  │      │  • Backed by referral commission   │
-└─────────────────────────────┘      │    (Phase B); treasury ($2K cap)   │
-                                     │    in Phase A for bootstrap        │
-                                     │  • Redeemable on next purchase     │
-                                     └────────────────────────────────────┘
+  Stellar User (LOBSTR / Freighter / StellarExpert)
+        │  paste invoice URL  /  natural-language ("buy $100 OpenRouter")
+        ▼
+  ROZO Intents UI  ──►  Intent Extraction Layer (NEW)
+                              │  user signs once
+                              ▼
+                    Stablecoin Abstraction API (existing)
+                              │
+                              ▼
+                    Settlement Adapter (NEW)
+                              │
+                ┌─────────────┴──────────────┐
+                ▼                            ▼
+       AI provider credited         Rewards Issuer (NEW)
+       via Coinbase Commerce        cashback to user
 ```
 
 ### 2.2 What's Completed vs. What's New
@@ -161,7 +124,7 @@ Extraction sources:
 
 1. OpenRouter invoice URL paste. OpenRouter's checkout exposes a Coinbase Commerce charge object with `pricing.local`, `addresses.{chain}`, and `memo`/`code`. We fetch the public Coinbase Commerce charge by its ID, extract destination + amount + memo, and verify the charge is in `NEW` status.
 
-2. Natural-language ("buy $50 of OpenRouter credit"). A small LLM-assisted parser maps the request to a known provider's top-up flow, then uses that provider's official top-up endpoint (which exposes a Coinbase Commerce charge for direct top-ups on supported providers) to get the structured intent. The parsed intent is *always* shown to the user for confirmation before any signing — the LLM never signs.
+2. Natural-language ("buy $100 of OpenRouter credit"). A small LLM-assisted parser maps the request to a known provider's top-up flow, then uses that provider's official top-up endpoint (which exposes a Coinbase Commerce charge for direct top-ups on supported providers) to get the structured intent. The parsed intent is *always* shown to the user for confirmation before any signing — the LLM never signs.
 
 3. Wallet deeplink. Partner wallets (LOBSTR, Freighter) embed a ROZO SDK that constructs the intent client-side from a structured payload, no parsing needed.
 
@@ -254,35 +217,17 @@ We are *not* building wallets. We are giving wallets a single SDK call to add AI
 
 ## 5. Data Flows & State Machines
 
-### 5.1 Happy Path: Pay $50 of OpenRouter via paste
+### 5.1 Happy Path: Pay $100 of OpenRouter via paste
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│ t=0    User pastes OpenRouter Coinbase Commerce charge URL into ROZO   │
-│                                                                        │
-│ t=0.2s ROZO fetches public Coinbase Commerce charge object             │
-│        Extracts: { dest: 0xCCC..., chain: base, asset: USDC,           │
-│                    amount: 50000000 (=$50), memo: "abc123" }           │
-│        Validates against AI provider allowlist                         │
-│                                                                        │
-│ t=0.4s UI displays parsed intent: "Pay $50 USDC to OpenRouter,         │
-│        receive ~$50 of AI credit. You'll earn 250 ROZO Rewards (5%)."  │
-│                                                                        │
-│ t=Xs   User clicks confirm → wallet signs Stellar tx                   │
-│                                                                        │
-│ t=X+1s USDC locked in Soroban PayIn contract on Stellar                │
-│                                                                        │
-│ t=X+2s Solver picks up intent, dispatches $50 USDC on Base to          │
-│        OpenRouter's Coinbase Commerce address with memo "abc123"       │
-│                                                                        │
-│ t=X+5s Base block confirms; Coinbase Commerce sees PAID                │
-│                                                                        │
-│ t=X+6s OpenRouter credits user's account (provider-side)               │
-│        ROZO mints 250 Rewards to user on Stellar                       │
-│                                                                        │
-│ t=X+7s UI updates: "Done. $50 credited to OpenRouter. 250 Rewards      │
-│        added to your Stellar wallet."                                  │
-└────────────────────────────────────────────────────────────────────────┘
+t=0     User pastes OpenRouter Coinbase Commerce charge URL
+t=0.2s  ROZO parses charge → { dest, chain: base, USDC, $100, memo }
+t=0.4s  UI shows intent: "Pay $100 USDC → OpenRouter, earn 500 Rewards (5%)"
+t=Xs    User signs Stellar tx → USDC locked in Soroban PayIn
+t=X+2s  Solver dispatches $100 USDC on Base with memo
+t=X+5s  Coinbase Commerce sees PAID → OpenRouter credits user
+t=X+6s  ROZO mints 500 Rewards to user on Stellar
+t=X+7s  UI: "Done. $100 credited. 500 Rewards added."
 ```
 
 Total user-perceived latency: 7 seconds, dominated by destination-chain confirmation.
