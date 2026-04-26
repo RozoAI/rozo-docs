@@ -24,7 +24,7 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 
 ## 2. System Architecture
 
-<img src="assets/permissionlesspay.png" alt="Permissionless Pay architecture" width="1400" style="max-width: 100%;">
+<figure><img src="assets/permissionlesspay.png" alt="Permissionless Pay architecture"></figure>
 
 
 ### 2.1 Component Overview
