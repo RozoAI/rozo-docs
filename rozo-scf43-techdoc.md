@@ -28,7 +28,7 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                            User on Stellar                              │
-│            (Stellar wallet: LOBSTR / Mykobo / Freighter / etc.)         │
+│         (Stellar wallet: LOBSTR / Freighter / StellarExpert / etc.)     │
 └────────────────────────────────┬────────────────────────────────────────┘
                                  │ paste invoice URL  /  open AI shortcut
                                  ▼
@@ -89,11 +89,11 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 | Passkey C-address wallet | ✅ Production | SCF #38 |
 | Solver / liquidity routing | ✅ Production | SCF #38 |
 | Public Dune dashboard + Hacken audit report | ✅ Live | SCF #38 |
-| Wallet partners shipped (LOBSTR, Mykobo, Defindex, Soroswap) | ✅ Live | SCF #38 |
+| Wallet + ecosystem partners shipped (LOBSTR, Freighter, StellarExpert; Mykobo, Defindex, Soroswap) | ✅ Live | SCF #38 |
 | Intent Extraction Layer | 🆕 To build | SCF #43 |
 | Settlement Adapter (Coinbase Commerce path) | 🆕 To build | SCF #43 |
 | On-chain Rewards token + redemption flow | 🆕 To build | SCF #43 |
-| Wallet-embedded AI purchase flow (LOBSTR, Mykobo, +) | 🆕 To build | SCF #43 |
+| Wallet-embedded AI purchase flow (LOBSTR, Freighter, +) | 🆕 To build | SCF #43 |
 
 The grant funds three components, not the whole stack. Most of the heavy lifting (cross-chain settlement, audit, partner network) is already in production.
 
@@ -161,7 +161,7 @@ Extraction sources:
 
 2. Natural-language ("buy $50 of OpenRouter credit"). A small LLM-assisted parser maps the request to a known provider's top-up flow, then uses that provider's official top-up endpoint (which exposes a Coinbase Commerce charge for direct top-ups on supported providers) to get the structured intent. The parsed intent is *always* shown to the user for confirmation before any signing — the LLM never signs.
 
-3. Wallet deeplink. Partner wallets (LOBSTR, Mykobo) embed a ROZO SDK that constructs the intent client-side from a structured payload, no parsing needed.
+3. Wallet deeplink. Partner wallets (LOBSTR, Freighter) embed a ROZO SDK that constructs the intent client-side from a structured payload, no parsing needed.
 
 Provider allowlist + sanity checks:
 - An allowlist of known AI provider addresses on Coinbase Commerce (OpenRouter, Anthropic, OpenAI, etc.) — hash-pinned, updated via a signed config
@@ -205,7 +205,7 @@ Settlement risk model:
 
 ### 4.3 On-Chain Rewards Token
 
-Asset: Stellar-native asset issued by a Soroban contract. Not a Soroban token contract — a Stellar Classic asset with a Soroban-controlled issuer for programmatic mint/burn. This keeps it natively visible in every Stellar wallet (LOBSTR, Mykobo, Freighter) without per-wallet Soroban compatibility checks.
+Asset: Stellar-native asset issued by a Soroban contract. Not a Soroban token contract — a Stellar Classic asset with a Soroban-controlled issuer for programmatic mint/burn. This keeps it natively visible in every Stellar wallet (LOBSTR, Freighter, StellarExpert) without per-wallet Soroban compatibility checks.
 
 Why a Stellar-native asset (not Soroban-only):
 - Visible by default in all Stellar wallets via standard trustline
@@ -239,7 +239,7 @@ Sybil / abuse resistance:
 
 ### 4.4 Wallet Integration (Tranche 2)
 
-ROZO's #38 SDK already integrates with LOBSTR, Mykobo, Defindex, Soroswap. The Tranche 2 wallet integration extends that SDK with:
+ROZO's #38 SDK already integrates with wallets (LOBSTR, Freighter) and ecosystem partners (Mykobo, Defindex, Soroswap). The Tranche 2 wallet integration extends that SDK with:
 
 - A new `payAiService(intent)` entry point
 - A wallet-side UI primitive (configurable per-partner styling) showing the parsed intent + Rewards preview
@@ -306,13 +306,13 @@ This is an Open Track submission — a few choices are deliberately Stellar-nati
 
 1. Settlement on Stellar mainnet, not Base. ROZO's #38 already settles cross-chain in seconds. The user's *experience* is Stellar-native: they sign on Stellar, their balance moves on Stellar, their Rewards live on Stellar, they see the result in their Stellar wallet. Base is invisible to the user.
 
-2. Rewards as a Stellar-native asset (not an ERC-20). This means existing Stellar wallets (LOBSTR, Mykobo, Freighter) display the asset by default after trustline, no Soroban-specific UI needed. It's also tradeable on Stellar DEX from day one — letting users who don't want to spend Rewards on AI services route them to liquidity instead.
+2. Rewards as a Stellar-native asset (not an ERC-20). This means existing Stellar wallets (LOBSTR, Freighter, StellarExpert) display the asset by default after trustline, no Soroban-specific UI needed. It's also tradeable on Stellar DEX from day one — letting users who don't want to spend Rewards on AI services route them to liquidity instead.
 
 3. Soroban for the issuer + redemption logic. Programmable mint/burn, event emission for the public dashboard, upgrade path for redemption-rule changes.
 
 4. Coinbase Commerce as the bridge, not a custom relayer. Coinbase Commerce is the publicly-supported crypto checkout used by hundreds of merchants beyond AI — once we ship this for AI, the same architecture extends to any Coinbase-Commerce-accepting merchant. This is what "permissionless integration" buys us long-term: AI is the wedge, Stellar→Coinbase-Commerce is the durable infra.
 
-5. Reuse of existing partner network (LOBSTR, Mykobo, Defindex, Soroswap). Wallet integration in Tranche 2 is BD-light because the relationships already exist — we are activating, not negotiating.
+5. Reuse of existing partner network — wallets (LOBSTR, Freighter) and ecosystem partners (Mykobo, Defindex, Soroswap). Wallet integration in Tranche 2 is BD-light because the relationships already exist — we are activating, not negotiating.
 
 ---
 
@@ -338,7 +338,7 @@ The new Tranche 3 components (Rewards issuer + redemption) will be submitted to 
 |---|---|---|
 | #0 ($15K) | Engineering hire onboarded; Coinbase Commerce path verified end-to-end (internal POC) | Test transaction visible on Base, Stellar PayIn lock visible on Stellar |
 | #1 ($30K) | Intent Extraction Layer + Settlement Adapter live on Stellar testnet for OpenRouter | rozo.ai testnet endpoint; ≥30 successful txs; public docs; Dune dashboard extended |
-| #2 ($45K) | Multi-provider (Anthropic + OpenAI direct) + Wallet SDK shipped to ≥1 production wallet (LOBSTR or Mykobo) | Live wallet integration; ≥$200K cumulative volume in 60d window; SDK on GitHub |
+| #2 ($45K) | Multi-provider (Anthropic + OpenAI direct) + Wallet SDK shipped to ≥1 production wallet (LOBSTR or Freighter) | Live wallet integration; ≥$200K cumulative volume in 60d window; SDK on GitHub |
 | #3 ($60K) | Mainnet launch + on-chain Rewards mint/redemption + professional user testing | Mainnet rozo.ai; Rewards asset live with public dashboard; user-test report; compliance design rationale published |
 
 ---
