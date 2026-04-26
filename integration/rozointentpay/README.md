@@ -37,6 +37,7 @@ RozoAI Intent Pay SDK is a React component that lets users pay you in crypto fro
 | [**Quick Start Guide**](quick-start.md)     | Get up and running in 5 minutes                    |
 | [**Complete Examples**](examples.md)        | Copy-paste ready examples for different frameworks |
 | [**API Reference**](api-reference.md)       | Complete props and configuration reference         |
+| [**Stellar SEP-24 Support**](stellar-sep24.md) | ROZO Stellar anchor hosts and supported assets   |
 | [**Troubleshooting**](troubleshooting.md)   | Common mistakes and how to avoid them              |
 | [**AI Prompts & Templates**](ai-prompts.md) | Templates for AI services to generate code         |
 

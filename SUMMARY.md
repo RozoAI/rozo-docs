@@ -12,6 +12,7 @@
   * [Quick Start Guide](integration/rozointentpay/quick-start.md)
   * [Complete Examples](integration/rozointentpay/examples.md)
   * [API Reference](integration/rozointentpay/api-reference.md)
+  * [Stellar SEP-24 Support](integration/rozointentpay/stellar-sep24.md)
   * [Troubleshooting](integration/rozointentpay/troubleshooting.md)
   * [AI Prompts](integration/rozointentpay/ai-prompts.md)
 * [ROZO Intent Pay API](integration/api-doc/README.md)
