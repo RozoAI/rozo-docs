@@ -1,11 +1,12 @@
-# ROZO Intents — Technical Architecture Document
+# ROZO Intents Technical Architecture Document
 
+<sub>Updated: 2026-04-27</sub>
 
 ## 1. Summary
 
 Today, Stellar users cannot easily pay for AI tokens. There is no direct path from Stellar USDC to OpenRouter, Claude, Gemini, ChatGPT, or other AI providers. This is the friction ROZO Intents removes.
 
-ROZO Intents is a permissionless payment layer that lets Stellar USDC users pay for any AI service tokens via OpenRouter, and 485+ other agentic-economy services on Tempo and adjacent networks — without leaving the Stellar ecosystem and without any AI provider needing to integrate Stellar.
+ROZO Intents is a permissionless payment layer that lets Stellar USDC users pay for any AI service tokens via OpenRouter, and 485+ other agentic-economy services on Tempo and adjacent networks, without leaving the Stellar ecosystem and without any AI provider needing to integrate Stellar.
 
 The system extends ROZO's Stablecoin Abstraction API (Hacken-audited with 1,032 users, $7.39M+ volume on Stellar) with three new components:
 
@@ -13,9 +14,9 @@ The system extends ROZO's Stablecoin Abstraction API (Hacken-audited with 1,032 
 - [Dune dashboard (live)](https://dune.com/rozointents/stellar)
 
 
-1. Intent Extraction Layer — parses AI provider invoices/checkout flows into a structured Stellar payment intent
-2. Settlement Adapter — translates a Stellar USDC payment into a Coinbase-Commerce-acceptable USDC settlement on the destination chain (no provider-side change)
-3. Rewards — a utility cashback issued to users, redeemable on the next purchase, funded by AI-provider referral commissions
+1. **Intent Extraction Layer**: parses AI provider invoices and checkout flows into a structured Stellar payment intent
+2. **Settlement Adapter**: translates a Stellar USDC payment into a Coinbase-Commerce-acceptable USDC settlement on the destination chain (no provider-side change)
+3. **Rewards**: a utility cashback issued to users, redeemable on the next purchase, funded by AI-provider referral commissions
 
 All of it runs on Stellar mainnet. No provider partnership required. No bridge for the user to operate.
 
@@ -23,8 +24,8 @@ All of it runs on Stellar mainnet. No provider partnership required. No bridge f
 
 ## 2. System Architecture
 
-![Permissionless Pay architecture](assets/permissionlesspay.png)
-*Diagram updated 2026-04-27*
+<img src="assets/permissionlesspay.png" alt="Permissionless Pay architecture" width="1400" style="max-width: 100%;">
+
 
 ### 2.1 Component Overview
 
