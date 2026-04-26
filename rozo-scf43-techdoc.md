@@ -13,9 +13,9 @@ The system extends ROZO's SCF #38 stack (Stablecoin Abstraction API, Hacken-audi
 
 1. Intent Extraction Layer — parses AI provider invoices/checkout flows into a structured Stellar payment intent
 2. Settlement Adapter — translates a Stellar USDC payment into a Coinbase-Commerce-acceptable USDC settlement on the destination chain (no provider-side change)
-3. On-chain Rewards — a Stellar-native utility token issued as cashback, redeemable on the next purchase, funded by AI-provider referral commissions
+3. Rewards — a utility cashback issued to users, redeemable on the next purchase, funded by AI-provider referral commissions
 
-All of it runs on Stellar mainnet. No provider partnership required. No bridge for the user to operate. One signature.
+All of it runs on Stellar mainnet. No provider partnership required. No bridge for the user to operate.
 
 ---
 
