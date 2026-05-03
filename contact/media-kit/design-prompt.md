@@ -6,6 +6,11 @@ icon: palette
 
 ✅ Monochrome-First Color Template
 
+🔤 Typography\
+• Font family: **Inter** (all weights, all UI surfaces)\
+• Fallback stack: `Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`\
+• Load from [Google Fonts](https://fonts.google.com/specimen/Inter) or [rsms.me/inter](https://rsms.me/inter/)
+
 🔑 Usage rules (important)\
 • Primary CTA → black\
 • Hover → slight elevation / subtle outline (not color)\
