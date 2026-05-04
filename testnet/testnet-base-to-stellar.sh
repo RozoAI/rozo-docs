@@ -19,7 +19,6 @@ set +a
 
 # API base URL is a project-wide constant. Override with API_BASE_URL=... in
 # the shell only if you've pointed a custom domain (e.g. intentapitestnet.rozo.ai)
-# at the same Supabase project.
 API_BASE_URL="${API_BASE_URL:-https://intentapitestnet.rozo.ai/functions/v1/payment-api}"
 
 : "${TEST_STELLAR_RECEIVER_ADDRESS:?TEST_STELLAR_RECEIVER_ADDRESS not set}"
