@@ -35,18 +35,18 @@ Both scripts:
 
 ```bash
 # Manual deposit (you send the USDC yourself from any wallet)
-bash tests/testnet-base-to-stellar.sh 0.01
-bash tests/testnet-base-to-stellar-c.sh 0.02
+bash testnet/testnet-base-to-stellar.sh 0.01
+bash testnet/testnet-base-to-stellar-c.sh 0.02
 
 # Auto-deposit using TEST_EVM_PAYER_PRIVATE_KEY
-AUTO=1 bash tests/testnet-base-to-stellar.sh 0.01
-AUTO=1 bash tests/testnet-base-to-stellar-c.sh 0.02
+AUTO=1 bash testnet/testnet-base-to-stellar.sh 0.01
+AUTO=1 bash testnet/testnet-base-to-stellar-c.sh 0.02
 ```
 
 Override the C-address destination:
 
 ```bash
-AUTO=1 bash tests/testnet-base-to-stellar-c.sh 0.02 CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
+AUTO=1 bash testnet/testnet-base-to-stellar-c.sh 0.02 CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
 ```
 
 ---

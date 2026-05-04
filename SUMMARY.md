@@ -43,7 +43,7 @@
 
 ## TESTS <a href="#tests" id="tests"></a>
 
-* [Base Sepolia → Stellar Testnet](tests/README.md)
+* [Base Sepolia → Stellar Testnet](testnet/README.md)
 
 ## CONTACT US <a href="#contact" id="contact"></a>
 
