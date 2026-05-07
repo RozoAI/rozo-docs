@@ -1,12 +1,14 @@
 # Wallet Top-up
 
-## Wallet Top-up v1 (Any Amount) for Base
+## Wallet Top-up v1 (Any Amount) to Stellar
 
 The `anyAmount` payment type allows users to send any amount without specifying it upfront. The system automatically detects the received amount and calculates the output dynamically.
 
 **API Host**: `https://intentapiv4.rozo.ai/functions/v1`
 
-**Supported Routes**: Currently only **Base ↔ Stellar** is supported.
+**Supported Routes**: `Ethereum`, `Arbitrum`, `Base`, `BSC`, and `Polygon` source routes to `Stellar` are supported.
+
+**Supported Source Tokens**: `USDC` and `USDT`
 
 ## Wallet Top-up v2 (Fixed address, Any amount)
 
@@ -29,7 +31,7 @@ Amounts outside this range will be rejected with `amountTooLow` or `amountTooHig
 
 ## Create Any Amount Payment
 
-### Base → Stellar Example
+### Base USDC → Stellar Example
 
 ```bash
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api' \
@@ -80,7 +82,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 }
 ```
 
-### Stellar → Base Example
+### Arbitrum USDT → Stellar Example
 
 ```bash
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api' \
@@ -94,20 +96,47 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
         "currency": "USD"
     },
     "source": {
-        "chainId": "1500",
-        "tokenSymbol": "USDC"
+        "chainId": "42161",
+        "tokenSymbol": "USDT"
     },
     "destination": {
-        "chainId": "8453",
-        "receiverAddress": "0x1234567890abcdef1234567890abcdef12345678",
+        "chainId": "1500",
+        "receiverAddress": "GDFLZTLVMLR3OVO4VSODYB7SGVIOI2AS652WODBCGBUQAMXXXXXXXXXX",
         "tokenSymbol": "USDC"
     }
 }'
 ```
 
+## Supported Source Chains
+
+- `1` Ethereum
+- `42161` Arbitrum
+- `8453` Base
+- `56` BSC
+- `137` Polygon
+
+## Supported Source Tokens
+
+- `USDC`
+- `USDT`
+
+## Destination Chain
+
+- `1500` or `stellar`
+
+## Request Notes
+
+- `source.chainId` must be one of the supported EVM source chains above.
+- `source.tokenSymbol` can be `USDC` or `USDT`.
+- `destination.chainId` must be `1500` or `stellar`.
+- `destination.receiverAddress` must be a valid Stellar address.
+- Current examples use Stellar `USDC` as the destination token.
+
+For the broader token and chain matrix, see [Supported Tokens and Chains](../supported-tokens-and-chains.md).
+
 ## After Payment Received
 
-Once the user sends USDC to the `source.receiverAddress`, the system:
+Once the user sends the selected source token to the `source.receiverAddress`, the system:
 
 1. Detects the payment amount on-chain
 2. Validates the amount is within the allowed range ($0.02 - $10,000)
@@ -139,7 +168,7 @@ The payment record is updated:
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
 │   Create    │     │    User     │     │   Monitor   │     │   Payout    │
 │   Payment   │────▶│   Sends     │────▶│   Detects   │────▶│  Triggered  │
-│             │     │   USDC      │     │   Amount    │     │             │
+│             │     │ USDC/USDT   │     │   Amount    │     │             │
 └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
        │                   │                   │                   │
        ▼                   ▼                   ▼                   ▼
