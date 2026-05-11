@@ -4,9 +4,32 @@
 
 **Latest version for merchants — Summary**
 
-* **OpenAPI spec:** `docs/openapi.yaml`
+* **OpenAPI spec:** [`docs/openapi.yaml`](https://github.com/RozoAI/rozo-intents-api/blob/main/docs/openapi.yaml)
 * **Version:** `2.0.0` (previously `1.0.0`)
 * **Revision date:** `2026-05-11` (recorded in `x-revision-date`)
+* **This page:** [https://docs.rozo.ai/integration/api-doc/api-doc-postman](https://docs.rozo.ai/integration/api-doc/api-doc-postman)
+* **Docs source on GitHub:** [rozoai/rozo-docs](https://github.com/RozoAI/rozo-docs)
+
+## Get Your API Key
+
+Before calling any endpoint, you need an API key from the Rozo merchant portal.
+
+1. Sign in at [**partners.rozo.ai**](https://partners.rozo.ai).
+2. Create or open your merchant app — your `appId` will look like `merchant_<slug>` or `wallet_<slug>`.
+3. Generate an API key — format: `rz_live_xxxxx`. The key is bound to that `appId`.
+4. Configure your **webhook URL** in the portal (used for `payment_payin_completed` and `payment_payout_completed` events).
+5. Pass the key on every `POST` request as the `X-API-Key` header:
+
+```
+X-API-Key: rz_live_xxxxx
+```
+
+> When `X-API-Key` is present, the key's `app_id` is authoritative — a stale `appId` in the request body is silently overridden. This is cross-tenant defense, so you cannot accidentally write into another merchant's namespace.
+
+**Auth errors**
+
+* `400 missing_api_key` — `appId` requires a key but none was provided.
+* `400 invalid_api_key` — key is unknown, revoked, expired, or inactive.
 
 ## Complete Endpoint List
 
