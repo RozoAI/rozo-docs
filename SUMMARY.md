@@ -18,7 +18,7 @@
   * [AI Prompts](integration/rozointentpay/ai-prompts.md)
 * [ROZO Intent Pay API](integration/api-doc/README.md)
   * [ROZO Intents Tech Design](integration/api-doc/rozo-intents-tech-design.md)
-  * [API Doc (POSTMAN)](https://apidoc.rozo.ai/)
+  * [API Doc (POSTMAN)](integration/api-doc/api-doc-postman.md)
   * [API Quick Start](integration/api-doc/api-quick-start.md)
   * [API for Advanced Used](integration/api-doc/api-for-advanced-used/README.md)
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
