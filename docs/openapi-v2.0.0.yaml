@@ -50,8 +50,6 @@ servers:
 tags:
   - name: Payments
     description: Payment operations
-  - name: Transactions
-    description: Transaction history
 
 paths:
   /:
@@ -126,6 +124,100 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: Order ID conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments:
+    get:
+      tags:
+        - Payments
+      summary: List Payments
+      description: |
+        Returns the merchant's payment orders, newest first.
+
+        **Auth required.** `X-API-Key` is mandatory for merchant appIds —
+        results are automatically scoped to the key's `app_id`, so you
+        only ever see your own orders (cross-tenant defense). Any
+        `?appId=` in the query string is ignored when a key is supplied.
+
+        Use this to power your own dashboard or reconciliation script.
+        For real-time updates, prefer webhooks over polling.
+      operationId: listPayments
+      security:
+        - apiKeyHeader: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Page size (1–100, default 20).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          required: false
+          description: Pagination offset (default 0).
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: status
+          in: query
+          required: false
+          description: |
+            Filter by payment status (e.g. `payment_started`,
+            `payment_payin_completed`, `payment_payout_completed`,
+            `payment_completed`, `payment_bounced`, `payment_expired`).
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          required: false
+          description: ISO 8601 timestamp — return payments created at or after this time.
+          schema:
+            type: string
+            format: date-time
+          example: "2026-05-01T00:00:00Z"
+        - name: toDate
+          in: query
+          required: false
+          description: ISO 8601 timestamp — return payments created at or before this time.
+          schema:
+            type: string
+            format: date-time
+          example: "2026-05-11T23:59:59Z"
+      responses:
+        '200':
+          description: Page of payments belonging to the key's app_id.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pagination]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentResponse'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total number of matching payments.
+                        example: 137
+                      limit:
+                        type: integer
+                        example: 20
+                      offset:
+                        type: integer
+                        example: 0
+        '400':
+          description: Invalid or missing API key.
           content:
             application/json:
               schema:
@@ -271,55 +363,6 @@ paths:
                 $ref: '#/components/schemas/PaymentResponse'
         '404':
           description: Payment not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /transactions:
-    get:
-      tags:
-        - Transactions
-      summary: Get Transactions by Address
-      description: Retrieves the last transactions for a wallet address
-      operationId: getTransactionsByAddress
-      parameters:
-        - name: address
-          in: query
-          required: true
-          description: Wallet address to search for
-          schema:
-            type: string
-          example: "GC56BXCNEWL6JSGKHD3RJ5HJRNKFEJQ53D3YY3SMD6XK7YPDI75BQ7FD"
-        - name: role
-          in: query
-          required: false
-          description: "Filter by role: source, destination, or any"
-          schema:
-            type: string
-            enum:
-              - source
-              - destination
-              - any
-            default: any
-        - name: limit
-          in: query
-          required: false
-          description: Max results (1-100)
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-      responses:
-        '200':
-          description: Transactions found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionsResponse'
-        '400':
-          description: Missing address parameter
           content:
             application/json:
               schema:
@@ -637,17 +680,6 @@ components:
           type: string
         metadata:
           type: object
-
-    TransactionsResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentResponse'
-        count:
-          type: integer
-          example: 10
 
     WebhookEventType:
       type: string
