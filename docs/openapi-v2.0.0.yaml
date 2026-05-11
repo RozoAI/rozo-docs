@@ -1,0 +1,710 @@
+openapi: 3.0.3
+info:
+  title: ROZO Payment API (Merchant)
+  description: |
+    Cross-chain payment processing API for merchants — USDC/USDT/EURC
+    transfers across Ethereum, Base, Polygon, BNB, Solana, Stellar.
+
+    Merchants only need the four endpoints listed below plus the two
+    outbound webhook events. All other backend endpoints (OTP,
+    registration, dashboard stats) live in the partners.rozo.ai portal,
+    not here.
+
+    ## What a merchant integration looks like
+
+    1. **Get an API key** from the merchant portal at
+       `https://partners.rozo.ai` — format `rz_live_xxxxx`. Your `appId`
+       (`merchant_<slug>` or `wallet_<slug>`) is bound to this key.
+    2. **Create a payment** — `POST /` with your `X-API-Key` header.
+       Save the returned `id` and show the buyer the deposit address
+       (`source.receiverAddress`).
+    3. **Track the payment** — either:
+        - subscribe to webhooks (recommended, see `webhooks:` section), or
+        - poll `GET /payments/{id}` / `GET /payments/order/{appId}/{orderId}`.
+    4. **Receive webhooks** — Rozo POSTs to the URL you configured in
+       the portal. Verify the HMAC signature and update your order.
+
+    ## Authentication
+
+    For merchant `appId`s (prefix `wallet_`, `merchant`, or
+    `rozomerchant`), every `POST /` **requires** the `X-API-Key` header.
+    `GET` endpoints accept the same key and scope results to that key's
+    `app_id` (cross-tenant defense).
+
+    When `X-API-Key` is present, the key's `app_id` is authoritative —
+    a stale `appId` in the request body is silently overridden, so you
+    can't accidentally write into another merchant's namespace.
+
+    Errors:
+      - `400 missing_api_key` — appId requires a key but none was provided
+      - `400 invalid_api_key` — key unknown, revoked, expired, or inactive
+  version: 2.0.0
+  x-revision-date: "2026-05-11"
+  contact:
+    email: hi@rozo.ai
+
+servers:
+  - url: https://intentapiv4.rozo.ai/functions/v1/payment-api
+    description: Production
+
+tags:
+  - name: Payments
+    description: Payment operations
+  - name: Transactions
+    description: Transaction history
+
+paths:
+  /:
+    post:
+      tags:
+        - Payments
+      summary: Create Payment
+      description: |
+        Creates a new cross-chain payment request.
+
+        **Conditional auth:** if the request's `appId` starts with `wallet_`,
+        `merchant`, or `rozomerchant`, the request **must** include header
+        `X-API-Key: rz_live_xxxxx`. Other appIds are public (no key required).
+
+        **Key is authoritative when present.** If a valid `X-API-Key` is
+        supplied, the body's `appId` is silently overridden with the key's
+        app_id — passing the wrong appId in the body is harmless as long as
+        the key is correct. The `appId` field stays in the body for legacy
+        unkeyed callers.
+
+        Errors:
+          - 400 `missing_api_key` — appId requires a key but none was provided
+          - 400 `invalid_api_key` — key is unknown, revoked, expired, or inactive
+
+        Example with key:
+        ```
+        curl -X POST https://intentapiv4.rozo.ai/functions/v1/payment-api/ \
+          -H 'Content-Type: application/json' \
+          -H 'X-API-Key: rz_live_xxxxx' \
+          -d '{"appId": "merchant_hellocoffee", ...}'
+        ```
+      operationId: createPayment
+      security:
+        - {}                  # Public for legacy appIds
+        - apiKeyHeader: []    # Required for wallet_/merchant/rozomerchant appIds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+            example:
+              appId: "rozoBridgeStellar"
+              type: "exactIn"
+              display:
+                title: "Deposit"
+                currency: "USD"
+              source:
+                chainId: 1
+                tokenSymbol: "USDT"
+                amount: "1.00"
+                tokenAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+              destination:
+                chainId: 1500
+                receiverAddress: "GC56BXCNEWL6JSGKHD3RJ5HJRNKFEJQ53D3YY3SMD6XK7YPDI75BQ7FD"
+                tokenSymbol: "USDC"
+                tokenAddress: "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"
+              metadata:
+                intent: "Deposit"
+      responses:
+        '201':
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Order ID conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}:
+    get:
+      tags:
+        - Payments
+      summary: Get Payment
+      description: |
+        Retrieves a payment by ID.
+
+        **Optional auth:** if `X-API-Key` is supplied, the payment must
+        belong to the key's app_id, otherwise 404 (cross-tenant defense).
+        Without a key, any payment id is fetchable (legacy contract).
+      operationId: getPayment
+      security:
+        - {}                  # Public (legacy)
+        - apiKeyHeader: []    # Optional, scopes lookup to key's app_id
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: Payment ID
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid API key (only when X-API-Key provided)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found, or belongs to a different app_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/order/{appId}/{orderId}:
+    get:
+      tags:
+        - Payments
+      summary: Get Payment by Order ID
+      description: |
+        Looks up a payment by the merchant-supplied `orderId` (same value
+        you passed on `POST /`). Useful for idempotency — call this on
+        retry to recover the existing payment instead of creating a
+        duplicate.
+
+        **Auth:** `X-API-Key` is recommended; the lookup is scoped to the
+        key's `app_id`. Without a key the endpoint still works for legacy
+        callers, but cross-tenant defense is disabled.
+      operationId: getPaymentByOrderId
+      security:
+        - apiKeyHeader: []
+        - {}
+      parameters:
+        - name: appId
+          in: path
+          required: true
+          description: Your app ID (e.g. `merchant_hellocoffee`).
+          schema:
+            type: string
+          example: "merchant_hellocoffee"
+        - name: orderId
+          in: path
+          required: true
+          description: The `orderId` you passed when creating the payment.
+          schema:
+            type: string
+          example: "CAFE-1768921337803"
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: No payment with that (appId, orderId) tuple
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/payin:
+    post:
+      tags:
+        - Payments
+      summary: Register Payin Transaction Hash
+      description: |
+        Tell Rozo the on-chain transaction the buyer just submitted.
+        **Optional** — Rozo also detects payins on its own via Alchemy
+        webhooks (EVM) and Stellar Horizon (Stellar). Calling this
+        endpoint just speeds up confirmation, especially on Stellar where
+        we can verify the tx through Horizon in ~5 seconds.
+
+        Pass `txHash` and the buyer's `fromAddress`. We store both and
+        kick off verification immediately.
+      operationId: registerPayin
+      security:
+        - apiKeyHeader: []
+        - {}
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [txHash, fromAddress]
+              properties:
+                txHash:
+                  type: string
+                  description: The source-chain transaction hash the buyer just submitted.
+                  example: "0xabc123..."
+                fromAddress:
+                  type: string
+                  description: Buyer's wallet address (the payin sender).
+                  example: "0xdef456..."
+      responses:
+        '200':
+          description: Payin registered. Verification continues asynchronously.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /transactions:
+    get:
+      tags:
+        - Transactions
+      summary: Get Transactions by Address
+      description: Retrieves the last transactions for a wallet address
+      operationId: getTransactionsByAddress
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Wallet address to search for
+          schema:
+            type: string
+          example: "GC56BXCNEWL6JSGKHD3RJ5HJRNKFEJQ53D3YY3SMD6XK7YPDI75BQ7FD"
+        - name: role
+          in: query
+          required: false
+          description: "Filter by role: source, destination, or any"
+          schema:
+            type: string
+            enum:
+              - source
+              - destination
+              - any
+            default: any
+        - name: limit
+          in: query
+          required: false
+          description: Max results (1-100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+        '400':
+          description: Missing address parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OUTBOUND WEBHOOKS — events Rozo POSTs TO your webhookUrl
+# Configure the URL once in https://partners.rozo.ai (or pass `webhookUrl`
+# on `POST /` per payment). Every delivery is signed HMAC-SHA256; see the
+# X-Rozo-Signature / X-Rozo-Timestamp headers below.
+# ─────────────────────────────────────────────────────────────────────────────
+webhooks:
+  paymentPayinCompleted:
+    post:
+      summary: Payin confirmed on the source chain
+      description: |
+        Sent when the buyer's payin transaction is confirmed on the
+        source chain (`status = payment_payin_completed`). The `data`
+        block is the same Payment object returned by
+        `GET /payments/{id}` — match on `data.id` to reconcile against
+        your stored order.
+
+        At-most-once delivery; dedupe on `event_id`.
+      parameters:
+        - $ref: '#/components/parameters/WebhookTimestampHeader'
+        - $ref: '#/components/parameters/WebhookSignatureHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEvent'
+            example:
+              event_id: "0a4f9b2e-1c2d-4e5f-8a6b-7c8d9e0f1a2b"
+              type: "payment_payin_completed"
+              timestamp: "2026-05-11T10:32:01Z"
+              data:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                orderId: "CAFE-1768921337803"
+                status: "payment_payin_completed"
+                source:
+                  chainId: "8453"
+                  tokenSymbol: "USDC"
+                  amount: "10.00"
+                  txHash: "0xabc..."
+                  amountReceived: "10.00"
+                  confirmedAt: "2026-05-11T10:31:55Z"
+                destination:
+                  chainId: "1500"
+                  tokenSymbol: "USDC"
+                  amount: "9.97"
+                  receiverAddress: "GC56..."
+                  txHash: null
+                  confirmedAt: null
+      responses:
+        '2XX':
+          description: Acknowledged. Any 2xx response is treated as `delivered`.
+
+  paymentPayoutCompleted:
+    post:
+      summary: Payout confirmed on the destination chain
+      description: |
+        Sent when the merchant payout transaction is confirmed on the
+        destination chain (`status = payment_payout_completed`).
+        `data.destination.txHash` and `data.destination.confirmedAt` are
+        guaranteed populated.
+
+        At-most-once delivery; dedupe on `event_id`.
+      parameters:
+        - $ref: '#/components/parameters/WebhookTimestampHeader'
+        - $ref: '#/components/parameters/WebhookSignatureHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEvent'
+      responses:
+        '2XX':
+          description: Acknowledged. Any 2xx response is treated as `delivered`.
+
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        API key issued via the merchant portal at https://partners.rozo.ai.
+        Format `rz_live_xxxxx`. Required on `POST /` when `appId` starts
+        with `wallet_`, `merchant`, or `rozomerchant`. Optional but
+        recommended on `GET` endpoints (scopes results to your app_id).
+
+  parameters:
+    WebhookTimestampHeader:
+      name: X-Rozo-Timestamp
+      in: header
+      required: true
+      description: |
+        Unix timestamp in **milliseconds** when Rozo signed the request.
+        Reject deliveries whose timestamp is more than 5 minutes from
+        your server clock (replay protection).
+      schema:
+        type: string
+        example: "1746282100000"
+    WebhookSignatureHeader:
+      name: X-Rozo-Signature
+      in: header
+      required: true
+      description: |
+        `sha256=` followed by the HMAC-SHA256 hex digest of
+        `${X-Rozo-Timestamp}.${raw_request_body}`, signed with your
+        merchant webhook secret. Use **raw body bytes** (do not
+        re-serialize) and a **constant-time** comparison.
+      schema:
+        type: string
+        example: "sha256=a1b2c3d4e5f6..."
+
+  schemas:
+    CreatePaymentRequest:
+      type: object
+      required:
+        - appId
+        - display
+        - source
+        - destination
+      properties:
+        appId:
+          type: string
+          description: Your application ID
+          example: "rozoBridgeStellar"
+        orderId:
+          type: string
+          description: Your order reference ID (for idempotency)
+        type:
+          type: string
+          enum:
+            - exactIn
+            - exactOut
+          default: exactIn
+          description: "exactIn: fee deducted from input. exactOut: fee added to input"
+        display:
+          type: object
+          required:
+            - title
+            - currency
+          properties:
+            title:
+              type: string
+              example: "Deposit"
+            description:
+              type: string
+            currency:
+              type: string
+              example: "USD"
+        source:
+          type: object
+          required:
+            - chainId
+            - tokenSymbol
+          properties:
+            chainId:
+              oneOf:
+                - type: string
+                - type: integer
+              description: "Chain ID: 1 (ETH), 137 (Polygon), 8453 (Base), 900 (Solana), 1500 (Stellar)"
+              example: 1
+            tokenSymbol:
+              type: string
+              enum:
+                - USDC
+                - USDT
+                - EURC
+              example: "USDT"
+            tokenAddress:
+              type: string
+              description: Token contract address
+            amount:
+              type: string
+              description: Amount (required for exactIn)
+              example: "1.00"
+        destination:
+          type: object
+          required:
+            - chainId
+            - receiverAddress
+            - tokenSymbol
+          properties:
+            chainId:
+              oneOf:
+                - type: string
+                - type: integer
+              example: 1500
+            receiverAddress:
+              type: string
+              description: Recipient wallet address
+              example: "GC56BXCNEWL6JSGKHD3RJ5HJRNKFEJQ53D3YY3SMD6XK7YPDI75BQ7FD"
+            receiverMemo:
+              type: string
+              description: Memo for Stellar
+            tokenSymbol:
+              type: string
+              enum:
+                - USDC
+                - USDT
+                - EURC
+              example: "USDC"
+            tokenAddress:
+              type: string
+            amount:
+              type: string
+              description: Amount (required for exactOut)
+        webhookUrl:
+          type: string
+          format: uri
+        metadata:
+          type: object
+
+    PaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        appId:
+          type: string
+        orderId:
+          type: string
+        status:
+          type: string
+          enum:
+            - payment_unpaid
+            - payment_started
+            - payment_payin_completed
+            - payment_payout_completed
+            - payment_completed
+            - payment_bounced
+            - payment_expired
+            - payment_refunded
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        type:
+          type: string
+          enum:
+            - exactIn
+            - exactOut
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        display:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            currency:
+              type: string
+        source:
+          type: object
+          properties:
+            chainId:
+              type: string
+            tokenSymbol:
+              type: string
+            tokenAddress:
+              type: string
+            amount:
+              type: string
+            receiverAddress:
+              type: string
+              description: Deposit address
+            receiverMemo:
+              type: string
+            fee:
+              type: string
+            senderAddress:
+              type: string
+            txHash:
+              type: string
+            amountReceived:
+              type: string
+            confirmedAt:
+              type: string
+              format: date-time
+        destination:
+          type: object
+          properties:
+            chainId:
+              type: string
+            receiverAddress:
+              type: string
+            receiverMemo:
+              type: string
+            tokenSymbol:
+              type: string
+            tokenAddress:
+              type: string
+            amount:
+              type: string
+            txHash:
+              type: string
+            confirmedAt:
+              type: string
+              format: date-time
+        webhookSecret:
+          type: string
+        metadata:
+          type: object
+
+    TransactionsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentResponse'
+        count:
+          type: integer
+          example: 10
+
+    WebhookEventType:
+      type: string
+      enum:
+        - payment_payin_completed
+        - payment_payout_completed
+      description: |
+        Outbound webhook event types.
+
+        | Event | Trigger |
+        |---|---|
+        | `payment_payin_completed` | Buyer's payin tx confirmed on source chain |
+        | `payment_payout_completed` | Payout tx confirmed on destination chain (terminal success) |
+
+        Failure terminals (`payment_bounced`, `payment_expired`,
+        `payment_refunded`) are NOT delivered as webhooks — poll
+        `GET /payments/{id}` for those.
+
+    WebhookEvent:
+      type: object
+      description: |
+        Outbound webhook payload. Shape is
+        `{ event_id, type, timestamp, data: PaymentResponse }`. The
+        `data` block matches the response of `GET /payments/{id}`, so
+        reconciliation is a straight key-by-key compare.
+      required: [event_id, type, timestamp, data]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          description: |
+            Globally unique delivery ID. Use as the dedup key in your
+            handler — at-most-once delivery, but network retries can
+            still cause duplicates if your endpoint times out after
+            processing.
+        type:
+          $ref: '#/components/schemas/WebhookEventType'
+        timestamp:
+          type: string
+          format: date-time
+          description: When Rozo emitted this event (ISO 8601, UTC).
+        data:
+          $ref: '#/components/schemas/PaymentResponse'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "invalidRequest"
+            message:
+              type: string
+              example: "address parameter is required"
+            details:
+              type: object
+        requestId:
+          type: string

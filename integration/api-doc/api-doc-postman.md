@@ -4,7 +4,8 @@
 
 **Latest version for merchants — Summary**
 
-* **OpenAPI spec:** [`docs/openapi.yaml`](https://github.com/RozoAI/rozo-intents-api/blob/main/docs/openapi.yaml)
+* **OpenAPI spec (v2.0.0):** [`docs/openapi-v2.0.0.yaml`](https://github.com/RozoAI/rozo-docs/blob/main/docs/openapi-v2.0.0.yaml) — hosted in this docs repo
+* **Raw download:** [`raw.githubusercontent.com/.../openapi-v2.0.0.yaml`](https://raw.githubusercontent.com/RozoAI/rozo-docs/main/docs/openapi-v2.0.0.yaml)
 * **Version:** `2.0.0` (previously `1.0.0`)
 * **Revision date:** `2026-05-11` (recorded in `x-revision-date`)
 * **This page:** [https://docs.rozo.ai/integration/api-doc/api-doc-postman](https://docs.rozo.ai/integration/api-doc/api-doc-postman)
