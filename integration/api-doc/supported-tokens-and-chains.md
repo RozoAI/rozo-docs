@@ -6,6 +6,18 @@
 >
 > Both formats are equivalent and interchangeable in all API requests.
 
+### CCTP V2 Domain Aliases
+
+If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the **`cctp:<N>` prefix** and the API will resolve it to the canonical Rozo chain ID before validation.
+
+<table><thead><tr><th width="140">Alias</th><th width="180">Resolves to chainId</th><th>Chain</th></tr></thead><tbody><tr><td><code>cctp:0</code></td><td><code>1</code></td><td>Ethereum</td></tr><tr><td><code>cctp:3</code></td><td><code>42161</code></td><td>Arbitrum</td></tr><tr><td><code>cctp:5</code></td><td><code>900</code></td><td>Solana</td></tr><tr><td><code>cctp:6</code></td><td><code>8453</code></td><td>Base</td></tr><tr><td><code>cctp:7</code></td><td><code>137</code></td><td>Polygon</td></tr><tr><td><code>cctp:27</code></td><td><code>1500</code></td><td>Stellar</td></tr></tbody></table>
+
+**Rules:**
+- The `cctp:` prefix is **required**. A bare integer (e.g. `27`) is treated as a literal `chainId` and will return `invalidChainId`.
+- Matching is case-insensitive and whitespace-trimmed (`cctp:27`, `CCTP:27`, ` Cctp:27 ` are all equivalent).
+- `cctp:25` is **not** aliased — domain `25` belongs to Codex, which is not currently supported.
+- `cctp:2` (Optimism) is not currently aliased and will be enabled separately once Optimism payout support is reviewed.
+
 ### Pay In Tokens and Chains
 
 **USDC Support (More chains coming soon)**
