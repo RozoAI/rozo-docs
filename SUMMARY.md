@@ -33,6 +33,7 @@
   * [Intent Based Bridge](products/intent-based-bridge/intent-based-bridge.md)
   * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
   * [EURC Onramp and Bridge](products/intent-based-bridge/eurc-onramp/README.md)
+* [CCTP Bridge](products/cctp-bridge/README.md)
 * [Intent Based Earn](products/intent-based-earn.md)
 * [Intent Based Payment & Transfer](products/intent-based-payment-transfer/README.md)
   * [Intent Based Payment](products/intent-based-payment-transfer/intent-based-payment.md)
