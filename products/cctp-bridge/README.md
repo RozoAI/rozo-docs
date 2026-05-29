@@ -25,9 +25,9 @@ Native USDC ↔ USDC, both directions, with **Stellar** on one side of every rou
 
 | Route | Status |
 |---|---|
-| Base ↔ Stellar | Live |
-| Ethereum ↔ Stellar | Live |
-| Solana ↔ Stellar | Live |
+| Base ↔ Stellar | Beta |
+| Ethereum ↔ Stellar | Beta |
+| Solana ↔ Stellar | Beta |
 
 ## How it works
 
