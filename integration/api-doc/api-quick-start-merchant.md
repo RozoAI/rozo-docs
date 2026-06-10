@@ -2,7 +2,7 @@
 
 Accept a USDC payment into your merchant account in two calls: create a payment, then poll for its status.
 
-App ID: your merchant `appId` (please join our discord to get one)
+App ID: your merchant `appId`. You can try the examples below with our test merchant `pos_rozostudio`, then join our discord to get your own.
 
 API Host: https://intentapiv4.rozo.ai/functions/v1
 
@@ -17,7 +17,7 @@ Base chain ID: `8453`
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "appId": "<your_merchant_app_id>",
+    "appId": "pos_rozostudio",
     "orderId": "order-'"$(date +%s)"'",
     "type": "exactIn",
     "display": {
@@ -37,7 +37,7 @@ The response returns a payment `id` and a `receiverAddress` on the source chain 
 ```json
 {
   "id": "<payment_id>",
-  "appId": "<your_merchant_app_id>",
+  "appId": "pos_rozostudio",
   "orderId": "order-1700000000",
   "status": "payment_unpaid",
   "type": "exactIn",
