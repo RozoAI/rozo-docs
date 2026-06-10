@@ -20,6 +20,8 @@
   * [ROZO Intents Tech Design](integration/api-doc/rozo-intents-tech-design.md)
   * [API Doc (POSTMAN)](integration/api-doc/api-doc-postman.md)
   * [API Quick Start](integration/api-doc/api-quick-start.md)
+  * [API Quick Start (Merchant)](integration/api-doc/api-quick-start-merchant.md)
+  * [Merchant API Keys](integration/api-doc/merchant-api-keys.md)
   * [API for Advanced Used](integration/api-doc/api-for-advanced-used/README.md)
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
     * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
