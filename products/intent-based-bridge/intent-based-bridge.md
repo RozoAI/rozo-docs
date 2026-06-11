@@ -5,7 +5,7 @@ description: >-
 icon: bridge
 ---
 
-# Intent Based Bridge
+# One-Click Bridge
 
 ## Fast
 

@@ -11,6 +11,6 @@ ROZO's bridge stack moves stablecoins across chains in one click — and powers 
 
 ## Sub-products
 
-- [**Intent Based Bridge**](intent-based-bridge.md) — One click bridging from Base to Stellar (and other supported chains).
+- [**One-Click Bridge**](intent-based-bridge.md) — One click bridging from Base to Stellar (and other supported chains).
 - [**Wallet Deposit for Apps**](intent-based-deposit.md) — Generate unique deposit addresses for your app to receive USDC with one API call.
 - [**EURC Onramp and Bridge**](eurc-onramp/README.md) — Buy EURC with bank transfer or bridge from Base.
