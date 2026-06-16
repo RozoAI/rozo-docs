@@ -87,6 +87,10 @@ We may disclose your information if required to do so by law or in response to:
 
 In the event of a merger, acquisition, or sale of assets, your information may be transferred to the acquiring entity.
 
+### 4.4 Analytics
+
+We use PostHog and other analytics tools to understand product usage, improve reliability, troubleshoot issues, and measure feature adoption. Analytics data may include device information, application events, wallet addresses, transaction metadata, and account identifiers. We do not collect or store private keys, seed phrases, or other wallet secrets through analytics services.
+
 ## 5. Data Security
 
 We implement appropriate technical and organizational measures to protect your personal information against:
