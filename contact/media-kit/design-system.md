@@ -8,7 +8,7 @@ description: >-
 
 # Design System
 
-> **Version:** `alpha`. Tokens may change without notice during alpha. Hex values are sRGB. The canonical source is the [ROZO Design project](https://claude.ai/design/p/d3946b1e-f82b-4212-b5df-40a064d8138a); this page mirrors it for external developers.
+> **Version:** `alpha`. Tokens may change without notice during alpha. Hex values are sRGB.
 
 ## Overview
 
