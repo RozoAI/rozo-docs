@@ -55,6 +55,7 @@
 * [Contracts & Audits](contact/contracts-and-audits.md)
 * [Media Kit](contact/media-kit/README.md)
   * [Design Prompt](contact/media-kit/design-prompt.md)
+  * [Design System](contact/media-kit/design-system.md)
 * [Contact us](contact/contact-us/README.md)
   * [Discord](https://discord.com/invite/EfWejgTbuU)
   * [Github](https://github.com/rozoai)
