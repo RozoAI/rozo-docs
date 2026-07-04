@@ -294,7 +294,7 @@ We build infrastructure that lets anyone earn yield and make payments — withou
 **Try ROZO:**
 
 * [ROZO Earn](https://earn.rozo.ai) — Earn yield on USDC&#x20;
-* [ROZO Bridge](https://intents.rozo.ai/bridge) — Intent based bridge
+* [ROZO Bridge](https://intents.rozo.ai/bridge?utm_source=docs&utm_medium=referral) — Intent based bridge
 
 ***
 
