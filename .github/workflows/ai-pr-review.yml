@@ -1,0 +1,131 @@
+# AI PR review — comments P0/P1/P2 and labels `ai-review-passed` when clean.
+#
+# ┌───────────────────────────────────────────────────────────────────────────┐
+# │ SECURITY BOUNDARY — DO NOT change `pull_request` to `pull_request_target`. │
+# └───────────────────────────────────────────────────────────────────────────┘
+# This workflow runs the review script from the base repo's default branch only.
+# PR code is fetched only to compute a diff; it is never executed with secrets.
+#
+# Auto-approve is limited to trusted contributors configured outside this file
+# (repo/org variable AI_REVIEW_TRUSTED_AUTHORS). The script only approves when
+# the PR author is trusted, the review has zero P0 findings, and a separate
+# AI_REVIEW_APPROVER_TOKEN secret is configured.
+
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+# One in-flight review per PR; a new push/comment cancels the previous run.
+concurrency:
+  group: ai-pr-review-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+    steps:
+      - name: Checkout trusted review script from default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          path: trusted
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve PR metadata
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            {
+              echo "number=${{ github.event.pull_request.number }}"
+              echo "author=${{ github.event.pull_request.user.login }}"
+              echo "base_ref=${{ github.event.pull_request.base.ref }}"
+              echo "head_repo=${{ github.event.pull_request.head.repo.full_name }}"
+              echo "head_ref=${{ github.event.pull_request.head.ref }}"
+            } >> "$GITHUB_OUTPUT"
+          else
+            pr_number="${{ github.event.issue.number }}"
+            pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}")"
+            {
+              echo "number=${pr_number}"
+              echo "author=$(printf '%s' "$pr_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["user"]["login"])')"
+              echo "base_ref=$(printf '%s' "$pr_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["base"]["ref"])')"
+              echo "head_repo=$(printf '%s' "$pr_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["head"]["repo"]["full_name"])')"
+              echo "head_ref=$(printf '%s' "$pr_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["head"]["ref"])')"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trusted contributor gate
+        id: trusted
+        env:
+          TRUSTED_AUTHORS: ${{ vars.AI_REVIEW_TRUSTED_AUTHORS }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          trusted = {x.strip().lower() for x in os.environ.get("TRUSTED_AUTHORS", "").split(",") if x.strip()}
+          pr_author = os.environ.get("PR_AUTHOR", "").lower()
+          comment_author = os.environ.get("COMMENT_AUTHOR", "").lower()
+          event_name = os.environ.get("EVENT_NAME", "")
+          ok = pr_author in trusted and (event_name != "issue_comment" or comment_author in trusted)
+          print(f"ok={'true' if ok else 'false'}")
+          PY
+
+      - name: Compute PR diff
+        if: steps.trusted.outputs.ok == 'true'
+        run: |
+          cd trusted
+          git remote add pr "https://github.com/${{ steps.pr.outputs.head_repo }}.git" 2>/dev/null || \
+            git remote set-url pr "https://github.com/${{ steps.pr.outputs.head_repo }}.git"
+          git fetch --no-tags origin "${{ steps.pr.outputs.base_ref }}" >/dev/null 2>&1
+          git fetch --no-tags pr "${{ steps.pr.outputs.head_ref }}" >/dev/null 2>&1
+          git diff "origin/${{ steps.pr.outputs.base_ref }}...FETCH_HEAD" > /tmp/pr.diff
+          echo "diff bytes: $(wc -c < /tmp/pr.diff)"
+
+      - name: AI review
+        if: steps.trusted.outputs.ok == 'true'
+        env:
+          # Anthropic key comes from ORG/repo secrets. Never hardcode it here and
+          # never echo it. On fork PRs this secret is simply absent (see boundary
+          # note above) and the script exits cleanly without reviewing.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Actions-provided token — no PAT needed for same-repo comment/label.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Separate fine-grained PAT for actual approvals. Leave unset to get
+          # comments + labels without approving.
+          AI_REVIEW_APPROVER_TOKEN: ${{ secrets.AI_REVIEW_APPROVER_TOKEN }}
+          AI_REVIEW_TRUSTED_AUTHORS: ${{ vars.AI_REVIEW_TRUSTED_AUTHORS }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          # Budget guardrails (override per repo if needed).
+          AI_REVIEW_DAILY_USD_CAP: "10.00"
+          AI_REVIEW_MAX_TOKENS: "4000"
+          AI_REVIEW_MAX_RETRIES: "3"
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "No ANTHROPIC_API_KEY in this context (likely a fork PR) — skipping AI review."
+            echo "AI review skipped: no API key in this context (fork PR safety boundary)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 "${GITHUB_WORKSPACE}/trusted/.github/ai_pr_review.py" --diff-file /tmp/pr.diff
