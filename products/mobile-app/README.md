@@ -4,6 +4,8 @@ icon: mobile
 
 # Mobile App
 
+## ROZO Wallet
+
 Current mobile app is invite only.  Please contact us if you want to earn in our mobile app.
 
 
@@ -15,6 +17,18 @@ Current mobile app is invite only.  Please contact us if you want to earn in our
 ### Android&#x20;
 
 {% embed url="https://play.google.com/store/apps/details?id=com.rozoapp" %}
+
+## ROZO POS (Merchant App)
+
+The merchant-side app for accepting multi-chain payments at the point of sale.
+
+### iOS App
+
+{% embed url="https://apps.apple.com/gr/app/rozo-merchant/id6776572346" %}
+
+### Android&#x20;
+
+{% embed url="https://play.google.com/store/apps/details?id=ai.rozo.merchant" %}
 
 ### Support and Contact Us
 
