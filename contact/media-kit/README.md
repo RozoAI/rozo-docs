@@ -20,30 +20,30 @@ Here is the logo rozo-square-black.png on our Twitter. Attached the image URL on
 
 [https://imagedelivery.net/AKLvTMvIg6yc9W08fHl1Tg/fdfef53e-91c2-4abc-aec0-6902a26d6c00/80x](https://imagedelivery.net/AKLvTMvIg6yc9W08fHl1Tg/fdfef53e-91c2-4abc-aec0-6902a26d6c00/80x)
 
-{% file src="../../.gitbook/assets/rozo-text-black (1).png" %}
+{% file src="../../.gitbook/assets/rozo-text-black.png" %}
 
-{% file src="../../.gitbook/assets/rozo-transparent-black (1).png" %}
+{% file src="../../.gitbook/assets/rozo-transparent-black.png" %}
 
-{% file src="../../.gitbook/assets/rozo-text-white (1).png" %}
+{% file src="../../.gitbook/assets/rozo-text-white.png" %}
 
-{% file src="../../.gitbook/assets/rozo-square-black (1).png" %}
+{% file src="../../.gitbook/assets/rozo-square-black.png" %}
 
-{% file src="../../.gitbook/assets/rozo-square-black (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-square-black.svg" %}
 
-{% file src="../../.gitbook/assets/rozo-square-text (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-square-text.svg" %}
 
-{% file src="../../.gitbook/assets/rozo-text-white (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-text-white.svg" %}
 
-{% file src="../../.gitbook/assets/rozo-square-text (1).png" %}
+{% file src="../../.gitbook/assets/rozo-square-text.png" %}
 
-{% file src="../../.gitbook/assets/rozo-transparent-white (1).png" %}
+{% file src="../../.gitbook/assets/rozo-transparent-white.png" %}
 
-{% file src="../../.gitbook/assets/rozo-square-text-black (1).png" %}
+{% file src="../../.gitbook/assets/rozo-square-text-black.png" %}
 
-{% file src="../../.gitbook/assets/rozo-text-black (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-text-black.svg" %}
 
-{% file src="../../.gitbook/assets/rozo-square-text-black (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-square-text-black.svg" %}
 
-{% file src="../../.gitbook/assets/rozo-square-white (1).png" %}
+{% file src="../../.gitbook/assets/rozo-square-white.png" %}
 
-{% file src="../../.gitbook/assets/rozo-square-white (1).svg" %}
+{% file src="../../.gitbook/assets/rozo-square-white.svg" %}

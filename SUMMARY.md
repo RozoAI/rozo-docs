@@ -46,7 +46,7 @@
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
 
-## TESTS <a href="#tests" id="tests"></a>
+## TESTS
 
 * [Base Sepolia → Stellar Testnet](testnet/README.md)
 

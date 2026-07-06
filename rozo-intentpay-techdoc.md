@@ -1,4 +1,4 @@
-# ROZO Intents Technical Architecture Document
+# ROZO Intent Pay Tech Doc
 
 <sub>Updated: 2026-05-08</sub>
 
@@ -6,10 +6,10 @@
 
 This revision deepens the technical architecture:
 
-- Added deterministic invoice-resolution details, using OpenRouter/Coinbase Commerce as the first implementation and keeping the same pattern extensible to future invoice sources such as Stripe invoices.
-- Added ROZO-owned LP inventory and asynchronous Stellar USDC → Base USDC rebalance, so checkout latency is optimized for payment SLA rather than bridge finality.
-- Expanded failure modes to cover malformed invoices, expired charges, partial payments, duplicate submissions, LP insufficiency, network errors, provider delays, bridge/rebalance delays, and refund paths.
-- Clarified Rewards/cashback as a lightweight account-based discount flow for now, kept separate from the core payment settlement path.
+* Added deterministic invoice-resolution details, using OpenRouter/Coinbase Commerce as the first implementation and keeping the same pattern extensible to future invoice sources such as Stripe invoices.
+* Added ROZO-owned LP inventory and asynchronous Stellar USDC → Base USDC rebalance, so checkout latency is optimized for payment SLA rather than bridge finality.
+* Expanded failure modes to cover malformed invoices, expired charges, partial payments, duplicate submissions, LP insufficiency, network errors, provider delays, bridge/rebalance delays, and refund paths.
+* Clarified Rewards/cashback as a lightweight account-based discount flow for now, kept separate from the core payment settlement path.
 
 ## 1. Summary
 
@@ -27,16 +27,14 @@ All of it runs from a Stellar-native user experience. No provider partnership re
 
 Existing SCF #38 infrastructure references:
 
-- [Hacken security audit](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
-- [Dune dashboard (live)](https://dune.com/rozointents/stellar)
+* [Hacken security audit](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
+* [Dune dashboard (live)](https://dune.com/rozointents/stellar)
 
----
-
+***
 
 ## 2. System Architecture
 
-<figure><img src="assets/permissionlesspay-vs.png" alt="Permissionless Pay architecture"></figure>
-
+<figure><img src=".gitbook/assets/permissionlesspay-vs.png" alt="Permissionless Pay architecture"><figcaption></figcaption></figure>
 
 ### 2.1 Component Overview
 
@@ -60,37 +58,37 @@ Existing SCF #38 infrastructure references:
 
 ### 2.2 Components
 
-| Component | Status |
-|---|---|
-| Stablecoin Abstraction API (Stellar↔Base sub-second settlement) | ✅ Production, Hacken-audited |
-| Soroban PayIn / PayOut contracts | ✅ Production |
-| ROZO settlement account for AI checkout | 🆕 To build |
-| ROZO-owned LP inventory for Base-side advance | 🆕 To build |
-| Passkey C-address wallet support | 🆕 To build |
-| Solver / liquidity routing | ✅ Production |
-| Public Dune dashboard + Hacken audit report for SCF #38 infrastructure | ✅ Live |
-| Intent Extraction Layer | 🆕 To build |
-| Settlement Adapter (Coinbase Commerce + Base USDC path) | 🆕 To build |
-| Rewards / cashback design (account-based discount flow) | 🆕 To build |
-| Mobile-friendly dapp for AI purchase flow | 🆕 To build |
+| Component                                                              | Status                       |
+| ---------------------------------------------------------------------- | ---------------------------- |
+| Stablecoin Abstraction API (Stellar↔Base sub-second settlement)        | ✅ Production, Hacken-audited |
+| Soroban PayIn / PayOut contracts                                       | ✅ Production                 |
+| ROZO settlement account for AI checkout                                | 🆕 To build                  |
+| ROZO-owned LP inventory for Base-side advance                          | 🆕 To build                  |
+| Passkey C-address wallet support                                       | 🆕 To build                  |
+| Solver / liquidity routing                                             | ✅ Production                 |
+| Public Dune dashboard + Hacken audit report for SCF #38 infrastructure | ✅ Live                       |
+| Intent Extraction Layer                                                | 🆕 To build                  |
+| Settlement Adapter (Coinbase Commerce + Base USDC path)                | 🆕 To build                  |
+| Rewards / cashback design (account-based discount flow)                | 🆕 To build                  |
+| Mobile-friendly dapp for AI purchase flow                              | 🆕 To build                  |
 
-
----
+***
 
 ## 3. Why This Architecture Is Permissionless
 
 The unlock: OpenRouter and most AI providers already accept crypto via Coinbase Commerce. Their checkout flow exposes a unique pay-to address, amount, asset, destination chain, charge status, and expiry. The unique charge address/reference is what correlates the payment to the order. They do not need to know that the user started from Stellar, as long as the exact funds settle to the Coinbase Commerce charge.
 
 What ROZO does:
-- Parse the Coinbase Commerce checkout (or the invoice URL the user pastes) into a structured intent
-- On the Stellar side, receive USDC from the user into a ROZO settlement account
-- On the destination side, use ROZO-owned LP inventory to settle the matching amount to Coinbase Commerce's Base USDC endpoint
-- Rebalance Stellar USDC to Base USDC asynchronously after the provider-side payment is completed
-- Confirm settlement back to the user, then apply Rewards/discounts where enabled
+
+* Parse the Coinbase Commerce checkout (or the invoice URL the user pastes) into a structured intent
+* On the Stellar side, receive USDC from the user into a ROZO settlement account
+* On the destination side, use ROZO-owned LP inventory to settle the matching amount to Coinbase Commerce's Base USDC endpoint
+* Rebalance Stellar USDC to Base USDC asynchronously after the provider-side payment is completed
+* Confirm settlement back to the user, then apply Rewards/discounts where enabled
 
 The integration scales horizontally — every new AI service that accepts Coinbase Commerce becomes payable from Stellar without new provider work
 
----
+***
 
 ## 4. Detailed Component Design
 
@@ -129,6 +127,7 @@ interface PaymentIntent {
 ```
 
 Extraction sources:
+
 1. **URL paste** — fetch the public Coinbase Commerce charge, extract `{payTo, amount, asset, chain, chargeId, expiresAt}`, verify `NEW` status
 2. **Natural-language** — LLM parses to a known provider's top-up; structured intent always shown for human confirmation before signing
 3. **Wallet deeplink** — partner SDK constructs the intent client-side, no parsing needed
@@ -164,10 +163,10 @@ Coinbase Commerce confirms PAID → provider credits user →
 ROZO rebalances Stellar USDC to Base USDC asynchronously → Rewards/discount applied where enabled
 ```
 
-- **Speed:** target payment-grade SLA measured in seconds; user does not wait for Stellar-to-Base bridge finality
-- **Liquidity:** uses ROZO-owned prefunded LP inventory for provider-side payment advance
-- **Rebalancing:** replenishes Base-side LP inventory asynchronously through the existing ROZO Intent API for Stellar USDC → Base USDC bridge/rebalance
-- **Risk:** ROZO is exposed between Stellar payment verification, Base-side Coinbase Commerce payment, and later rebalance; mitigated by per-tx ceiling, LP inventory limits, circuit breakers, retry logic, and reconciliation monitoring
+* **Speed:** target payment-grade SLA measured in seconds; user does not wait for Stellar-to-Base bridge finality
+* **Liquidity:** uses ROZO-owned prefunded LP inventory for provider-side payment advance
+* **Rebalancing:** replenishes Base-side LP inventory asynchronously through the existing ROZO Intent API for Stellar USDC → Base USDC bridge/rebalance
+* **Risk:** ROZO is exposed between Stellar payment verification, Base-side Coinbase Commerce payment, and later rebalance; mitigated by per-tx ceiling, LP inventory limits, circuit breakers, retry logic, and reconciliation monitoring
 
 ### 4.3 Liquidity Settlement and Rebalancing
 
@@ -202,7 +201,7 @@ Sybil resistance: per-purchase rate, minimum purchase size, per-account/per-wind
 
 Extends the existing #38 SDK with `payAiService(intent)`, a wallet-side UI primitive showing intent + Rewards preview, webhook hooks for "purchase complete" notifications, and a partner-onboarding flow (< 1 week kickoff to live). We are not building wallets — we are giving wallets a single SDK call to add AI-purchase as a feature.
 
----
+***
 
 ## 5. Data Flows & State Machines
 
@@ -258,48 +257,45 @@ rewards_failed
 
 ### 5.3 Edge Cases & Mitigations
 
-| Edge case | Handling |
-|---|---|
-| Malformed invoice URL | Reject before signing; show a retry prompt and ask the user to paste a fresh provider URL |
-| Coinbase Commerce charge fetch returns 4xx / 5xx | Do not create a payable intent; retry fetch where safe, otherwise ask user to refresh the invoice |
-| Charge expires after parse, before user confirms | Re-fetch on confirm click; if expired, show "this invoice expired, please get a new one" with a prefilled retry |
-| Missing or changed reference / charge ID | Block signing; payment-critical reference fields must be preserved from provider data |
-| User edits the parsed intent | Treated as a new intent; full re-validation + re-confirm |
-| User has insufficient Stellar USDC | Pre-flight balance check; offer one-click bridge from Base USDC via existing #38 path |
-| Partial Stellar payment | Keep order in `partial_payment`; ask user to top up or initiate refund/manual review depending on amount and timeout |
-| Duplicate payment / duplicate submit | Idempotency key and charge ID prevent double settlement; duplicate Stellar payment is flagged for refund/manual review |
-| LP inventory insufficient | Do not advance provider-side payment; throttle new orders and show retry timing until inventory is replenished |
-| Settlement Adapter fails on Base (gas spike, RPC failure) | Retry with exponential backoff; if retries fail, mark `provider_failed` / `refund_required` and reconcile the Stellar-side funds |
-| Stellar Horizon/RPC/network failure | Do not mark `stellar_paid` until transaction can be independently verified; user sees pending/retry state |
-| Bridge/rebalance delayed | User purchase remains complete after provider fulfillment; LP inventory stays marked `bridge_pending` until rebalance completes |
-| Bridge/rebalance failed | Retry alternate route or manual rebalance; no user action required unless refund is triggered before provider fulfillment |
-| Coinbase Commerce charge confirms but provider doesn't credit user | Record dispute; user-facing support flow; ROZO pursues via Coinbase Commerce dispute mechanics — tracked publicly on dashboard |
-| Rewards action fails | Settlement is independent of Rewards; user's purchase still completes; Rewards are retried or backfilled |
-| Provider not on allowlist | UI shows a clear "we don't recognize this provider — paying anyway is at your own risk" gate; user explicit opt-in |
-| Sybil attempts to farm Rewards via tiny purchases | Per-purchase minimum + per-account-per-window rate-limit + dashboard abuse monitoring |
+| Edge case                                                          | Handling                                                                                                                         |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Malformed invoice URL                                              | Reject before signing; show a retry prompt and ask the user to paste a fresh provider URL                                        |
+| Coinbase Commerce charge fetch returns 4xx / 5xx                   | Do not create a payable intent; retry fetch where safe, otherwise ask user to refresh the invoice                                |
+| Charge expires after parse, before user confirms                   | Re-fetch on confirm click; if expired, show "this invoice expired, please get a new one" with a prefilled retry                  |
+| Missing or changed reference / charge ID                           | Block signing; payment-critical reference fields must be preserved from provider data                                            |
+| User edits the parsed intent                                       | Treated as a new intent; full re-validation + re-confirm                                                                         |
+| User has insufficient Stellar USDC                                 | Pre-flight balance check; offer one-click bridge from Base USDC via existing #38 path                                            |
+| Partial Stellar payment                                            | Keep order in `partial_payment`; ask user to top up or initiate refund/manual review depending on amount and timeout             |
+| Duplicate payment / duplicate submit                               | Idempotency key and charge ID prevent double settlement; duplicate Stellar payment is flagged for refund/manual review           |
+| LP inventory insufficient                                          | Do not advance provider-side payment; throttle new orders and show retry timing until inventory is replenished                   |
+| Settlement Adapter fails on Base (gas spike, RPC failure)          | Retry with exponential backoff; if retries fail, mark `provider_failed` / `refund_required` and reconcile the Stellar-side funds |
+| Stellar Horizon/RPC/network failure                                | Do not mark `stellar_paid` until transaction can be independently verified; user sees pending/retry state                        |
+| Bridge/rebalance delayed                                           | User purchase remains complete after provider fulfillment; LP inventory stays marked `bridge_pending` until rebalance completes  |
+| Bridge/rebalance failed                                            | Retry alternate route or manual rebalance; no user action required unless refund is triggered before provider fulfillment        |
+| Coinbase Commerce charge confirms but provider doesn't credit user | Record dispute; user-facing support flow; ROZO pursues via Coinbase Commerce dispute mechanics — tracked publicly on dashboard   |
+| Rewards action fails                                               | Settlement is independent of Rewards; user's purchase still completes; Rewards are retried or backfilled                         |
+| Provider not on allowlist                                          | UI shows a clear "we don't recognize this provider — paying anyway is at your own risk" gate; user explicit opt-in               |
+| Sybil attempts to farm Rewards via tiny purchases                  | Per-purchase minimum + per-account-per-window rate-limit + dashboard abuse monitoring                                            |
 
----
+***
 
 ## 6. Stellar-Specific Design Choices
 
 A few choices are deliberately Stellar-native:
 
 1. User experience on Stellar mainnet. The user signs on Stellar, pays Stellar USDC, and sees a Stellar-side payment record. Base is used for OpenRouter/Coinbase Commerce settlement behind the scenes, but the user does not operate the bridge or switch chains.
-
 2. ROZO settlement account for checkout SLA. For the OpenRouter flow, Stellar USDC currently enters a ROZO settlement account. ROZO verifies that payment before advancing Base-side provider settlement from its own LP inventory.
-
 3. Rewards as a separate checkout discount path. Rewards can start account-based for repeat-purchase discounts and dashboard reporting. This keeps rewards separate from payment settlement, so reward operations never block a successful AI purchase.
-
 4. Coinbase Commerce as the permissionless merchant rail. Coinbase Commerce is the publicly-supported crypto checkout used by merchants beyond AI. Once ROZO ships this for OpenRouter, the same architecture extends to any Coinbase-Commerce-accepting merchant without requiring provider-side Stellar integration.
 
----
+***
 
 ## 8. References
 
-- [ROZO production data (live)](https://dune.com/rozointents/stellar)
-- [Hacken security audit (March 2026)](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
-- [ROZO website](https://rozo.ai/)
-- [ROZO GitHub](https://github.com/rozoai)
-- [SCF #38 award page](https://communityfund.stellar.org/projects/recN7Zf3kGBRIHVQy)
+* [ROZO production data (live)](https://dune.com/rozointents/stellar)
+* [Hacken security audit (March 2026)](https://hacken.io/audits/rozo/sca-rozo-sdf-audit-mar2026/)
+* [ROZO website](https://rozo.ai/)
+* [ROZO GitHub](https://github.com/rozoai)
+* [SCF #38 award page](https://communityfund.stellar.org/projects/recN7Zf3kGBRIHVQy)
 
----
+***

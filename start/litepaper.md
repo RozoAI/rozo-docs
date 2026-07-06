@@ -8,7 +8,7 @@ Rozo is building the Visa for crypto-native payments — enabling users to tap a
 
 We hide the complexity, and it's referred as ROZO Intents (intent bsed) or stablecoin abstractions.
 
-Intents based is the way to transact with others focusing on outcomes not processes.  As the user, you only need to declare an end result without stating how to accomplish it.
+Intents based is the way to transact with others focusing on outcomes not processes. As the user, you only need to declare an end result without stating how to accomplish it.
 
 ### 1. 🎯 The Problem: Fragmented Stablecoin Payments
 
@@ -19,8 +19,6 @@ Crypto users and merchants face overwhelming fragmentation:
 * Current crypto payments require multi-step processes: wallet approvals, token bridging, and manual chain switching.
 
 This fragmentation severely limits crypto’s usability in real-world commerce — from cafés and coworking spaces to online SaaS and AI agents.
-
-<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 ### 2. 🧠 Solution: Intent-Based Stablecoin Abstraction
 

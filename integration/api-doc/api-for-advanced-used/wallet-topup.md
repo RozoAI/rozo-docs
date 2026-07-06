@@ -12,7 +12,7 @@ The `anyAmount` payment type allows users to send any amount without specifying 
 
 ## Wallet Top-up v2 (Fixed address, Any amount)
 
-For multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon) with a fixed deposit address, see the [Wallet Deposit API](../deposit-api.md).
+For multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon) with a fixed deposit address, see the [Wallet Deposit API](https://github.com/RozoAI/rozo-docs/blob/main/integration/api-doc/deposit-api.md).
 
 ## Use Cases
 
@@ -22,9 +22,9 @@ For multi-chain deposit support (Ethereum, Arbitrum, Base, BSC, Polygon) with a 
 
 ## Supported Amount Range
 
-| Limit   | Value       |
-| ------- | ----------- |
-| Minimum | $0.02 USDC  |
+| Limit   | Value        |
+| ------- | ------------ |
+| Minimum | $0.02 USDC   |
 | Maximum | $10,000 USDC |
 
 Amounts outside this range will be rejected with `amountTooLow` or `amountTooHigh` error codes. For custom limits, please contact us.
@@ -109,28 +109,28 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 
 ## Supported Source Chains
 
-- `1` Ethereum
-- `42161` Arbitrum
-- `8453` Base
-- `56` BSC
-- `137` Polygon
+* `1` Ethereum
+* `42161` Arbitrum
+* `8453` Base
+* `56` BSC
+* `137` Polygon
 
 ## Supported Source Tokens
 
-- `USDC`
-- `USDT`
+* `USDC`
+* `USDT`
 
 ## Destination Chain
 
-- `1500` or `stellar`
+* `1500` or `stellar`
 
 ## Request Notes
 
-- `source.chainId` must be one of the supported EVM source chains above.
-- `source.tokenSymbol` can be `USDC` or `USDT`.
-- `destination.chainId` must be `1500` or `stellar`.
-- `destination.receiverAddress` must be a valid Stellar address.
-- Current examples use Stellar `USDC` as the destination token.
+* `source.chainId` must be one of the supported EVM source chains above.
+* `source.tokenSymbol` can be `USDC` or `USDT`.
+* `destination.chainId` must be `1500` or `stellar`.
+* `destination.receiverAddress` must be a valid Stellar address.
+* Current examples use Stellar `USDC` as the destination token.
 
 For the broader token and chain matrix, see [Supported Tokens and Chains](../supported-tokens-and-chains.md).
 
@@ -182,7 +182,7 @@ The payment record is updated:
 | Error Code              | Description                                      |
 | ----------------------- | ------------------------------------------------ |
 | `amountTooLow`          | Received amount is below $0.02 USDC              |
-| `amountTooHigh`         | Received amount exceeds $10,000 USDC              |
+| `amountTooHigh`         | Received amount exceeds $10,000 USDC             |
 | `insufficientLiquidity` | Destination chain lacks liquidity for the payout |
 
 ## Best Practices

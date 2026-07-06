@@ -1,9 +1,9 @@
-# Tests — Base Sepolia → Stellar Testnet
+# Base Sepolia → Stellar Testnet
 
 End-to-end testnet bridges from **Base Sepolia USDC** to **Stellar testnet USDC**, covering both Stellar destination types:
 
-- **G-address** (classic Stellar account) — payout via Horizon `Operation.payment`
-- **C-address** (Soroban smart-contract account, e.g. smart wallets, AMMs) — payout via the **Stellar Asset Contract (SAC)** `transfer(from, to, i128)` over Soroban RPC
+* **G-address** (classic Stellar account) — payout via Horizon `Operation.payment`
+* **C-address** (Soroban smart-contract account, e.g. smart wallets, AMMs) — payout via the **Stellar Asset Contract (SAC)** `transfer(from, to, i128)` over Soroban RPC
 
 Both flows hit the public testnet API at:
 
@@ -13,14 +13,14 @@ https://intentapitestnet.rozo.ai
 
 No auth header required. USDC only. Amount range 0.01–1.00. Order TTL 10 min.
 
----
+***
 
 ## Scripts
 
-| Script | Destination | Default amount |
-|---|---|---|
-| [`testnet-base-to-stellar.sh`](./testnet-base-to-stellar.sh) | G-address (`G…`) | `0.01` |
-| [`testnet-base-to-stellar-c.sh`](./testnet-base-to-stellar-c.sh) | C-address (`C…`) | `0.02` |
+| Script                                                                                                               | Destination      | Default amount |
+| -------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------- |
+| [`testnet-base-to-stellar.sh`](https://github.com/RozoAI/rozo-docs/blob/main/testnet/testnet-base-to-stellar.sh)     | G-address (`G…`) | `0.01`         |
+| [`testnet-base-to-stellar-c.sh`](https://github.com/RozoAI/rozo-docs/blob/main/testnet/testnet-base-to-stellar-c.sh) | C-address (`C…`) | `0.02`         |
 
 Both scripts:
 
@@ -29,7 +29,7 @@ Both scripts:
 3. Either pause for a manual deposit, or — with `AUTO=1` — auto-broadcast using the test keys in `.env.dev`.
 4. Poll `GET /payments/{id}` until `payment_completed`, `payment_bounced`, or `payment_expired`.
 
----
+***
 
 ## Quick start
 
@@ -49,19 +49,19 @@ Override the C-address destination:
 AUTO=1 bash testnet/testnet-base-to-stellar-c.sh 0.02 CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
 ```
 
----
+***
 
 ## `.env.dev` requirements
 
-| Variable | Purpose |
-|---|---|
+| Variable                                                | Purpose                           |
+| ------------------------------------------------------- | --------------------------------- |
 | `TEST_EVM_PAYER_PRIVATE_KEY` + `TEST_EVM_PAYER_ADDRESS` | Source-side signer (Base Sepolia) |
-| `TEST_STELLAR_RECEIVER_ADDRESS` | Default G-address destination |
-| `TEST_STELLAR_C_RECEIVER_ADDRESS` | Default C-address destination |
+| `TEST_STELLAR_RECEIVER_ADDRESS`                         | Default G-address destination     |
+| `TEST_STELLAR_C_RECEIVER_ADDRESS`                       | Default C-address destination     |
 
 Generate fresh test keys: `npx tsx scripts/gen-hub-keys.ts --test-wallets`. Fund payer at the [Circle USDC faucet](https://faucet.circle.com/) and [Alchemy Base Sepolia faucet](https://www.alchemy.com/faucets/base-sepolia).
 
----
+***
 
 ## What's different about the C-address payout
 
@@ -73,13 +73,13 @@ A Stellar **C-address** is a Soroban contract identifier, not a classic account.
 
 The order schema is identical for both — clients pass `destination.receiverAddress` as either a `G…` or a `C…` and the API routes correctly.
 
----
+***
 
 ## Verified end-to-end run
 
 A run of `testnet-base-to-stellar-c.sh 0.02` against `CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV`:
 
-```text
+```
 Payment id : pay_ewHL66ke5XdqP7GLZ8xnkVPh
 Send TO    : 0x4843B70de3Aa77CFbfDA0BAf468e3C4f32B1FA34
 Send AMOUNT: 0.03 USDC (Base Sepolia)   ← 0.02 + $0.01 collision step
@@ -89,14 +89,14 @@ Dest C-addr: CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
 [2] status = payment_completed
 ```
 
-| Leg | Tx hash | Confirmation |
-|---|---|---|
-| Base Sepolia payin (USDC → hub) | `0x92d4ed6ab6270c9d7e0db4b251ccd2c8aef41f9be311678491e6cf6caa199237` | block 41065985, success |
-| Stellar payout (SAC `transfer` → C-address) | `e7eedc04fb5605550a0e5c8c98ad310fe26f93b3bee5c6bf65af24d6477c4572` | ledger 2378571, SUCCESS, 0.0300000 USDC credited to the contract |
+| Leg                                         | Tx hash                                                              | Confirmation                                                     |
+| ------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Base Sepolia payin (USDC → hub)             | `0x92d4ed6ab6270c9d7e0db4b251ccd2c8aef41f9be311678491e6cf6caa199237` | block 41065985, success                                          |
+| Stellar payout (SAC `transfer` → C-address) | `e7eedc04fb5605550a0e5c8c98ad310fe26f93b3bee5c6bf65af24d6477c4572`   | ledger 2378571, SUCCESS, 0.0300000 USDC credited to the contract |
 
-End-to-end time: ~10 seconds.
+End-to-end time: \~10 seconds.
 
----
+***
 
 ## Status transitions
 
