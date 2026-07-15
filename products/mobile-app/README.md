@@ -12,7 +12,7 @@ Current mobile app is invite only.  Please contact us if you want to earn in our
 
 ### iOS App
 
-{% embed url="https://apps.apple.com/us/app/rozo/id6754191938" %}
+{% embed url="https://apps.apple.com/app/id6754191938" %}
 
 ### Android&#x20;
 
@@ -24,7 +24,7 @@ The merchant-side app for accepting multi-chain payments at the point of sale.
 
 ### iOS App
 
-{% embed url="https://apps.apple.com/gr/app/rozo-merchant/id6776572346" %}
+{% embed url="https://apps.apple.com/app/id6776572346" %}
 
 ### Android&#x20;
 
