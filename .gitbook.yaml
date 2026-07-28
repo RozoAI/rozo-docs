@@ -1,0 +1,22 @@
+## GitBook site configuration.
+##
+## `redirects` exists to clear the "Not found (404)" URLs Google Search Console
+## reports for docs.rozo.ai. Those paths are directories that live in this repo
+## but are absent from SUMMARY.md, so GitBook never publishes them — yet Google
+## discovered them through old links and keeps re-crawling them.
+##
+## Only paths with a genuine replacement page are redirected. Every destination
+## below was verified to return HTTP 200. Deliberately left as 404, because no
+## meaningful destination exists:
+##   /blogs                                  — unpublished drafts (en/es/zh)
+##   /products-1                             — "Coming soon" stub
+##   /integration/api-doc/api-for-advanced-used — parent path, never had a page
+##
+## Source and destination are both site-root-relative and omit the leading slash.
+
+redirects:
+  reports: contact/contracts-and-audits
+  reward-docs: products/intent-based-earn
+  docs: contact/contact-us
+  rozo-intentpay-techdoc: start/litepaper/rozo-intentpay-techdoc
+  testnet: tests/testnet
