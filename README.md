@@ -25,6 +25,10 @@ We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we 
 > “I want to buy $100 BTC.”
 >
 > “I want to earn 10% APY with a pool with $10M+ TVL.”
+>
+> “I want my AI agent to pay for this API call, per request, with no API key.”
+
+That last one is [Agentic Payments with MPP Router](products/intent-based-payment-transfer/agentic-payments-mpprouter.md): an agent holding Stellar USDC can call 90+ upstream API services — OpenAI, Anthropic, DeepSeek, Perplexity, Exa, Firecrawl, Tavily and more — and settle each request over a 402 challenge, with no subscription and no card on file.
 
 
 
