@@ -86,4 +86,41 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 }
 ```
 
-&#x20;&#x20;
+### Routing provider (optional)
+
+Every payment is executed on one of two rails. You can leave the choice to Rozo or ask for a rail by name with the optional `provider` field:
+
+```json
+{
+  "appId": "rozodevDemo",
+  "type": "exactIn",
+  "provider": "auto",
+  "source": { "chainId": "10", "tokenSymbol": "USDC", "amount": "20.00" },
+  "destination": { "chainId": "8453", "tokenSymbol": "USDC", "receiverAddress": "0x..." }
+}
+```
+
+| `provider` | Meaning | Fee |
+| --- | --- | --- |
+| `auto` (default) | Rozo picks: our own rails for every route we serve, NEAR Intents only for routes we cannot serve (e.g. an Optimism source). | whichever rail is chosen |
+| `rozo` | Rozo's own rails. | your app tier (public default 0.1%) |
+| `near` | Routed through [NEAR Intents](https://near-intents.org). | flat 0.3% |
+
+Notes:
+
+* Omitting `provider` behaves exactly as before — existing integrations need no change.
+* The response always echoes the **resolved** rail in `provider` (never `auto`) and in `feeInfo.provider`, so you can show users which rail and fee applied (e.g. "0.1% via Rozo" / "0.3% via NEAR Intents").
+* `near` orders can currently settle only on Base (`8453`), Solana (`900`) and Stellar (`1500`). Asking for `near` on a route it cannot serve returns `400 ROUTE_NOT_SUPPORTED_BY_PROVIDER` — it is never silently downgraded.
+* `near` deposit addresses are single-use and expire; never reuse one.
+* Use [`GET /payment-api/payments/supported`](supported-tokens-and-chains.md#live-supported-matrix) to discover which rails serve which chains and tokens.
+
+Every create and dry-run response includes a `feeInfo` block:
+
+```json
+"feeInfo": {
+  "feePercentage": "0.3%",
+  "minimumFee": "$0.01",
+  "provider": "near",
+  "feeTier": "near-routing"
+}
+```

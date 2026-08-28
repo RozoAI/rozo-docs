@@ -1,5 +1,36 @@
 # Supported Tokens and Chains
 
+### Live supported matrix
+
+The tables on this page are a snapshot. The always-current, machine-readable list is served by the API itself — use it to populate chain/token pickers instead of hardcoding:
+
+```bash
+curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported'
+# optional filter: ?provider=rozo | ?provider=near
+```
+
+Each entry describes one (chain, token) leg in Rozo's own naming:
+
+```json
+{
+  "chainId": "10",
+  "chainName": "Optimism",
+  "chainAliases": ["op", "optimism"],
+  "addressFormat": "evm",
+  "tokenSymbol": "USDC",
+  "providers": ["near"],
+  "destinationProviders": [],
+  "destinationMinimumFee": "$0.10"
+}
+```
+
+* `providers` — rails that accept this leg as a **pay-in source**.
+* `destinationProviders` — rails that can **pay out to** it. They differ for `near`: it accepts pay-ins from many chains but only settles on Base, Solana and Stellar.
+* `destinationMinimumFee` — present only when a per-destination minimum fee applies.
+* The top-level `fees` object is the rate card per rail (see [Get Fees](api-for-advanced-used/get-fees.md)).
+
+New chains and tokens appear here automatically as they are enabled — for example Optimism USDC/USDT is currently available as a pay-in source via the `near` rail. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
+
 > **Note on Chain IDs for Solana and Stellar:** For non-EVM chains, the API accepts **either** the numeric chain ID **or** the lowercase chain name string:
 > - **Solana** — `900` or `"solana"`
 > - **Stellar** — `1500` or `"stellar"`
