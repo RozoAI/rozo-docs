@@ -478,16 +478,43 @@ def main() -> int:
             if pr_author.lower() in trusted_authors:
                 approver_token = os.environ.get("AI_REVIEW_APPROVER_TOKEN", "")
                 if approver_token:
-                    submit_approval(
-                        repo,
-                        pr,
-                        approver_token,
-                        "AI review found no P0 blockers for a trusted Rozo contributor.",
-                    )
-                    set_output("trusted_auto_approve", "approved")
-                    write_step_summary(
-                        "Trusted-author auto-approve submitted."
-                    )
+                    # The review itself (comment + label) is already posted above
+                    # and is the actual deliverable. Auto-approve is a bonus, and
+                    # its PAT expires independently of this workflow. A dead or
+                    # under-scoped AI_REVIEW_APPROVER_TOKEN must NOT turn a
+                    # successful review into a red check — that trains everyone
+                    # to ignore this workflow. Degrade to "reviewed, not
+                    # approved" and surface the reason instead.
+                    try:
+                        submit_approval(
+                            repo,
+                            pr,
+                            approver_token,
+                            "AI review found no P0 blockers for a trusted Rozo contributor.",
+                        )
+                        set_output("trusted_auto_approve", "approved")
+                        write_step_summary(
+                            "Trusted-author auto-approve submitted."
+                        )
+                    except urllib.error.HTTPError as e:
+                        set_output("trusted_auto_approve", f"failed-http-{e.code}")
+                        hint = (
+                            "`AI_REVIEW_APPROVER_TOKEN` is expired, revoked, or "
+                            "missing the `pull_requests: write` scope."
+                            if e.code in (401, 403)
+                            else "See the approval API response code above."
+                        )
+                        eprint(f"Auto-approve failed: HTTP {e.code}. {hint}")
+                        write_step_summary(
+                            f"Review posted, but auto-approve failed "
+                            f"(HTTP {e.code}). {hint}"
+                        )
+                    except urllib.error.URLError as e:
+                        set_output("trusted_auto_approve", "failed-network")
+                        eprint(f"Auto-approve failed: network error ({e.reason}).")
+                        write_step_summary(
+                            "Review posted, but auto-approve failed: network error."
+                        )
                 else:
                     set_output("trusted_auto_approve", "skipped-no-token")
                     write_step_summary(
