@@ -35,6 +35,7 @@
   * [Bridge & Wallet API](integration/api-doc/bridge-api.md)
     * [API Quick Start](integration/api-doc/api-quick-start.md)
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
+    * [Wallet Deposit API](integration/api-doc/deposit-api.md)
     * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
   * [Merchant API](integration/api-doc/merchant-api.md)
