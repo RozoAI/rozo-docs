@@ -21,9 +21,9 @@ The merchant-side app for accepting stablecoin payments in person. Enter an amou
 
 ## How it fits with the rest of ROZO
 
-* Payments run on the same intent rails as [Intent Based Payment](intent-based-payment-transfer/README.md), so the customer can pay from any chain in [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md).
-* Merchants who want to integrate programmatically instead of using the app should start with the [Merchant API](../integration/api-doc/merchant-api.md).
+* Payments run on the same intent rails as [Intent Based Payment](../intent-based-payment-transfer/README.md), so the customer can pay from any chain in [Supported Tokens and Chains](../../integration/api-doc/supported-tokens-and-chains.md).
+* Merchants who want to integrate programmatically instead of using the app should start with the [Merchant API](../../integration/api-doc/merchant-api.md).
 
 ## Getting an account
 
-Merchant accounts are provisioned by ROZO. [Contact us](../contact/contact-us/README.md) with your business name and the chains you want to settle on.
+Merchant accounts are provisioned by ROZO. [Contact us](../../contact/contact-us/README.md) with your business name and the chains you want to settle on.

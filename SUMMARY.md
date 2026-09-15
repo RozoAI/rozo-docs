@@ -17,8 +17,8 @@
   * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
   * [EURC Onramp and Bridge](products/intent-based-bridge/eurc-onramp/README.md)
   * [CCTP Bridge](products/cctp-bridge/README.md)
-* [ROZO POS (Merchant App)](products/pos-merchant-app.md)
 * [Mobile App](products/mobile-app/README.md)
+  * [ROZO POS (Merchant App)](products/mobile-app/pos-merchant-app.md)
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
@@ -39,12 +39,12 @@
     * [Wallet Deposit API](integration/api-doc/deposit-api.md)
     * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
+    * [Testnet: Base Sepolia → Stellar](testnet/README.md)
   * [Merchant API](integration/api-doc/merchant-api.md)
     * [API Quick Start (Merchant)](integration/api-doc/api-quick-start-merchant.md)
     * [Merchant API Keys](integration/api-doc/merchant-api-keys.md)
     * [API Doc (POSTMAN)](integration/api-doc/api-doc-postman.md)
     * [Webhook](integration/api-doc/api-for-advanced-used/webhook.md)
-* [Testnet: Base Sepolia → Stellar Testnet](testnet/README.md)
 
 ## TECHNICAL REFERENCE <a href="#reference" id="reference"></a>
 

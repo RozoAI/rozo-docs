@@ -20,7 +20,7 @@ Current mobile app is invite only.  Please contact us if you want to earn in our
 
 ## ROZO POS (Merchant App)
 
-Looking for the merchant-side app? See [ROZO POS (Merchant App)](../pos-merchant-app.md).
+Looking for the merchant-side app? See [ROZO POS (Merchant App)](pos-merchant-app.md).
 
 ### Support and Contact Us
 

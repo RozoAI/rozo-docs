@@ -31,6 +31,8 @@ redirects:
   products/cctp-bridge: products/cctp-bridge/README.md
   products/intent-based-earn: products/intent-based-bridge/README.md
   tests/testnet: testnet/README.md
+  integration/testnet: testnet/README.md
+  products/pos-merchant-app: products/mobile-app/pos-merchant-app.md
   contact/contracts-and-audits: contact/contracts-and-audits.md
   contact/media-kit: contact/media-kit/README.md
   contact/media-kit/design-prompt: contact/media-kit/design-prompt.md
