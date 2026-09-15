@@ -17,6 +17,7 @@
   * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
   * [EURC Onramp and Bridge](products/intent-based-bridge/eurc-onramp/README.md)
   * [CCTP Bridge](products/cctp-bridge/README.md)
+* [ROZO POS (Merchant App)](products/pos-merchant-app.md)
 * [Mobile App](products/mobile-app/README.md)
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
