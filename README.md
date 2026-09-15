@@ -35,3 +35,5 @@ That last one is [Agentic Payments with MPP Router](products/intent-based-paymen
 Welcome to ROZO.&#x20;
 
 Let's hide the wires and use a new way of transacting.
+
+Building on ROZO? Start with [Choose Your Integration](start/choose-your-integration.md).

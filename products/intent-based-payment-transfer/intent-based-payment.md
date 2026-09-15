@@ -37,4 +37,3 @@ Accept crypto payments and transfers from users on supported chains, while you r
 * [ROZO Intent Pay SDK](../../integration/rozointentpay/)
 * [ROZO Intent Pay API](../../integration/api-doc/)
 * [Intent Based Bridge](../intent-based-bridge/README.md)
-* [Intent Based Earn](../intent-based-earn.md)

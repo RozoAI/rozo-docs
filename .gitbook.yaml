@@ -1,22 +1,41 @@
 ## GitBook site configuration.
 ##
-## `redirects` exists to clear the "Not found (404)" URLs Google Search Console
-## reports for docs.rozo.ai. Those paths are directories that live in this repo
-## but are absent from SUMMARY.md, so GitBook never publishes them — yet Google
-## discovered them through old links and keeps re-crawling them.
+## `redirects` maps old site paths to the Markdown file that now serves them.
+## GitBook requires the destination to be a repository file path ending in .md
+## (not a site URL); the previous revision used URL paths and every entry
+## silently 404ed in production. Sources are site-root-relative, no leading slash.
 ##
-## Only paths with a genuine replacement page are redirected. Every destination
-## below was verified to return HTTP 200. Deliberately left as 404, because no
-## meaningful destination exists:
-##   /blogs                                  — unpublished drafts (en/es/zh)
-##   /products-1                             — "Coming soon" stub
-##   /integration/api-doc/api-for-advanced-used — parent path, never had a page
+## Two groups:
+##   1. Directories that exist in the repo but are absent from SUMMARY.md, which
+##      Google keeps re-crawling from old links.
+##   2. Pages whose position in SUMMARY.md changed in the 2026-09 information
+##      architecture restructure. GitBook also creates automatic redirects for
+##      moved pages; these entries are the explicit backstop.
 ##
-## Source and destination are both site-root-relative and omit the leading slash.
+## Deliberately left as 404 (no meaningful destination):
+##   /blogs, /products-1, /integration/api-doc/api-for-advanced-used
 
 redirects:
-  reports: contact/contracts-and-audits
-  reward-docs: products/intent-based-earn
-  docs: contact/contact-us
-  rozo-intentpay-techdoc: start/litepaper/rozo-intentpay-techdoc
-  testnet: tests/testnet
+  # group 1: unpublished directories
+  reports: contact/contracts-and-audits.md
+  reward-docs: products/intent-based-bridge/README.md
+  docs: contact/contact-us/README.md
+  rozo-intentpay-techdoc: rozo-intentpay-techdoc.md
+  testnet: testnet/README.md
+  # group 2: 2026-09 restructure
+  start/litepaper: start/litepaper.md
+  start/litepaper/rozo-intentpay-techdoc: rozo-intentpay-techdoc.md
+  integration/api-doc/rozo-intents-tech-design: integration/api-doc/rozo-intents-tech-design.md
+  integration/api-doc/supported-tokens-and-chains: integration/api-doc/supported-tokens-and-chains.md
+  products/intent-based-payment-transfer/intent-based-payment: products/intent-based-payment-transfer/intent-based-payment.md
+  products/cctp-bridge: products/cctp-bridge/README.md
+  products/intent-based-earn: products/intent-based-bridge/README.md
+  tests/testnet: testnet/README.md
+  contact/contracts-and-audits: contact/contracts-and-audits.md
+  contact/media-kit: contact/media-kit/README.md
+  contact/media-kit/design-prompt: contact/media-kit/design-prompt.md
+  contact/media-kit/design-system: contact/media-kit/design-system.md
+  contact/contact-us: contact/contact-us/README.md
+  contact/terms-of-service: contact/contact-us/terms-of-service.md
+  contact/privacy-policy: contact/contact-us/privacy-policy.md
+  contact/faqs: contact/faqs.md
