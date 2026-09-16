@@ -38,6 +38,8 @@
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
     * [Wallet Deposit API](integration/api-doc/deposit-api.md)
     * [Get Fees](integration/api-doc/api-for-advanced-used/get-fees.md)
+    * [Partner Fee](integration/api-doc/api-for-advanced-used/partner-fee.md)
+    * [Look Up by Tx Hash](integration/api-doc/api-for-advanced-used/lookup-by-tx-hash.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
     * [Testnet: Base Sepolia → Stellar](testnet/README.md)
   * [Merchant API](integration/api-doc/merchant-api.md)
