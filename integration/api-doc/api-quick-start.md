@@ -95,14 +95,14 @@ Every payment is executed on one of two rails. You can leave the choice to Rozo 
   "appId": "rozodevDemo",
   "type": "exactIn",
   "provider": "auto",
-  "source": { "chainId": "10", "tokenSymbol": "USDC", "amount": "20.00" },
+  "source": { "chainId": "42161", "tokenSymbol": "USDC", "amount": "20.00" },
   "destination": { "chainId": "8453", "tokenSymbol": "USDC", "receiverAddress": "0x..." }
 }
 ```
 
 | `provider` | Meaning | Fee |
 | --- | --- | --- |
-| `auto` (default) | Rozo picks: our own rails for every route we serve, NEAR Intents only for routes we cannot serve (e.g. an Optimism source). | whichever rail is chosen |
+| `auto` (default) | Rozo picks: our own rails for every route we serve, NEAR Intents only for routes our own rails do not cover. | whichever rail is chosen |
 | `rozo` | Rozo's own rails. | your app tier (public default 0.1%) |
 | `near` | Routed through [NEAR Intents](https://near-intents.org). | flat 0.3% |
 
