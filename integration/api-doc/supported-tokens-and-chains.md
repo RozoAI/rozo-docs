@@ -13,14 +13,13 @@ Each entry describes one (chain, token) leg in Rozo's own naming:
 
 ```json
 {
-  "chainId": "10",
-  "chainName": "Optimism",
-  "chainAliases": ["op", "optimism"],
+  "chainId": "42161",
+  "chainName": "Arbitrum",
+  "chainAliases": ["arb", "arbitrum"],
   "addressFormat": "evm",
   "tokenSymbol": "USDC",
-  "providers": ["near"],
-  "destinationProviders": [],
-  "destinationMinimumFee": "$0.10"
+  "providers": ["rozo", "near"],
+  "destinationProviders": ["rozo"]
 }
 ```
 
@@ -29,7 +28,7 @@ Each entry describes one (chain, token) leg in Rozo's own naming:
 * `destinationMinimumFee` — present only when a per-destination minimum fee applies.
 * The top-level `fees` object is the rate card per rail (see [Get Fees](api-for-advanced-used/get-fees.md)).
 
-New chains and tokens appear here automatically as they are enabled — for example Optimism USDC/USDT is currently available as a pay-in source via the `near` rail. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
+New chains and tokens appear here automatically as they are enabled. Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
 
 > **Note on Chain IDs for Solana and Stellar:** For non-EVM chains, the API accepts **either** the numeric chain ID **or** the lowercase chain name string:
 > - **Solana** — `900` or `"solana"`
@@ -47,7 +46,7 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 - The `cctp:` prefix is **required**. A bare integer (e.g. `27`) is treated as a literal `chainId` and will return `invalidChainId`.
 - Matching is case-insensitive and whitespace-trimmed (`cctp:27`, `CCTP:27`, ` Cctp:27 ` are all equivalent).
 - `cctp:25` is **not** aliased — domain `25` belongs to Codex, which is not currently supported.
-- `cctp:2` (Optimism) is not currently aliased and will be enabled separately once Optimism payout support is reviewed.
+- `cctp:2` (Optimism) is not aliased: Optimism is not offered.
 
 ### Pay In Tokens and Chains
 
