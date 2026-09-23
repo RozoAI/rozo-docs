@@ -137,10 +137,11 @@ paths:
       description: |
         Returns the merchant's payment orders, newest first.
 
-        **Auth required.** `X-API-Key` is mandatory for merchant appIds —
-        results are automatically scoped to the key's `app_id`, so you
-        only ever see your own orders (cross-tenant defense). Any
-        `?appId=` in the query string is ignored when a key is supplied.
+        **Auth required.** Every call must send `X-API-Key`; a request
+        without one is rejected with `401 unauthorized`. Results are always
+        scoped to the key's `app_id`, so you only ever see your own orders.
+        There is no `appId` query parameter: the key decides which app is
+        listed.
 
         Use this to power your own dashboard or reconciliation script.
         For real-time updates, prefer webhooks over polling.
@@ -217,7 +218,13 @@ paths:
                         type: integer
                         example: 0
         '400':
-          description: Invalid or missing API key.
+          description: Invalid, revoked or expired API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No `X-API-Key` header was sent.
           content:
             application/json:
               schema:
