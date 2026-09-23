@@ -1,0 +1,41 @@
+# Org secret-scan rules: gitleaks defaults plus patterns for the keys we actually hold.
+title = "org secret scan"
+[extend]
+useDefault = true
+
+[[rules]]
+id = "stellar-secret-seed"
+description = "Stellar secret seed (S...)"
+regex = '''\b(S[A-D][A-Z2-7]{54})\b'''
+secretGroup = 1
+entropy = 4.0
+keywords = ["s"]
+
+[[rules]]
+id = "evm-private-key"
+description = "Hex private key assigned to a key-like name"
+regex = '''(?i)(?:priv(?:ate)?[_\-. ]?key|secret[_\-. ]?key|signer|deployer|operator|relayer|funder|wallet|pk|sk)[\w\-."']{0,30}\s*(?::|=|:=|=>)\s*[`"']?(?:0x)?([a-f0-9]{64})\b'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["priv","secret","signer","deployer","operator","relayer","funder","wallet","pk","sk"]
+
+[[rules]]
+id = "mnemonic"
+description = "BIP39-like mnemonic assigned to a seed/mnemonic name"
+regex = '''(?i)(?:mnemonic|seed[_\- ]?phrase|recovery[_\- ]?phrase|seed[_\- ]?words)[\w\-."']{0,20}\s*(?::|=|:=|=>)\s*[`"']?((?:[a-z]{3,8} ){11,23}[a-z]{3,8})\b'''
+secretGroup = 1
+keywords = ["mnemonic","seed","phrase"]
+
+[[rules]]
+id = "supabase-service-role"
+description = "Supabase JWT with role=service_role"
+regex = '''\b(eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]*(?:c2VydmljZV9yb2xl|NlcnZpY2Vfcm9sZ|zZXJ2aWNlX3JvbG)[A-Za-z0-9_-]*\.[A-Za-z0-9_-]{10,})'''
+secretGroup = 1
+keywords = ["eyj"]
+
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase new-style secret key"
+regex = '''\b(sb_secret_[A-Za-z0-9_-]{20,})'''
+secretGroup = 1
+keywords = ["sb_secret_"]
