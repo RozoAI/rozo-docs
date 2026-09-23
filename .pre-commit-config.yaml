@@ -1,0 +1,10 @@
+# Local secret scan before every commit. Enable once per clone:
+#   brew install gitleaks pre-commit
+#   pre-commit install
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks-system
+        args: ["--config", ".github/gitleaks.toml"]
+        pass_filenames: false

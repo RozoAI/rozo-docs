@@ -37,3 +37,7 @@ Welcome to ROZO.&#x20;
 Let's hide the wires and use a new way of transacting.
 
 Building on ROZO? Start with [Choose Your Integration](start/choose-your-integration.md).
+
+## Secret scanning
+
+Enable the local gitleaks pre-commit hook once per clone: `brew install gitleaks pre-commit && pre-commit install` (config in `.pre-commit-config.yaml`). CI also runs a report-only scan in `.github/workflows/secret-scan.yml`.
