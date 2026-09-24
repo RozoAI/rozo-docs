@@ -13,9 +13,11 @@
 
 name: AI PR Review
 
+# Runs when a PR is opened or marked ready. To re-review after new pushes,
+# comment `/ai-review` on the PR.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, ready_for_review]
   issue_comment:
     types: [created]
 
@@ -24,17 +26,20 @@ permissions:
   pull-requests: write
   issues: write
 
-# One in-flight review per PR; a new push/comment cancels the previous run.
-concurrency:
-  group: ai-pr-review-${{ github.event.pull_request.number || github.event.issue.number }}
-  cancel-in-progress: true
-
 jobs:
   review:
     runs-on: ubuntu-latest
+    # One in-flight review per PR. Job-level, so a comment run whose `if` is
+    # false never enters the group and cannot cancel or displace a real review.
+    # A later trigger queues behind a running review instead of killing it.
+    concurrency:
+      group: ai-pr-review-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: false
     if: >
       github.event_name == 'pull_request' ||
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       startsWith(github.event.comment.body, '/ai-review'))
     steps:
       - name: Checkout trusted review script from default branch
         uses: actions/checkout@v4
