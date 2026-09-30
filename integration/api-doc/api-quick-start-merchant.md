@@ -74,3 +74,32 @@ Poll this endpoint until `status` becomes `payment_completed`. Common statuses:
 | `payment_completed` | Settled — fulfill the order |
 
 > Tip: instead of polling, configure a [Webhook](api-for-advanced-used/webhook.md) to get notified when the payment completes.
+
+### Merchant info and supported tokens
+
+Create (including `?dryrun=true`) and get order responses carry the merchant shown to the buyer and what that merchant accepts:
+
+```json
+{
+  "id": "...",
+  "status": "payment_unpaid",
+  "merchant": {
+    "appId": "merchant_example",
+    "name": "Example Store",
+    "logoUrl": "https://.../logo.png",
+    "description": "...",
+    "supportedTokens": {
+      "stablecoins": "all",
+      "native": [
+        { "asset": "ETH@8453", "symbol": "ETH", "chainId": "8453", "chainName": "Base" },
+        { "asset": "SOL@900", "symbol": "SOL", "chainId": "900", "chainName": "Solana" }
+      ]
+    }
+  },
+  "supportedTokens": { "stablecoins": "all", "native": ["..."] }
+}
+```
+
+* `supportedTokens.native` lists only the native coins this merchant has enabled (empty when none). Stablecoins are always accepted. The same object is returned at the top level for orders that have no `merchant` block. Render the checkout coin picker from this field instead of a hardcoded list. See [Supported Tokens and Chains](supported-tokens-and-chains.md#native-coins-opt-in-per-merchant-beta).
+* `merchant.logoUrl` is the logo you set in partners.rozo.ai → Settings → Brand Profile. If none is set it may be a brand logo Rozo recognises for your merchant name, or `null`.
+
