@@ -36,6 +36,29 @@ New chains and tokens appear here automatically as they are enabled. Optimism (`
 >
 > Both formats are equivalent and interchangeable in all API requests.
 
+### Native coins (opt-in per merchant, beta)
+
+Besides stablecoins, a merchant can accept these native coins. The buyer pays in the native coin and the merchant still settles in USDC.
+
+| Coin | Chain | Chain ID |
+| --- | --- | --- |
+| ETH | Ethereum | `1` |
+| ETH | Base | `8453` |
+| BNB | BNB Chain | `56` |
+| SOL | Solana | `900` |
+
+* Native coins are **off by default**. A merchant requests access in [partners.rozo.ai](https://partners.rozo.ai) → Settings → Supported tokens, and once Rozo approves the account the merchant switches each coin on or off there.
+* Pay-in only. The quoted amount is locked for 60 minutes and includes a conversion spread.
+* During the beta, per-order and daily limits apply. An order above the limit returns `amountTooHigh`; once the daily limit is reached new native orders return `nativePayinPaused`. Stablecoin orders are not affected.
+* An order with a native source for a merchant that has not enabled that coin is rejected with `invalidRequest` (`Native <COIN> payin on chain <id> is not enabled for this app`), including dryruns.
+* In `GET /payments/supported`, native entries carry `"optIn": true`. Pass your `X-API-Key` or `?appId=<your appId>` to list only the native coins your account can use:
+
+```bash
+curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported?appId=<your appId>'
+```
+
+* Order responses also include `supportedTokens`; see [API Quick Start (Merchant)](api-quick-start-merchant.md#merchant-info-and-supported-tokens).
+
 ### CCTP V2 Domain Aliases
 
 If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the **`cctp:<N>` prefix** and the API will resolve it to the canonical Rozo chain ID before validation.
