@@ -36,9 +36,13 @@ New chains and tokens appear here automatically as they are enabled. Optimism (`
 >
 > Both formats are equivalent and interchangeable in all API requests.
 
-### Native coins (opt-in per merchant, beta)
+### Native coins (beta, invite only)
 
-Besides stablecoins, a merchant can accept these native coins. The buyer pays in the native coin and the merchant still settles in USDC.
+{% hint style="info" %}
+**Beta feature.** Stablecoins (USDC, USDT, EURC) are enabled for every merchant. Native coins are available only to merchants invited by Rozo. Other merchants can request an invitation in partners.rozo.ai.
+{% endhint %}
+
+Invited merchants can accept these native coins. The buyer pays in the native coin and the merchant still settles in USDC.
 
 | Coin | Chain | Chain ID |
 | --- | --- | --- |
@@ -47,7 +51,7 @@ Besides stablecoins, a merchant can accept these native coins. The buyer pays in
 | BNB | BNB Chain | `56` |
 | SOL | Solana | `900` |
 
-* Native coins are **off by default**. A merchant requests access in [partners.rozo.ai](https://partners.rozo.ai) → Settings → Supported tokens, and once Rozo approves the account the merchant switches each coin on or off there.
+* Native coins are **off by default** and **invite only**. To ask for an invitation, open [partners.rozo.ai](https://partners.rozo.ai) → Settings → Supported tokens and click Request access. Once Rozo invites the account, the merchant switches each coin on or off on the same page.
 * Pay-in only. The quoted amount is locked for 60 minutes and includes a conversion spread.
 * During the beta, per-order and daily limits apply. An order above the limit returns `amountTooHigh`; once the daily limit is reached new native orders return `nativePayinPaused`. Stablecoin orders are not affected.
 * An order with a native source for a merchant that has not enabled that coin is rejected with `invalidRequest` (`Native <COIN> payin on chain <id> is not enabled for this app`), including dryruns.

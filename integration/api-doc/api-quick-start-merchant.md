@@ -100,6 +100,6 @@ Create (including `?dryrun=true`) and get order responses carry the merchant sho
 }
 ```
 
-* `supportedTokens.native` lists only the native coins this merchant has enabled (empty when none). Stablecoins are always accepted. The same object is returned at the top level for orders that have no `merchant` block. Render the checkout coin picker from this field instead of a hardcoded list. See [Supported Tokens and Chains](supported-tokens-and-chains.md#native-coins-opt-in-per-merchant-beta).
+* `supportedTokens.native` lists only the native coins this merchant has enabled (empty when none). Native coins are a beta feature for invited merchants only; stablecoins are always accepted for every merchant. The same object is returned at the top level for orders that have no `merchant` block. Render the checkout coin picker from this field instead of a hardcoded list. See [Supported Tokens and Chains](supported-tokens-and-chains.md#native-coins-beta-invite-only).
 * `merchant.logoUrl` is the logo you set in partners.rozo.ai → Settings → Brand Profile. If none is set it may be a brand logo Rozo recognises for your merchant name, or `null`.
 
