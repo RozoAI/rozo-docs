@@ -93,17 +93,17 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 
 USDT payouts are in private beta and are not offered through the public API yet. They are available only inside Rozo's own apps. Orders with a USDT destination from other accounts are rejected at creation. To request access for your integration, see [Contact us](../../contact/contact-us/README.md).
 
-### USDT0 on Stellar (beta)
+### USDT on Stellar (beta)
 
-USDT0 is Tether's USDT on Stellar. Rozo bridges it to and from USDC and USDT on other chains, so a Stellar wallet can receive USDT that was paid in USDC on Base, or turn USDT0 into USDC on Base, Solana or Stellar.
+Rozo bridges Tether's USDT on Stellar to and from USDC and USDT on other chains, so a Stellar wallet can receive USDT that was paid in USDC on Base, or turn its USDT into USDC on Base, Solana or Stellar.
 
-| Chain ID | Chain Name | USDT0 Asset | Decimals |
+| Chain ID | Chain Name | USDT Asset | Decimals |
 | --- | --- | --- | --- |
 | `1500` or `stellar` | Stellar | `USDT0:GATISXX6BZ6NC7IKQBY37CJD4SOZL3CYZJWXEDG6JVIY4WBS6KXJHN6Q` | 7 |
 
-Use `"tokenSymbol": "USDT0"` with chain `1500` on either side of the order. A Stellar receiver must hold a trustline to the USDT0 asset above.
+On Stellar this asset uses the asset code `USDT0`, so the API token symbol is `"tokenSymbol": "USDT0"` with chain `1500`, on either side of the order. On every other chain use `USDT`. A Stellar receiver must hold a trustline to the asset above.
 
-**Pay in, receive USDT0 on Stellar**
+**Pay in, receive USDT on Stellar**
 
 | Pay in chain | Chain ID | Pay in tokens |
 | --- | --- | --- |
@@ -115,7 +115,7 @@ Use `"tokenSymbol": "USDT0"` with chain `1500` on either side of the order. A St
 | Polygon | `137` | USDC, USDT |
 | Arbitrum | `42161` | USDC, USDT |
 
-**Pay in USDT0 on Stellar, receive**
+**Pay in USDT on Stellar, receive**
 
 | Payout chain | Chain ID | Payout token |
 | --- | --- | --- |
@@ -123,11 +123,11 @@ Use `"tokenSymbol": "USDT0"` with chain `1500` on either side of the order. A St
 | Base | `8453` | USDC |
 | Solana | `900` | USDC |
 
-USDT0 to USDT on another chain is part of the USDT payout beta above. Any other pair with USDT0 on one side, for example USDT0 to USDC on Ethereum or BSC, is rejected with `unsupportedRoute`.
+USDT on Stellar to USDT on another chain is part of the USDT payout beta above. Any other pair with Stellar USDT on one side, for example Stellar USDT to USDC on Ethereum or BSC, is rejected with `unsupportedRoute`.
 
 **Fees and limits**
 
-* Fee: **0.2%** of the pay in amount, with a **minimum of 0.10 USD** per order. The fee is charged on the source side, so paying 100 USDC returns 99.80 USDT0, and paying 10 USDC returns 9.90 USDT0. Check the exact amount with a dryrun quote before you create the order.
+* Fee: **0.2%** of the pay in amount, with a **minimum of 0.10 USD** per order. The fee is charged on the source side, so paying 100 USDC returns 99.80 USDT, and paying 10 USDC returns 9.90 USDT. Check the exact amount with a dryrun quote before you create the order.
 * Limit: up to **1,000 USD per order** during the beta. Larger orders are rejected with `amountTooHigh`. Split larger amounts into several orders.
 * Availability depends on Rozo's liquidity for the payout leg. If a route is temporarily short, the order is rejected at creation with `INSUFFICIENT_LIQUIDITY` and no funds are taken.
 * Fees and limits may change during the beta. A quote keeps the fee it was issued with.
