@@ -95,6 +95,8 @@ USDT payouts are in private beta and are not offered through the public API yet.
 
 ### USDT on Stellar (beta)
 
+**Beta feature.** USDT routes are live in beta. Supported pairs, fees and limits may change while the beta runs, and USDT payouts to other chains are private beta (see above).
+
 Rozo bridges Tether's USDT on Stellar to and from USDC and USDT on other chains, so a Stellar wallet can receive USDT that was paid in USDC on Base, or turn its USDT into USDC on Base, Solana or Stellar.
 
 | Chain ID | Chain Name | USDT Asset | Decimals |
