@@ -91,7 +91,48 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 
 <table><thead><tr><th width="118.76953125">Chain ID</th><th width="119.1953125">Chain Name</th><th width="407.73828125">USDC Token Address</th><th>Decimals</th></tr></thead><tbody><tr><td><code>1</code></td><td>Ethereum</td><td><code>0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48</code></td><td>6</td></tr><tr><td><code>42161</code></td><td>Arbitrum</td><td><code>0xaf88d065e77c8cc2239327c5edb3a432268e5831</code></td><td>6</td></tr><tr><td><code>8453</code></td><td>Base</td><td><code>0x833589fcd6edb6e08f4c7c32d4f71b54bda02913</code></td><td>6</td></tr><tr><td><code>56</code></td><td>BSC</td><td><code>0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d</code></td><td>18</td></tr><tr><td><code>137</code></td><td>Polygon</td><td><code>0x3c499c542cef5e3811e1192ce70d8cc03d5c3359</code></td><td>6</td></tr><tr><td><code>999</code></td><td>HyperEVM</td><td><code>0xb88339cb7199b77e23db6e890353e22632ba630f</code></td><td>6</td></tr><tr><td><code>900</code> or <code>solana</code></td><td>Solana</td><td><code>EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</code></td><td>6</td></tr><tr><td><code>1500</code> or <code>stellar</code></td><td>Stellar</td><td><code>USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN</code></td><td>7</td></tr></tbody></table>
 
-USDT payouts are in private beta and not offered through the public API yet. Orders with a USDT destination are rejected at creation.
+USDT payouts are in private beta and are not offered through the public API yet. They are available only inside Rozo's own apps. Orders with a USDT destination from other accounts are rejected at creation. To request access for your integration, see [Contact us](../../contact/contact-us/README.md).
+
+### USDT on Stellar (beta)
+
+**Beta feature.** USDT routes are live in beta. Supported pairs, fees and limits may change while the beta runs, and USDT payouts to other chains are private beta (see above).
+
+Rozo bridges Tether's USDT on Stellar to and from USDC and USDT on other chains, so a Stellar wallet can receive USDT that was paid in USDC on Base, or turn its USDT into USDC on Base, Solana or Stellar.
+
+| Chain ID | Chain Name | USDT Asset | Decimals |
+| --- | --- | --- | --- |
+| `1500` or `stellar` | Stellar | `USDT0:GATISXX6BZ6NC7IKQBY37CJD4SOZL3CYZJWXEDG6JVIY4WBS6KXJHN6Q` | 7 |
+
+On Stellar this asset uses the asset code `USDT0`, so the API token symbol is `"tokenSymbol": "USDT0"` with chain `1500`, on either side of the order. On every other chain use `USDT`. A Stellar receiver must hold a trustline to the asset above.
+
+**Pay in, receive USDT on Stellar**
+
+| Pay in chain | Chain ID | Pay in tokens |
+| --- | --- | --- |
+| Stellar | `1500` | USDC |
+| Base | `8453` | USDC |
+| Solana | `900` | USDC, USDT |
+| Ethereum | `1` | USDC, USDT |
+| BSC | `56` | USDC, USDT |
+| Polygon | `137` | USDC, USDT |
+| Arbitrum | `42161` | USDC, USDT |
+
+**Pay in USDT on Stellar, receive**
+
+| Payout chain | Chain ID | Payout token |
+| --- | --- | --- |
+| Stellar | `1500` | USDC |
+| Base | `8453` | USDC |
+| Solana | `900` | USDC |
+
+USDT on Stellar to USDT on another chain is part of the USDT payout beta above. Any other pair with Stellar USDT on one side, for example Stellar USDT to USDC on Ethereum or BSC, is rejected with `unsupportedRoute`.
+
+**Fees and limits**
+
+* Fee: **0.2%** of the pay in amount, with a **minimum of 0.10 USD** per order. The fee is charged on the source side, so paying 100 USDC returns 99.80 USDT, and paying 10 USDC returns 9.90 USDT. Check the exact amount with a dryrun quote before you create the order.
+* Limit: up to **1,000 USD per order** during the beta. Larger orders are rejected with `amountTooHigh`. Split larger amounts into several orders.
+* Availability depends on Rozo's liquidity for the payout leg. If a route is temporarily short, the order is rejected at creation with `INSUFFICIENT_LIQUIDITY` and no funds are taken.
+* Fees and limits may change during the beta. A quote keeps the fee it was issued with.
 
 ### EURC PayIn  & PayOut
 
