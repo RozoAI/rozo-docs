@@ -48,6 +48,7 @@ Invited merchants can accept these native coins. The buyer pays in the native co
 | --- | --- | --- |
 | ETH | Ethereum | `1` |
 | ETH | Base | `8453` |
+| ETH | Arbitrum | `42161` |
 | BNB | BNB Chain | `56` |
 | SOL | Solana | `900` |
 

@@ -28,7 +28,11 @@ We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we 
 >
 > “I want my AI agent to pay for this API call, per request, with no API key.”
 
-That last one is [Agentic Payments with MPP Router](products/intent-based-payment-transfer/agentic-payments-mpprouter.md): an agent holding Stellar USDC can call 90+ upstream API services — OpenAI, Anthropic, DeepSeek, Perplexity, Exa, Firecrawl, Tavily and more — and settle each request over a 402 challenge, with no subscription and no card on file.
+That last one is [Agentic Payments with MPP Router](products/intent-based-payment-transfer/agentic-payments-mpprouter.md): an agent holding Stellar USDC can call paid API services such as OpenAI, Anthropic, DeepSeek, Perplexity, Exa, Firecrawl and Tavily, and settle each request over a 402 challenge, with no subscription and no card on file.
+
+> "I want to top up OpenRouter with the SOL I already have."
+
+That one is [ROZO Checkout](products/checkout/README.md): paste an OpenRouter or other Coinbase payment link, pay with BTC over Lightning, ETH, SOL, BNB, USDC or USDT, and ROZO settles the invoice in USDC on Base. Agents can do the same through the CLI, the MCP server or the Claude Code skill.
 
 
 

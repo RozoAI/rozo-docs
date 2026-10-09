@@ -1,12 +1,12 @@
 # Common Questions & Answers
 
-**Latest Updated**: [2025-12-09]
+**Latest Updated**: [2026-10-09]
 
 Find out all the essential details about our platform and how it can serve your needs.
 
 ## 1. What is ROZO Intents?
 
-ROZO Intents is an intent-based stablecoin SDK that enables users to transfer USDC and other stablecoins between chains like Stellar, Base, Polygon, and Solana with zero confusion and near-zero error. It is designed for real-world payment speed and reliability, combining stablecoin abstraction, automatic route selection for the fastest route, and optimized capital flow with transparent status tracking. ROZO Intents approaches cross-chain transfers as both a technical and user-experience problem — making crypto payments feel as simple as Visa. Rozo is supported by Stellar Community Fund, Base, Draper and Circle Alliance.
+ROZO Intents is an intent-based stablecoin SDK that enables users to transfer USDC and other stablecoins between chains like Stellar, Base, Polygon, and Solana with zero confusion and near-zero error. It is designed for real-world payment speed and reliability, combining stablecoin abstraction, automatic route selection for the fastest route, and optimized capital flow with transparent status tracking. ROZO Intents approaches cross-chain transfers as both a technical and user-experience problem, making crypto payments feel as simple as Visa. Rozo is supported by Stellar Community Fund, Base, Draper and Circle Alliance.
 
 ## 2. How long does it take to receive my funds?
 
@@ -24,18 +24,23 @@ ROZO Intents currently supports transfers between:
 
 - Stellar
 - Base
-- Polygon
+- Ethereum
 - Solana
 - BNB Chain
-- Arbitrum & Polygon (coming soon)
+- Polygon
+- Arbitrum
+- HyperEVM
+
+plus Bitcoin over Lightning for checkout pay-ins. See [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) for the exact token on each chain.
 
 ## 4. What tokens can I transfer?
 
 ROZO Intents supports stablecoins and assets including:
 
 - USDC
-- USDT
-- Other stablecoins (coming soon)
+- USDT (USDT0 on Stellar)
+- EURC (Base, Stellar)
+- Native coins (ETH, BNB, SOL) for invited merchants
 
 ## 5. What if my transfer is stuck or delayed?
 
