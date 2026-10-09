@@ -1,6 +1,6 @@
 # Common Questions & Answers
 
-**Latest Updated**: [2025-12-09]
+**Latest Updated**: [2026-10-09]
 
 Find out all the essential details about our platform and how it can serve your needs.
 
@@ -24,18 +24,23 @@ ROZO Intents currently supports transfers between:
 
 - Stellar
 - Base
-- Polygon
+- Ethereum
 - Solana
 - BNB Chain
-- Arbitrum & Polygon (coming soon)
+- Polygon
+- Arbitrum
+- HyperEVM
+
+plus Bitcoin over Lightning for [ROZO Checkout](../products/checkout/README.md) pay-ins. See [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) for which tokens each chain supports.
 
 ## 4. What tokens can I transfer?
 
 ROZO Intents supports stablecoins and assets including:
 
 - USDC
-- USDT
-- Other stablecoins (coming soon)
+- USDT (on Stellar this is USDT0, in beta)
+- EURC (Base and Stellar)
+- Native coins (ETH, BNB, SOL) for invited merchants
 
 ## 5. What if my transfer is stuck or delayed?
 

@@ -30,6 +30,10 @@ We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we 
 
 That last one is [Agentic Payments with MPP Router](products/intent-based-payment-transfer/agentic-payments-mpprouter.md): an agent holding Stellar USDC can call 90+ upstream API services — OpenAI, Anthropic, DeepSeek, Perplexity, Exa, Firecrawl, Tavily and more — and settle each request over a 402 challenge, with no subscription and no card on file.
 
+> "I want to top up OpenRouter with the SOL I already have."
+
+That one is [ROZO Checkout](products/checkout/README.md): paste a Coinbase payment link, pay it with BTC over Lightning, USDC, USDT, ETH, BNB or SOL, and ROZO settles the invoice in USDC on Base. Agents can do the same from the CLI, the MCP server or the Claude Code skill.
+
 
 
 Welcome to ROZO.&#x20;

@@ -9,9 +9,16 @@ icon: robot
 
 Agentic payments let AI agents spend Stellar USDC to call paid HTTP APIs — no API keys, no subscriptions, no credit card on file. The agent makes a request, the server returns `402 Payment Required` with a Stellar payment challenge, the agent signs with its wallet, retries the request, and receives the response.
 
+{% hint style="info" %}
+**Two agentic payment scenarios.**
+
+1. **The agent pays per API call with its own Stellar USDC.** That is this page: MPP Router.
+2. **The agent pays a Coinbase invoice for a user, with whatever coin the user holds.** For example, an OpenRouter top-up paid in USDT on Solana or BTC over Lightning. See [ROZO Checkout](../checkout/README.md).
+{% endhint %}
+
 ROZO's agentic payment stack runs on **Stellar mainnet** via [MPP Router](https://www.mpprouter.dev) — a Stellar-native 402 proxy that accepts Stellar USDC and forwards the request to upstream merchants.
 
-The router fronts **90+ upstream services** across **670 endpoints**, including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them — no per-service API key, no subscription, no card on file.
+The router fronts **90+ upstream services** across **677 endpoints**, including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them, with no per-service API key, no subscription and no card on file.
 
 ## Why Stellar for agentic payments
 
@@ -63,7 +70,7 @@ The MPP and x402 `payTo` addresses in a single challenge are **different** and H
 
 The service catalog is live at `https://apiserver.mpprouter.dev/v1/services/catalog`. Never hardcode service paths — the catalog is the source of truth, and it carries its own `generated_at` timestamp plus a `summary` block with the current counts.
 
-As of 2026-08-11 the catalog reports **670 endpoints from 94 upstream providers**, of which **444 are payable** and **15 are paid-verified** — meaning a real paid call was made through them and the settling Stellar transaction hash is published. Treat unverified entries as available but untested.
+As of 2026-10-09 the catalog reports **677 endpoints from 97 upstream providers**, of which **451 are payable** and **28 are paid-verified**, meaning a real paid call was made through them and the settling Stellar transaction hash is published. Treat unverified entries as available but untested.
 
 Representative services:
 
@@ -126,4 +133,4 @@ MPP Router is the agentic payments rail that lets ROZO's Stellar-native wallets 
 
 ---
 
-_Last updated: 2026-08-11. Service counts verified against the live catalog on that date._
+_Last updated: 2026-10-09. Service counts verified against the live catalog on that date._

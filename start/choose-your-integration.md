@@ -1,7 +1,7 @@
 ---
 description: >-
   Choose your ROZO integration. One table to pick between the SDK, the Bridge &
-  Wallet API, the Merchant API, MPP Router and CCTP Bridge.
+  Wallet API, the Merchant API, MPP Router, ROZO Checkout and CCTP Bridge.
 icon: signs-post
 ---
 
@@ -17,6 +17,7 @@ Every ROZO product runs on the same intent rails. Pick the entry point that matc
 | An AI agent that pays per API call over HTTP 402, no API keys | **Agentic Payments (MPP Router)** | [MPP Router](../products/intent-based-payment-transfer/agentic-payments-mpprouter.md) |
 | Native USDC moves between Stellar and Base, Ethereum or Solana, self-custody | **CCTP Bridge** | [CCTP Bridge](../products/cctp-bridge/README.md) |
 | A unique deposit address per user so your app can receive USDC | **Wallet Deposit API** | [Wallet Deposit API](../integration/api-doc/deposit-api.md) |
+| An agent or script that pays an OpenRouter or Coinbase invoice with the coin the user already holds | **ROZO Checkout (CLI / MCP / skill)** | [ROZO Checkout](../products/checkout/README.md) |
 
 ## SDK or API?
 
