@@ -7,18 +7,23 @@ icon: robot
 
 # Agentic Payments with MPP Router
 
+## Two agentic payment scenarios
+
+1. **The agent pays for its own API calls.** The agent holds Stellar USDC and pays per request over HTTP 402. That is this page: MPP Router.
+2. **The agent pays an invoice for its user.** The agent pays an OpenRouter top-up or another Coinbase-hosted invoice with whatever coin the user already holds, through the CLI, the MCP server or the Claude Code skill. See [ROZO Checkout](../checkout/README.md).
+
 Agentic payments let AI agents spend Stellar USDC to call paid HTTP APIs — no API keys, no subscriptions, no credit card on file. The agent makes a request, the server returns `402 Payment Required` with a Stellar payment challenge, the agent signs with its wallet, retries the request, and receives the response.
 
 ROZO's agentic payment stack runs on **Stellar mainnet** via [MPP Router](https://www.mpprouter.dev) — a Stellar-native 402 proxy that accepts Stellar USDC and forwards the request to upstream merchants.
 
-The router fronts **90+ upstream services** across **670 endpoints**, including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them — no per-service API key, no subscription, no card on file.
+As of 2026-10-09, the router fronts **88 services** ([live count](https://www.mpprouter.dev)), including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them, with no per-service API key, no subscription and no card on file.
 
 ## Why Stellar for agentic payments
 
 - **Sub-cent fees.** Each 402-gated call settles for fractions of a cent, making microtransactions practical.
 - **Fast finality.** Stellar closes ledgers every ~5 seconds, so the 402 → pay → retry loop completes in one round trip.
 - **Sponsored transactions.** The agent's wallet does not need XLM for fees — MPP Router sponsors the fee payer.
-- **One stablecoin balance, many APIs.** You hold USDC on Stellar once and spend it across 90+ upstream services — no need to fund Base, Tron, or Solana.
+- **One stablecoin balance, many APIs.** You hold USDC on Stellar once and spend it across all of them. No need to fund Base, Tron or Solana.
 
 ## The flow
 
@@ -63,7 +68,7 @@ The MPP and x402 `payTo` addresses in a single challenge are **different** and H
 
 The service catalog is live at `https://apiserver.mpprouter.dev/v1/services/catalog`. Never hardcode service paths — the catalog is the source of truth, and it carries its own `generated_at` timestamp plus a `summary` block with the current counts.
 
-As of 2026-08-11 the catalog reports **670 endpoints from 94 upstream providers**, of which **444 are payable** and **15 are paid-verified** — meaning a real paid call was made through them and the settling Stellar transaction hash is published. Treat unverified entries as available but untested.
+As of 2026-10-09 the catalog reports **677 endpoints**, of which **451 are payable** and **28 are paid-verified**, meaning a real paid call was made through them and the settling Stellar transaction hash is published. Treat unverified entries as available but untested.
 
 Representative services:
 
