@@ -38,7 +38,7 @@ plus Bitcoin over Lightning for checkout pay-ins. See [Supported Tokens and Chai
 ROZO Intents supports stablecoins and assets including:
 
 - USDC
-- USDT (USDT0 on Stellar)
+- USDT (USDT0 on Stellar, beta)
 - EURC (Base, Stellar)
 - Native coins (ETH, BNB, SOL) for invited merchants
 

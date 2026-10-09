@@ -32,7 +32,7 @@ That last one is [Agentic Payments with MPP Router](products/intent-based-paymen
 
 > "I want to top up OpenRouter with the SOL I already have."
 
-That one is [ROZO Checkout](products/checkout/README.md): paste an OpenRouter or other Coinbase payment link, pay with BTC over Lightning, ETH, SOL, BNB, USDC or USDT, and ROZO settles the invoice in USDC on Base. Agents can do the same through the CLI, the MCP server or the Claude Code skill.
+That one is [ROZO Checkout](products/checkout/README.md): paste an OpenRouter or other Coinbase payment link, pay with BTC over Lightning, ETH, SOL, BNB, USDC or USDT, and ROZO settles the invoice in USDC on Base. Agents can pay with stablecoins or Lightning through the CLI, the MCP server or the Claude Code skill.
 
 
 

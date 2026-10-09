@@ -16,7 +16,7 @@ Agentic payments let AI agents spend Stellar USDC to call paid HTTP APIs — no 
 
 ROZO's agentic payment stack runs on **Stellar mainnet** via [MPP Router](https://www.mpprouter.dev) — a Stellar-native 402 proxy that accepts Stellar USDC and forwards the request to upstream merchants.
 
-As of 2026-10-09, the router fronts **88 services** across **489 paid endpoints** ([live count](https://www.mpprouter.dev)), including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them, with no per-service API key, no subscription and no card on file.
+As of 2026-10-09, the router fronts **88 services** ([live count](https://www.mpprouter.dev)), including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them, with no per-service API key, no subscription and no card on file.
 
 ## Why Stellar for agentic payments
 

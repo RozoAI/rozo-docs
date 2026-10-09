@@ -20,7 +20,7 @@ There is no account to create and no private key to share. You pay from your own
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana |
 
-On-chain Bitcoin, native POL and Tron are not accepted. Native coins are available on [checkout.rozo.ai](https://checkout.rozo.ai); the CLI, MCP server and skill take the stablecoins and Lightning.
+On-chain Bitcoin, native POL and Tron are not accepted. Native coins and Arbitrum stablecoins are available on [checkout.rozo.ai](https://checkout.rozo.ai) only. The CLI, MCP server and skill take USDC or USDT on Solana, Ethereum, BNB Chain or Polygon, USDC on Base or Stellar, and BTC over Lightning.
 
 ## Supported merchants
 
@@ -85,7 +85,7 @@ The skill wraps the same CLI, so it pays from your own wallet without a key.
 
 * **Fee.** ROZO's service fee is included in the quote, shown before you pay. You pay the full invoice amount plus the fee, as the exact deposit amount in your order. The network fee for sending your coin goes to the blockchain, not to ROZO. Lightning and native coin payments also include a conversion spread built into the coin amount.
 * **Quote validity.** A quote (`quoteReceipt`) is valid for about 60 seconds. Creating the order takes a fresh quote.
-* **Order deadline.** Each deposit order has its own expiry, returned when the order is created (`expiresAt`). It is also bounded by the expiry of the Coinbase link itself. Pay before the earlier of the two.
+* **Order deadline.** Each deposit order has its own expiry, returned when the order is created (`expiresAt`). It is also bounded by the expiry of the Coinbase link itself. Send well before the earlier of the two: settlement needs a few minutes after your payment confirms, and the CLI shows the safe-send window (`order.expiry`) for each order. If the window has passed, create a new order instead of paying old deposit details.
 * **Refunds.** Crypto top-ups to OpenRouter are never refundable. That is OpenRouter's policy. Check the credit amount before you pay.
 * **Minimum.** OpenRouter sets its own minimum top-up; see [Pay OpenRouter with crypto](https://checkout.rozo.ai/blog/pay-openrouter-with-crypto).
 
