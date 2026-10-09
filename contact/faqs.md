@@ -31,7 +31,7 @@ ROZO Intents currently supports transfers between:
 - Arbitrum
 - HyperEVM
 
-plus Bitcoin over Lightning for [ROZO Checkout](../products/checkout/README.md) pay-ins. See [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) for which tokens each chain supports.
+Plus Bitcoin over Lightning for [ROZO Checkout](../products/checkout/README.md) pay-ins. See [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) for which tokens each chain supports.
 
 ## 4. What tokens can I transfer?
 
