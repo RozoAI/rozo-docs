@@ -44,13 +44,17 @@ New chains and tokens appear here automatically as they are enabled. Optimism (`
 
 Invited merchants can accept these native coins. The buyer pays in the native coin and the merchant still settles in USDC.
 
-| Coin | Chain | Chain ID |
-| --- | --- | --- |
-| ETH | Ethereum | `1` |
-| ETH | Base | `8453` |
-| ETH | Arbitrum | `42161` |
-| BNB | BNB Chain | `56` |
-| SOL | Solana | `900` |
+| Coin | Chain | Chain ID | Minimum pay-in | Status |
+| --- | --- | --- | --- | --- |
+| ETH | Ethereum | `1` | 1.00 USD | Beta |
+| ETH | Base | `8453` | 0.10 USD | Beta |
+| ETH | Arbitrum | `42161` | 0.10 USD | Beta |
+| BNB | BNB Chain | `56` | 0.10 USD | Beta |
+| SOL | Solana | `900` | 1.00 USD | Beta |
+| POL | Polygon | `137` | 0.10 USD | Beta, not open yet |
+
+* The minimum is the USD value of the order, priced from the coin at quote time. An order below it is rejected with `amountTooLow` (`Minimum for <COIN> payins on chain <id> is $<min>`). Ethereum and Solana have a higher minimum because each pay-in costs more in network fees on those chains.
+* POL on Polygon is listed by `GET /payments/supported` but cannot be enabled yet. Orders return `invalidRequest` until Rozo opens it. This page will be updated when it opens.
 
 * Native coins are **off by default** and **invite only**. To ask for an invitation, open [partners.rozo.ai](https://partners.rozo.ai) → Settings → Supported tokens and click Request access. Once Rozo invites the account, the merchant switches each coin on or off on the same page.
 * Pay-in only. The quoted amount is locked for 60 minutes and includes a conversion spread.
@@ -63,6 +67,45 @@ curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported?ap
 ```
 
 * Order responses also include `supportedTokens`; see [API Quick Start (Merchant)](api-quick-start-merchant.md#merchant-info-and-supported-tokens).
+
+#### How native-coin conversion works
+
+Nothing changes on the partner side. The flow for a native-coin order:
+
+1. The buyer sends the native coin to the order's deposit address. It arrives at the Rozo hub on the same chain.
+2. Rozo converts it to USDC on that chain. ETH and SOL are converted through NEAR Intents. BNB on BNB Chain and POL on Polygon are converted through Rozo's own bridge and a DEX.
+3. The partner is settled in USDC exactly as for a stablecoin order: same payout, same webhooks, same settlement time.
+
+The partner never holds the volatile coin, and no extra integration work or action is needed. The conversion spread is already in the quoted amount the buyer pays.
+
+#### Gas drop add-on (beta)
+
+{% hint style="info" %}
+**Beta feature.** Gas drop is enabled per account on request. Other accounts get `"available": false` with `"reason": "app_not_allowed"` and an otherwise unchanged response. To request it, see [Contact us](../../contact/contact-us/README.md).
+{% endhint %}
+
+The payer can add a small amount of the destination chain's gas coin to an order that pays out USDC, so the receiving wallet can move its USDC right away. For example, an order paying out USDC on Arbitrum can also deliver a little ETH on Arbitrum.
+
+Request it with `options.gasDrop` on a dryrun or a create:
+
+```json
+"options": {
+  "gasDrop": { "enabled": true, "amountUsd": "1" }
+}
+```
+
+| Setting | Value |
+| --- | --- |
+| Minimum | 0.10 USD (Ethereum: 1.00 USD) |
+| Maximum | 10.00 USD |
+| Step | 0.10 USD |
+| Spread | 5% of the gas drop amount |
+| Gas coin by destination chain | ETH on Ethereum, Base and Arbitrum; BNB on BNB Chain; POL on Polygon; SOL on Solana; XLM on Stellar; HYPE on HyperEVM |
+
+* `amountUsd` is what the payer gives up for the gas coin. On `exactIn` it comes out of the USDC payout; on `exactOut` it is added to the pay-in.
+* An amount outside the range or off the 0.10 USD step returns `"available": false` with `"reason": "amount_out_of_range"`. The rest of the order is never affected by a refused gas drop.
+* The response `gasDrop` block shows `amountNative`, `chargedUsd`, `feeUsd` (the spread) and `principalUsd`. Example for 1 USD to Arbitrum: `chargedUsd` 1.00, `feeUsd` 0.05, `principalUsd` 0.95, delivered as ETH at the quoted price.
+* The gas coin is sent after the USDC payout completes.
 
 ### CCTP V2 Domain Aliases
 
