@@ -63,10 +63,8 @@ Two legs, listed apart on purpose: what you send ROZO, and what the seller recei
 | --- | --- |
 | USDT | Solana, BNB Chain, Ethereum, Polygon |
 | USDC | Solana, BNB Chain, Ethereum, Polygon, Base, Stellar |
-| BTC | Lightning |
-| ETH (native coin, beta) | Ethereum, Base, Arbitrum |
-| BNB (native coin, beta) | BNB Chain |
-| SOL (native coin, beta) | Solana |
+
+x402 balance top ups accept USDC and USDT only. A top up request for any other coin is answered with `X402_TOPUP_SOURCE_UNSUPPORTED` and no deposit address. Holding a native coin or sats? Use them to top up OpenRouter with [ROZO Checkout](https://checkout.rozo.ai).
 
 **Payment leg (ROZO to the x402 seller)**
 
@@ -75,7 +73,7 @@ Two legs, listed apart on purpose: what you send ROZO, and what the seller recei
 | Base (`eip155:8453`) | USDC | `exact` |
 | Solana | Coming later | An endpoint that only accepts USDC on Solana is refused before anything is charged. |
 
-Native coins and USDT only fund the balance. Sellers are always paid in USDC on Base, because x402 `exact` payments are token transfers.
+Sellers are always paid in USDC on Base, because x402 `exact` payments are token transfers; from a balance funded with USDT, ROZO pays the seller in USDC.
 
 ## Limits and keys
 
@@ -123,7 +121,7 @@ The balance is debited only by the ledger commit inside `/sign`, after signing; 
 | `/topup` | 400 | `X402_TOPUP_AMOUNT_OUT_OF_RANGE` | A top up must be between $5 and $500. | No | Pick an amount in range. |
 | `/topup` | 400 | `X402_TOPUP_SOURCE_REQUIRED` | `chain` and `token` are missing. The response lists accepted chains. | No | Say which coin you pay with. |
 | `/topup` | 400 | `X402_UNSUPPORTED_CHAIN` | Unknown chain. | No | Use a CAIP-2 id or a name such as `solana`, `base`, `ethereum`, `bsc`, `polygon`, `arbitrum`, `stellar`. |
-| `/topup` | 400 | `X402_TOPUP_SOURCE_UNSUPPORTED` | That coin is not accepted for top ups. The server currently refuses native coins and Lightning here. May carry a `supported` list. | No | Top up with USDC or USDT. |
+| `/topup` | 400 | `X402_TOPUP_SOURCE_UNSUPPORTED` | That coin is not accepted for top ups. May carry a `supported` list. | No | Use USDC or USDT. |
 | `/topup` | 502 | `INTENTS_API_FAILED` | The top up order could not be created. | No, no address was shown | Retry later. |
 | `/topup` | 503 | `X402_TOPUP_MISCONFIGURED`, `X402_TOPUP_NOT_REGISTERED` | The order was not usable, so the deposit address was withheld. | No, no address was shown | Retry later; email hi@rozo.ai if it repeats. |
 | `/topup` | 503 | `X402_PAYER_SHADOW`, `X402_TOPUP_NOT_CONFIGURED`, `X402_SIGNER_NOT_CONFIGURED` | Top ups are closed right now. | No | Stop. |
