@@ -90,11 +90,62 @@ Native coins and USDT only fund the balance. Sellers are always paid in USDC on 
 
 ## Error codes
 
+### CLI codes
+
+The CLI raises these on its own, before or after talking to ROZO.
+
 | Code | Meaning | What to do |
 | --- | --- | --- |
 | `X402_UNSUPPORTED` | The endpoint does not accept USDC on Base, for example it only accepts Solana. Nothing is charged. | Tell the user the endpoint is not covered yet. Do not try to bridge per call. |
-| `X402_RETRY`, `X402_PAYER_MODE_CHANGED` or `X402_LEDGER_UNAVAILABLE` (503) | A temporary condition on the ROZO side. | Retry with the same `idempotencyKey`. |
-| Any other 503 from `/v1/x402` | The x402 payer is not enabled for this key. Nothing was charged. | Stop and tell the user. |
+| `X402_OVER_BUDGET` | Every payable option is above `--max-usd`. Nothing is charged. | Ask the user before raising `--max-usd`. |
+| `X402_PAYER_DISABLED` | The CLI's name for any server 503 except the three retryable ones. The server code is in `error.details.serverCode`. | Stop and tell the user. |
+
+On `/sign` the CLI retries 429, 500, 502, 504 and the 503 codes `X402_RETRY`, `X402_PAYER_MODE_CHANGED` and `X402_LEDGER_UNAVAILABLE` itself, with the same `idempotencyKey`.
+
+### Server codes
+
+What `https://apiserver.mpprouter.dev/v1/x402/*` returns. Every error body looks like `{"ok":false,"code":"X402_...","error":{"code":"X402_...","message":"..."}}`, sometimes with extra top level fields such as `limitUsd` or `balanceUsd`.
+
+The balance is debited only by the ledger commit inside `/sign`, after signing; every error raised before that commit charges nothing. If `/sign` answers `X402_LEDGER_UNAVAILABLE` or `X402_INTERNAL` the commit may have landed: retry with the same `idempotencyKey`, and a payment that did land comes back as the stored signature (`"replay": true`), never as a second charge. On `/topup` no deposit address is shown on any error, so only pay an address from a 200 response.
+
+| Endpoint | HTTP | Code | Meaning | Charged? | What to do |
+| --- | --- | --- | --- | --- | --- |
+| `/balance`, `/topup`, `/sign` | 401 | `X402_KEY_INVALID` | Agent key missing, malformed or unknown. | No | Send `Authorization: Bearer ak_...`. Do not mint a new key to get around it: the balance belongs to the old key. |
+| `/balance`, `/topup`, `/sign` | 403 | `X402_KEY_SUSPENDED` | The key is not active. | No | Stop. Email hi@rozo.ai. |
+| any | 503 | `X402_PAYER_DISABLED` | The payer is switched off. | No | Stop and tell the user. |
+| any | 503 | `X402_PAYER_NOT_CONFIGURED` | The payer is not set up on this deployment. | No | Stop. |
+| any | 503 | `X402_LEDGER_UNAVAILABLE` | The balance ledger is unreachable. | No. On `/sign` the outcome can be unknown, see below the table. | Retry shortly with the same `idempotencyKey`. |
+| any | 500 | `X402_INTERNAL` | Unexpected server error. | No. On `/sign` the outcome can be unknown, see below the table. | Retry with the same `idempotencyKey` a few times, then stop and report it. |
+| any | 405 | `METHOD_NOT_ALLOWED` | Wrong HTTP method. | No | `keys`, `topup` and `sign` are POST; `balance` is GET. |
+| `/keys` | 429 | `X402_KEY_RATE_LIMITED` | Too many keys created from this IP this hour. | No | Reuse the key you have, or retry later. |
+| `/keys` | 503 | `X402_RETRY` | Key collision. | No | Retry. |
+| `/topup` | 400 | `X402_INVALID_REQUEST` | Body is not JSON, or `amount` is not a USD amount with at most 2 decimals. | No | Fix the request. |
+| `/topup` | 400 | `X402_TOPUP_AMOUNT_OUT_OF_RANGE` | A top up must be between $5 and $500. | No | Pick an amount in range. |
+| `/topup` | 400 | `X402_TOPUP_SOURCE_REQUIRED` | `chain` and `token` are missing. The response lists accepted chains. | No | Say which coin you pay with. |
+| `/topup` | 400 | `X402_UNSUPPORTED_CHAIN` | Unknown chain. | No | Use a CAIP-2 id or a name such as `solana`, `base`, `ethereum`, `bsc`, `polygon`, `arbitrum`, `stellar`. |
+| `/topup` | 400 | `X402_TOPUP_SOURCE_UNSUPPORTED` | That coin is not accepted for top ups. The server currently refuses native coins and Lightning here. May carry a `supported` list. | No | Top up with USDC or USDT. |
+| `/topup` | 502 | `INTENTS_API_FAILED` | The top up order could not be created. | No, no address was shown | Retry later. |
+| `/topup` | 503 | `X402_TOPUP_MISCONFIGURED`, `X402_TOPUP_NOT_REGISTERED` | The order was not usable, so the deposit address was withheld. | No, no address was shown | Retry later; email hi@rozo.ai if it repeats. |
+| `/topup` | 503 | `X402_PAYER_SHADOW`, `X402_TOPUP_NOT_CONFIGURED`, `X402_SIGNER_NOT_CONFIGURED` | Top ups are closed right now. | No | Stop. |
+| `/sign` | 400 | `X402_INVALID_REQUEST` | Body is not JSON, or `budget` is not a positive USD amount. | No | Fix the request. |
+| `/sign` | 400 | `X402_IDEMPOTENCY_KEY_REQUIRED` | `idempotencyKey` missing or invalid: 8 to 128 chars of `[A-Za-z0-9_.:-]`. | No | Send one key per 402 challenge. |
+| `/sign` | 400 | `X402_UNSUPPORTED_VERSION` | Only `x402Version` 2 is accepted. | No | Send the v2 requirement. |
+| `/sign` | 400 | `X402_UNSUPPORTED_NETWORK`, `X402_UNSUPPORTED_SCHEME`, `X402_UNSUPPORTED_ASSET`, `X402_INVALID_REQUIREMENT`, `X402_SIGN_UNSUPPORTED` | The `accepts` entry is malformed or asks for something not covered (only `exact` USDC is signed). | No | Do not retry the same entry. Tell the user. |
+| `/sign` | 402 | `X402_BUDGET_EXCEEDED` | The challenge asks more than your `budget`. | No | Stop and ask the user. |
+| `/sign` | 402 | `X402_PER_TX_LIMIT_EXCEEDED` | Above this key's single-payment limit (`limitUsd`). | No | Stop and ask the user. |
+| `/sign` | 402 | `X402_INSUFFICIENT_BALANCE` | Balance too low (`balanceUsd`). | No | Top up, wait for the credit, then pay again. |
+| `/sign` | 403 | `X402_PAYTO_NOT_ALLOWED` | `payTo` is not on this key's allowlist. | No | Stop. |
+| `/sign` | 403 | `X402_PAYTO_BLOCKED` | This `payTo` is blocked. | No | Stop. Do not retry. |
+| `/sign` | 409 | `X402_IDEMPOTENCY_CONFLICT` | This `idempotencyKey` was already used for a different requirement. | No new charge | Use a new key only for a new 402 challenge. |
+| `/sign` | 410 | `X402_CREDENTIAL_REFUNDED` | The stored signature expired unused and its amount went back to the balance. | Refunded | Fetch a new 402 and sign it with a new key. |
+| `/sign` | 429 | `X402_DAILY_LIMIT_EXCEEDED` | This key's daily limit would be exceeded (`limitUsd`, `spentTodayUsd`). | No | Wait for the daily window to reset, or ask hi@rozo.ai for a higher limit. |
+| `/sign` | 429 | `X402_GLOBAL_DAILY_CAP_REACHED`, `X402_SIGNER_DAILY_CAP_REACHED` | A platform-wide daily cap was reached. | No | Retry after 00:00 UTC. |
+| `/sign` | 429 | `X402_SIGNER_CAP_REACHED` | The signing service refused this amount. | No | Try a smaller payment or later. |
+| `/sign` | 503 | `X402_RETRY`, `X402_PAYER_MODE_CHANGED` | Transient. | No | Retry with the same `idempotencyKey`. |
+| `/sign` | 503 | `X402_PAYER_SHADOW` | The payer is not live for this key. A fresh request is checked and recorded but not signed. With `"replay": true` it refers to an earlier payment under this `idempotencyKey`. | No for a fresh request. A replay may refer to an earlier charged payment. | Stop. On a replay check `/balance` and never pay again with a new key. |
+| `/sign` | 503 | `X402_SIGNER_NOT_CONFIGURED`, `X402_SIGNER_DISABLED` | Signing for this network is off right now. | No | Stop. |
+
+A 200 with `"replay": true` is the stored signature for an `idempotencyKey` that was already paid. It is not a second charge.
 
 Never generate a new `idempotencyKey` when retrying one payment. A new key on retry can charge twice.
 
