@@ -40,7 +40,7 @@ ROZO Intents supports stablecoins and assets including:
 - USDC
 - USDT (USDT0 on Stellar, beta)
 - EURC (Base, Stellar)
-- Native coins (ETH, BNB, SOL) for invited merchants
+- Native coins (ETH, BNB, SOL, POL) for invited merchants
 
 ## 5. What if my transfer is stuck or delayed?
 
