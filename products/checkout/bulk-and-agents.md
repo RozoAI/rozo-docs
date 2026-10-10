@@ -14,6 +14,8 @@ This page is for anyone who pays more than the occasional invoice through [ROZO 
 * **Teams** that top up several OpenRouter accounts on a schedule.
 * **AI agents** that top up OpenRouter, or pay another Coinbase-hosted invoice, on behalf of a user.
 
+Paying x402 APIs instead of Coinbase invoices? See [x402 Payer](x402-payer.md).
+
 Everything here is self-serve. There is no account to create, no API key to request and no private key to share. Each OpenRouter top-up is its own Coinbase payment link, so a batch is a loop over links: one order per link, one payment per order.
 
 ## Three ways in
