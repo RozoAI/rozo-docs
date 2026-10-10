@@ -83,6 +83,8 @@ The skill wraps the same CLI, so it pays from your own wallet without a key.
 
 Paying many invoices, or building an agent that tops up for users? See [Bulk Purchases and Agents](bulk-and-agents.md).
 
+Paying x402 APIs from an agent? Top up a ROZO balance once with the coin you hold and pay any x402 endpoint that asks for USDC on Base. See [x402 Payer](x402-payer.md).
+
 ## Fees and timing
 
 * **Fee.** ROZO's service fee is included in the quote, shown before you pay. You pay the full invoice amount plus the fee, as the exact deposit amount in your order. The network fee for sending your coin goes to the blockchain, not to ROZO. Lightning and native coin payments also include a conversion spread built into the coin amount.
