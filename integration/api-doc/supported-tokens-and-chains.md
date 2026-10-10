@@ -78,13 +78,21 @@ Nothing changes on the partner side. The flow for a native-coin order:
 
 The partner never holds the volatile coin, and no extra integration work or action is needed. The conversion spread is already in the quoted amount the buyer pays.
 
-#### Gas drop add-on (beta)
+### Gas drop add-on (beta)
 
 {% hint style="info" %}
 **Beta feature.** Gas drop is enabled per account on request. Other accounts get `"available": false` with `"reason": "app_not_allowed"` and an otherwise unchanged response. To request it, see [Contact us](../../contact/contact-us/README.md).
 {% endhint %}
 
 The payer can add a small amount of the destination chain's gas coin to an order that pays out USDC, so the receiving wallet can move its USDC right away. For example, an order paying out USDC on Arbitrum can also deliver a little ETH on Arbitrum.
+
+Gas drop is separate from native-coin pay-ins. It is offered only when all of these hold:
+
+* The order pays in USDC or USDT and pays out USDC.
+* The order type is `exactIn` or `exactOut`.
+* The order is routed by Rozo (`provider` is `rozo`).
+
+It is not available on native-coin pay-ins (ETH, BNB, SOL, POL) or on orders routed through NEAR Intents. Those return `"available": false` with `"reason": "token"` or `"reason": "route"`.
 
 Request it with `options.gasDrop` on a dryrun or a create:
 
@@ -103,7 +111,9 @@ Request it with `options.gasDrop` on a dryrun or a create:
 | Gas coin by destination chain | ETH on Ethereum, Base and Arbitrum; BNB on BNB Chain; POL on Polygon; SOL on Solana; XLM on Stellar; HYPE on HyperEVM |
 
 * `amountUsd` is what the payer gives up for the gas coin. On `exactIn` it comes out of the USDC payout; on `exactOut` it is added to the pay-in.
-* An amount outside the range or off the 0.10 USD step returns `"available": false` with `"reason": "amount_out_of_range"`. The rest of the order is never affected by a refused gas drop.
+* An amount outside the range or off the 0.10 USD step returns `"available": false` with `"reason": "amount_out_of_range"`.
+* At quote time a refused gas drop only removes the add-on: the quote is returned without it and the rest is unchanged.
+* At order creation the gas coin is reserved for the order. If that reservation fails, for example because the gas inventory ran out after the quote, the API returns HTTP `409` with `gasDropUnavailable` and **the order is not created**. Request a new quote; it will show whether the gas drop is still available.
 * The response `gasDrop` block shows `amountNative`, `chargedUsd`, `feeUsd` (the spread) and `principalUsd`. Example for 1 USD to Arbitrum: `chargedUsd` 1.00, `feeUsd` 0.05, `principalUsd` 0.95, delivered as ETH at the quoted price.
 * The gas coin is sent after the USDC payout completes.
 
