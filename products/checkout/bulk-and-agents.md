@@ -94,7 +94,14 @@ Source chain ids: `"1"` Ethereum, `"56"` BNB Chain, `"137"` Polygon, `"42161"` A
 curl https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/<rozoPaymentId>
 ```
 
-Pay exactly `source.amount` to `source.receiverAddress`. On Stellar also send `source.receiverMemo` as a text memo (`MEMO_TEXT`, even when it looks numeric). For Lightning, pay the BOLT11 in `source.lnInvoice`; the amount is in satoshis when `source.amountUnit` is `sats`.
+Before sending anything, confirm all of these in the same run. If any check fails, do not pay; poll status instead:
+
+* `status` is `payment_unpaid`, and `source.txHash`, `source.confirmedAt` and `source.amountReceived` (null or `"0"`) show no pay-in yet.
+* The returned order's `source` matches the chain and token you asked for (a reused order keeps its own rail).
+* The order is still payable: `invoice-status` (step 4) does not show the link as paid or expired.
+* There is time left: now is earlier than the order `expiresAt` and the payment link's own expiry, minus a margin (10 minutes for EVM chains and Stellar, 5 for Solana; only pay a Lightning invoice with at least 10 minutes of validity left).
+
+Then pay exactly `source.amount` to `source.receiverAddress`, once. On Stellar also send `source.receiverMemo` as a text memo (`MEMO_TEXT`, even when it looks numeric). For Lightning, pay the BOLT11 in `source.lnInvoice`; the amount is in satoshis when `source.amountUnit` is `sats`.
 
 **Step 4. Poll until settled.** See [Receipts and status](#receipts-and-status).
 
@@ -107,9 +114,9 @@ The full agent-oriented reference for these calls, including every safety check,
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain or Polygon; USDC on Base or Stellar | Yes | Yes |
 | Stablecoins | USDC or USDT on Arbitrum | No | Yes |
 | Bitcoin | BTC over Lightning | Yes | Yes |
-| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana | No | Yes, when `quote-invoice` lists the coin in `supportedSources` for that invoice |
+| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana | No | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
 
-USDT is not accepted on Base or Stellar. On-chain Bitcoin, native POL and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires.
+USDT is not accepted on Base or Stellar. On-chain Bitcoin, native POL and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Native coin orders are limited to $2,000 per invoice, fee included; above that, `create-invoice` answers `UNSUPPORTED_SOURCE`, so pay large invoices with a stablecoin.
 
 ## Fees
 
@@ -125,7 +132,7 @@ Order creation (`create-invoice`) is rate limited per IP address. Quotes and sta
 * A history of paid orders raises the limit for that caller.
 * Need more headroom than that? Email [hi@rozo.ai](mailto:hi@rozo.ai) and ask about an API key.
 
-The current numbers are published in the API reference. When you hit the limit, `create-invoice` answers HTTP `429` with code `RATE_LIMITED`. Wait, then resume with the links that are not yet `settled`. Retrying an order you already created is safe (see below); hammering the endpoint is not.
+Every `create-invoice` call counts toward the limit, including a retry that returns the same order. The current numbers are published in the API reference. When you hit the limit, `create-invoice` answers HTTP `429` with code `RATE_LIMITED`. Wait, then resume with the links that are not yet `settled`. Retrying an order you already created is safe (see below); hammering the endpoint is not.
 
 ## Idempotency and error codes
 
