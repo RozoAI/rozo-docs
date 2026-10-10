@@ -114,9 +114,9 @@ The full agent-oriented reference for these calls, including every safety check,
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain or Polygon; USDC on Base or Stellar | Yes | Yes |
 | Stablecoins | USDC or USDT on Arbitrum | No | Yes |
 | Bitcoin | BTC over Lightning | Yes | Yes |
-| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana | No | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
+| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon (Beta) | No | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
 
-USDT is not accepted on Base or Stellar. On-chain Bitcoin, native POL and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Native coin orders are limited to $2,000 per invoice, fee included; above that, `create-invoice` answers `UNSUPPORTED_SOURCE`, so pay large invoices with a stablecoin.
+USDT is not accepted on Base or Stellar. On-chain Bitcoin and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Native coin orders are limited to $2,000 per invoice, fee included; above that, `create-invoice` answers `UNSUPPORTED_SOURCE`, so pay large invoices with a stablecoin.
 
 ## Fees
 

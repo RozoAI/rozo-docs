@@ -51,10 +51,9 @@ Invited merchants can accept these native coins. The buyer pays in the native co
 | ETH | Arbitrum | `42161` | 0.10 USD | Beta |
 | BNB | BNB Chain | `56` | 0.10 USD | Beta |
 | SOL | Solana | `900` | 1.00 USD | Beta |
-| POL | Polygon | `137` | 0.10 USD | Beta, not open yet |
+| POL | Polygon | `137` | 0.10 USD | Beta |
 
 * The minimum is the USD value of the order, priced from the coin at quote time. An order below it is rejected with `amountTooLow` (`Minimum for <COIN> payins on chain <id> is $<min>`). Ethereum and Solana have a higher minimum because each pay-in costs more in network fees on those chains.
-* POL on Polygon is listed by `GET /payments/supported` but cannot be enabled yet. Orders return `invalidRequest` until Rozo opens it. This page will be updated when it opens.
 
 * Native coins are **off by default** and **invite only**. To ask for an invitation, open [partners.rozo.ai](https://partners.rozo.ai) → Settings → Supported tokens and click Request access. Once Rozo invites the account, the merchant switches each coin on or off on the same page.
 * Pay-in only. The quoted amount is locked for 60 minutes and includes a conversion spread.
