@@ -1,6 +1,6 @@
 # Common Questions & Answers
 
-**Latest Updated**: [2026-10-09]
+**Latest Updated**: [2026-10-10]
 
 Find out all the essential details about our platform and how it can serve your needs.
 
@@ -13,8 +13,8 @@ ROZO Intents is an intent-based stablecoin SDK that enables users to transfer US
 Most ROZO Intents transfers complete in under few seconds.
 
 - **Fast route available on destination chain:** 5 seconds
-- **Requires liquidity rebalance from another chain:** 10–20 minutes
-- **Network-level fallback route:** up to 1–2 hours
+- **Requires liquidity rebalance from another chain:** 10 to 20 minutes
+- **Network-level fallback route:** up to 1 to 2 hours
 
 If your transfer takes longer than the quoted time, you can contact our support team via Discord.
 

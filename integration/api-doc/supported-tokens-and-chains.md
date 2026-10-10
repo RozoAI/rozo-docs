@@ -2,7 +2,7 @@
 
 ### Live supported matrix
 
-The tables on this page are a snapshot. The always-current, machine-readable list is served by the API itself — use it to populate chain/token pickers instead of hardcoding:
+The tables on this page are a snapshot. The always-current, machine-readable list is served by the API itself. Use it to populate chain/token pickers instead of hardcoding:
 
 ```bash
 curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported'
@@ -23,16 +23,16 @@ Each entry describes one (chain, token) leg in Rozo's own naming:
 }
 ```
 
-* `providers` — rails that accept this leg as a **pay-in source**.
-* `destinationProviders` — rails that can **pay out to** it. They differ for `near`: it accepts pay-ins from many chains but only settles on Base, Solana and Stellar.
-* `destinationMinimumFee` — present only when a per-destination minimum fee applies.
+* `providers`: rails that accept this leg as a **pay-in source**.
+* `destinationProviders`: rails that can **pay out to** it. They differ for `near`: it accepts pay-ins from many chains but only settles on Base, Solana and Stellar.
+* `destinationMinimumFee`: present only when a per-destination minimum fee applies.
 * The top-level `fees` object is the rate card per rail (see [Get Fees](api-for-advanced-used/get-fees.md)).
 
 New chains and tokens appear here automatically as they are enabled. Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
 
 > **Note on Chain IDs for Solana and Stellar:** For non-EVM chains, the API accepts **either** the numeric chain ID **or** the lowercase chain name string:
-> - **Solana** — `900` or `"solana"`
-> - **Stellar** — `1500` or `"stellar"`
+> - **Solana**: `900` or `"solana"`
+> - **Stellar**: `1500` or `"stellar"`
 >
 > Both formats are equivalent and interchangeable in all API requests.
 
@@ -73,7 +73,7 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 **Rules:**
 - The `cctp:` prefix is **required**. A bare integer (e.g. `27`) is treated as a literal `chainId` and will return `invalidChainId`.
 - Matching is case-insensitive and whitespace-trimmed (`cctp:27`, `CCTP:27`, ` Cctp:27 ` are all equivalent).
-- `cctp:25` is **not** aliased — domain `25` belongs to Codex, which is not currently supported.
+- `cctp:25` is **not** aliased: domain `25` belongs to Codex, which is not currently supported.
 - `cctp:2` (Optimism) is not aliased: Optimism is not offered.
 
 ### Pay In Tokens and Chains

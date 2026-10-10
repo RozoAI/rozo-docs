@@ -14,7 +14,7 @@ It turned out the merchant only accept USDC on Base chain, while my wallets only
 
 <figure><img src=".gitbook/assets/Screenshot 2025-11-29 at 5.27.39 PM.png" alt="" width="375"><figcaption></figcaption></figure>
 
-Stablecoins are the best form of money on the Internet, but the user experience is still stuck in the early days. USDC exists on 29 different blockchains — and that’s not even counting USDT.
+Stablecoins are the best form of money on the Internet, but the user experience is still stuck in the early days. USDC exists on 29 different blockchains, and that’s not even counting USDT.
 
 To pay for a coffee, why do we need to understand 29 chains, different stablecoins, different bridges, different fees? That’s _not_ how money should work.<br>
 
