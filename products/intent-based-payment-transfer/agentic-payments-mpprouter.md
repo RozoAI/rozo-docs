@@ -12,9 +12,9 @@ icon: robot
 1. **The agent pays for its own API calls.** The agent holds Stellar USDC and pays per request over HTTP 402. That is this page: MPP Router.
 2. **The agent pays an invoice for its user.** The agent pays an OpenRouter top-up or another Coinbase-hosted invoice with whatever coin the user already holds, through the CLI, the MCP server or the Claude Code skill. See [ROZO Checkout](../checkout/README.md).
 
-Agentic payments let AI agents spend Stellar USDC to call paid HTTP APIs — no API keys, no subscriptions, no credit card on file. The agent makes a request, the server returns `402 Payment Required` with a Stellar payment challenge, the agent signs with its wallet, retries the request, and receives the response.
+Agentic payments let AI agents spend Stellar USDC to call paid HTTP APIs, with no API keys, no subscriptions and no credit card on file. The agent makes a request, the server returns `402 Payment Required` with a Stellar payment challenge, the agent signs with its wallet, retries the request, and receives the response.
 
-ROZO's agentic payment stack runs on **Stellar mainnet** via [MPP Router](https://www.mpprouter.dev) — a Stellar-native 402 proxy that accepts Stellar USDC and forwards the request to upstream merchants.
+ROZO's agentic payment stack runs on **Stellar mainnet** via [MPP Router](https://www.mpprouter.dev), a Stellar-native 402 proxy that accepts Stellar USDC and forwards the request to upstream merchants.
 
 As of 2026-10-09, the router fronts **88 services** ([live count](https://www.mpprouter.dev)), including OpenAI, Anthropic, DeepSeek, Mistral, Gemini, Grok, Groq, OpenRouter, Perplexity, Exa, Firecrawl, Tavily, Brave, Parallel.ai, Replicate, fal, Stability AI, Deepgram, DeepL, Alchemy, Dune, Nansen, CoinGecko, QuickNode, Mapbox, Google Maps and WolframAlpha. One Stellar USDC balance pays for all of them, with no per-service API key, no subscription and no card on file.
 
@@ -22,7 +22,7 @@ As of 2026-10-09, the router fronts **88 services** ([live count](https://www.mp
 
 - **Sub-cent fees.** Each 402-gated call settles for fractions of a cent, making microtransactions practical.
 - **Fast finality.** Stellar closes ledgers every ~5 seconds, so the 402 → pay → retry loop completes in one round trip.
-- **Sponsored transactions.** The agent's wallet does not need XLM for fees — MPP Router sponsors the fee payer.
+- **Sponsored transactions.** The agent's wallet does not need XLM for fees: MPP Router sponsors the fee payer.
 - **One stablecoin balance, many APIs.** You hold USDC on Stellar once and spend it across all of them. No need to fund Base, Tron or Solana.
 
 ## The flow
@@ -47,13 +47,13 @@ Agent                           Server (402-gated)
 
 1. First request: plain HTTP POST to the service URL.
 2. Server responds `402 Payment Required` with a Stellar charge challenge (either MPP's `WWW-Authenticate: Payment` header or the x402 `Payment-Required` header).
-3. Agent signs the challenge with its Stellar key. The inner transaction is a sponsored SAC transfer — the agent's account is `ALL_ZEROS` and only the auth entries are signed, so the server can fee-bump and broadcast.
+3. Agent signs the challenge with its Stellar key. The inner transaction is a sponsored SAC transfer. The agent's account is `ALL_ZEROS` and only the auth entries are signed, so the server can fee-bump and broadcast.
 4. Agent retries the request with the signed credential in the `Authorization` header.
 5. Server validates the credential, broadcasts the signed transaction, and returns the upstream response plus a `Payment-Receipt` header.
 
 ## Protocols supported
 
-MPP Router emits a single `402` response that carries **both** dialects. The inner signed XDR is identical — a single signer produces both envelopes.
+MPP Router emits a single `402` response that carries **both** dialects. The inner signed XDR is identical: a single signer produces both envelopes.
 
 | Aspect | x402 | MPP |
 |--------|------|-----|
@@ -62,11 +62,11 @@ MPP Router emits a single `402` response that carries **both** dialects. The inn
 | Sponsored flag | `extra.areFeesSponsored` | `feePayer: true` |
 | Inner XDR | Same sponsored SAC transfer | Same sponsored SAC transfer |
 
-The MPP and x402 `payTo` addresses in a single challenge are **different** and HMAC-bound — pay the address that matches the dialect you chose. Never mix.
+The MPP and x402 `payTo` addresses in a single challenge are **different** and HMAC-bound. Pay the address that matches the dialect you chose. Never mix.
 
 ## Discovering services
 
-The service catalog is live at `https://apiserver.mpprouter.dev/v1/services/catalog`. Never hardcode service paths — the catalog is the source of truth, and it carries its own `generated_at` timestamp plus a `summary` block with the current counts.
+The service catalog is live at `https://apiserver.mpprouter.dev/v1/services/catalog`. Never hardcode service paths. The catalog is the source of truth, and it carries its own `generated_at` timestamp plus a `summary` block with the current counts.
 
 As of 2026-10-09 the catalog reports **677 endpoints**, of which **451 are payable** and **28 are paid-verified**, meaning a real paid call was made through them and the settling Stellar transaction hash is published. Treat unverified entries as available but untested.
 
@@ -87,10 +87,10 @@ Prices and availability change; the table above is illustrative and the catalog 
 
 ## Getting started
 
-The fastest path for Claude Code or similar AI agents is the [`stellar-agent-wallet`](https://github.com/mpprouter/stellar-agent-wallet-skill) plugin. Seven skills ship in it — `onboard`, `check-balance`, `discover`, `pay-per-call`, `send-payment`, `send-raw` and `bridge` — of which two drive the pay-per-call loop:
+The fastest path for Claude Code or similar AI agents is the [`stellar-agent-wallet`](https://github.com/mpprouter/stellar-agent-wallet-skill) plugin. Seven skills ship in it (`onboard`, `check-balance`, `discover`, `pay-per-call`, `send-payment`, `send-raw` and `bridge`), and two of them drive the pay-per-call loop:
 
-- `discover` — fetch and filter the MPP Router service catalog
-- `pay-per-call` — execute the full 402 → sign → retry loop, handling both MPP and x402 dialects
+- `discover`: fetch and filter the MPP Router service catalog
+- `pay-per-call`: execute the full 402 → sign → retry loop, handling both MPP and x402 dialects
 
 Install the plugin, then:
 
@@ -98,7 +98,7 @@ Install the plugin, then:
 # Find a service
 ./node_modules/.bin/tsx skills/discover/run.ts --query "web search"
 
-# Call it — the skill pays automatically
+# Call it; the skill pays automatically
 ./node_modules/.bin/tsx skills/pay-per-call/run.ts \
   "https://apiserver.mpprouter.dev/v1/services/parallel/search" \
   --body '{"query": "Summarize https://stripe.com/docs"}' \
@@ -109,7 +109,7 @@ For custom integrations, use the `@stellar/mpp` SDK on npm with `@stellar/stella
 
 ## Safety notes
 
-- **Credentials are single-use.** The HMAC binding to amount, currency, and recipient is the router's defense against replay. If the retry fails, start fresh with a new 402 challenge — do not re-send the same credential.
+- **Credentials are single-use.** The HMAC binding to amount, currency, and recipient is the router's defense against replay. If the retry fails, start fresh with a new 402 challenge. Do not re-send the same credential.
 - **Confirm above a threshold.** For mainnet calls above ~$1.00, prompt the user before signing. The `pay-per-call` skill enforces this by default (`--max-auto <usd>` to override).
 - **Validate the challenge amount.** If you know the advertised price from the catalog, verify the 402 challenge amount matches before signing.
 - **Mainnet only.** MPP Router does not run on Stellar testnet.
