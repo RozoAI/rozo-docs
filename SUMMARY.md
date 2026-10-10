@@ -13,6 +13,7 @@
   * [How Intent Based Payment Works](products/intent-based-payment-transfer/intent-based-payment.md)
 * [Agentic Payments (MPP Router)](products/intent-based-payment-transfer/agentic-payments-mpprouter.md)
 * [ROZO Checkout](products/checkout/README.md)
+  * [Bulk Purchases and Agents](products/checkout/bulk-and-agents.md)
 * [Bridge](products/intent-based-bridge/README.md)
   * [One-Click Bridge](products/intent-based-bridge/intent-based-bridge.md)
   * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
