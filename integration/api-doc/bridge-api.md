@@ -17,6 +17,7 @@ Every payment request includes a `destination.receiverAddress`, and ROZO routes 
 * [Wallet Top-up](api-for-advanced-used/wallet-topup.md) — `anyAmount` deposits: send any amount, the system detects it automatically.
 * [Get Fees](api-for-advanced-used/get-fees.md) — preview fees with `dryrun=true` before creating a payment.
 * [Stellar Smart Account Payments](api-for-advanced-used/stellar-contract-payments.md) — pay from Soroban contract addresses (C-addresses) to EVM and Solana.
+* [Funding API (gated beta)](funding/README.md): one stablecoin payment buys native gas tokens ([Buy Gas Tokens](funding/buy-gas-tokens.md)), gas plus a stablecoin ([Gas + Stablecoin Funding](funding/gas-plus-stablecoin.md)), or onboards a new Stellar wallet ([Stellar Wallet Onboarding](funding/stellar-wallet-onboarding.md), not yet available). Requires an explicit grant for your app.
 
 ## Webhooks
 
