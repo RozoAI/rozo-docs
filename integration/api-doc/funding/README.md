@@ -20,13 +20,25 @@ The Funding API lets your user pay **once, in a supported stablecoin**, and rece
 | `stellar_onboarding` | A new or not yet ready Stellar account gets a USDC trustline, USDC and optionally spendable XLM, with one funding signature by the user. | [Stellar Wallet Onboarding](stellar-wallet-onboarding.md) |
 
 **API host**: `https://intentapiv4.rozo.ai/functions/v1/payment-api`
-**Contract**: [OpenAPI `openapi-funding-v1.0.0.yaml`](../../../docs/openapi-funding-v1.0.0.yaml) (version `1.0.0`).
+**Contract**: [OpenAPI `openapi-funding-v1.1.0.yaml`](../../../docs/openapi-funding-v1.1.0.yaml) (version `1.1.0`).
 
 ## Before you start
 
 1. Register your app on [partners.rozo.ai](https://partners.rozo.ai). You get an app id such as `wallet_<slug>` and a server-side API key.
 2. Ask ROZO to enable the Funding API for that app. Registration alone does not grant any funding mode, chain or limit.
 3. Call the API **from your backend only**, with `X-API-Key`. Never ship the key to a browser, mobile app or agent. The key identifies your app; it does not authorize spending from the user's wallet. The user always pays the deposit and signs Stellar transactions themselves.
+
+## No API key yet? The public app `rozoNativeGas`
+
+Agents and scripts that have not registered can call the plain gas flow without a key: `GET /funding/capabilities`, `POST /funding/quotes`, `GET /funding/quotes/{quoteId}`, `POST /funding/orders` and `GET /funding/orders/{fundingId}`. Such calls run as the shared public app `rozoNativeGas`:
+
+* only `native_only`, with small limits (see capabilities);
+* rate limited per client IP (`429 rate_limited`), and `userRef` is replaced by a per-IP value;
+* the public app holds only a few unpaid orders at once; when it is busy, retry later or register your own app;
+* keep the `fundingId` private: it is the only handle to a keyless order, and anyone holding it can read that order;
+* lookup by `orderId`, Stellar ownership proofs and Stellar signing always need your own API key.
+
+Send a normal `User-Agent` header; some default library user agents are refused at the edge.
 
 ## Flow
 

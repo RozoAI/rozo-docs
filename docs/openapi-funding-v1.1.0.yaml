@@ -1,0 +1,1084 @@
+openapi: 3.1.0
+info:
+  title: ROZO Funding API (native gas, gas + stablecoin, Stellar onboarding)
+  version: 1.1.0
+  x-contract-id: rozo-funding-v1
+  description: |
+    One stablecoin payment from the user funds one of three delivery modes:
+
+    | mode | the user receives |
+    | --- | --- |
+    | `native_only` | the destination chain's native coin only (ETH, SOL, XLM, ...). No stablecoin output exists. |
+    | `native_and_stable` | one native output and one stablecoin output, same chain or two supported chains. Each output is tracked and confirmed separately. |
+    | `stellar_onboarding` | a new or not-yet-ready Stellar G-account gets a USDC trustline and USDC (and optionally spendable XLM) through one funding signature by the user. |
+
+    **Status: gated beta, not generally available.** Every endpoint answers
+    `503 funding_disabled` until the operator turns the product on, and each
+    app must be explicitly granted modes, routes and limits. Discover what is
+    actually available with `GET /funding/capabilities`; never hard-code chains,
+    assets, minimums or maximums from this document.
+
+    ## Authentication
+
+    Every endpoint, including `GET`, accepts `X-API-Key` (server-to-server).
+
+    **Keyless public app `rozoNativeGas` (1.1.0)**: agents that have not
+    registered may call `GET /funding/capabilities`, `POST /funding/quotes`,
+    `GET /funding/quotes/{quoteId}`, `POST /funding/orders` and
+    `GET /funding/orders/{fundingId}` WITHOUT a key. Such calls run as app
+    `rozoNativeGas` (small caps, `native_only` only), are rate limited per
+    client IP (`429 rate_limited`), and `userRef` is replaced by a per-IP
+    value. Keep the `fundingId` private: it is the only handle to a keyless
+    order (anyone holding it can read that order). The public app holds at
+    most a few unpaid orders at once; when busy, quotes or orders answer
+    `limit_exceeded` / `inventory_unavailable`: retry later or register an app. Lookup by `orderId`, ownership and Stellar signing always need a
+    key.
+    The key's app is authoritative: a body `appId` is ignored and never widens
+    access. Browsers and agents must call through their own trusted backend;
+    never ship the API key to a client. The API key does not authorize spending
+    from the user's wallet: the user pays the source deposit and signs Stellar
+    transactions themselves.
+
+    ## Flow
+
+    1. `GET /funding/capabilities` - modes, source assets, outputs, limits.
+    2. Stellar onboarding only: `POST /funding/ownership/challenges`, the user
+       signs the returned message, `POST /funding/ownership/verify`.
+    3. `POST /funding/quotes` - read-only plan with every fee and per-output
+       minimum. No deposit address, nothing reserved.
+    4. Show the plan; the user approves it.
+    5. `POST /funding/orders` with `quoteId`, the quote's `planDigest` and an
+       `Idempotency-Key`. Inventory and limits are reserved atomically and a
+       one-time deposit instruction is returned.
+    6. The user sends exactly `deposit.amount` of `deposit.assetId` before
+       `deposit.payBefore`.
+    7. Poll `GET /funding/orders/{fundingId}` (webhooks are a convenience,
+       polling is the source of truth). For Stellar onboarding, when an action
+       `sign_stellar_onboarding` appears, call
+       `POST /funding/orders/{fundingId}/signing-requests`, have the user sign
+       the XDR in their wallet, then `POST /funding/signing-requests/{id}/submit`.
+    8. The order is `completed` only after every output is confirmed on chain.
+
+    ## Money format
+
+    Public amounts are decimal strings in the asset's own unit (`"10.00"`,
+    `"0.0021"`); never JSON numbers. USD figures are decimal strings with 2
+    decimals. Rounding remainders are shown in the quote with their owner.
+
+    ## Contract rules
+
+    * `exactIn` only: the source amount is fixed; outputs have frozen minimums.
+    * A quote never becomes payable by itself; only an order has a deposit.
+    * After the source is paid, receiver addresses, assets and amounts cannot
+      change. A late, short, over- or wrong-asset payment goes to
+      `recovery_required`; it is never re-priced silently.
+    * A leg in `unknown` is being reconciled; it is neither re-sent nor refunded
+      until its outcome is known.
+    * The `internal_settlement` in a quote is where the source payment settles
+      inside ROZO; it is not a stablecoin output to the user.
+  contact:
+    name: ROZO
+    url: https://docs.rozo.ai
+  license:
+    name: Proprietary
+    url: https://rozo.ai
+servers:
+  - url: https://intentapiv4.rozo.ai/functions/v1/payment-api
+    description: Production (gated; answers funding_disabled until enabled)
+
+tags:
+  - name: Discovery
+    description: What the calling app may fund.
+  - name: Ownership
+    description: Prove control of a Stellar address before onboarding.
+  - name: Quotes
+    description: Read-only, frozen funding plans.
+  - name: Orders
+    description: Payable orders, per-leg status and recovery.
+  - name: Stellar signing
+    description: User-signed Stellar onboarding transaction (gated).
+
+security:
+  - apiKey: []
+
+paths:
+  /funding/capabilities:
+    get:
+      tags: [Discovery]
+      operationId: getFundingCapabilities
+      security: [{ apiKey: [] }, {}]
+      summary: What this app may fund right now
+      description: |
+        Returns the modes, source assets, outputs, route combinations, limits,
+        fee rules and Stellar signing support granted to the calling app, with
+        a reason for everything that is disabled. Contains no inventory
+        balances or other internal data. Cache no longer than `validUntil`.
+      responses:
+        '200':
+          description: Capabilities for the authenticated app
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Capabilities' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/ownership/challenges:
+    post:
+      tags: [Ownership]
+      operationId: createOwnershipChallenge
+      summary: Create a no-funds signing challenge for a Stellar address
+      description: |
+        Required before quoting `stellar_onboarding`. The server builds the
+        message (domain, purpose, app, userRef, address, nonce, expiry). The
+        user signs it with their wallet's message-signing function (SEP-53).
+        A challenge can be verified once.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OwnershipChallengeRequest' }
+      responses:
+        '201':
+          description: Challenge created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnershipChallenge' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/ownership/verify:
+    post:
+      tags: [Ownership]
+      operationId: verifyOwnershipChallenge
+      summary: Verify the user's signature and get a short-lived ownership proof
+      description: |
+        Consumes the challenge atomically. Returns `ownershipProofId`, bound to
+        this app, userRef, address, network and purpose. A client-side
+        `verified=true` is never accepted as proof.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OwnershipVerifyRequest' }
+      responses:
+        '201':
+          description: Proof issued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnershipProof' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '410': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/quotes:
+    post:
+      tags: [Quotes]
+      operationId: createFundingQuote
+      security: [{ apiKey: [] }, {}]
+      summary: Price a funding plan (read-only)
+      description: |
+        Validates the mode, route, assets, receivers and limits for this app and
+        returns a frozen plan with every fee component and each output's
+        minimum. Does not create a deposit and does not reserve inventory.
+        A quote is `quoted` until it expires or is consumed by an order.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/QuoteRequest' }
+            examples:
+              nativeOnly:
+                summary: Buy Arbitrum ETH with Base USDC
+                value:
+                  mode: native_only
+                  userRef: user-123
+                  source: { chainId: '8453', assetId: 'BASE_USDC_ASSET_ID_FROM_CAPABILITIES', amount: '3.00' }
+                  outputs:
+                    - { id: native, kind: native, chainId: '42161', receiverAddress: 'RECEIVER_ADDRESS', allocation: all_after_fees }
+              nativeAndStable:
+                summary: Arbitrum ETH plus Stellar USDC to a ready account
+                value:
+                  mode: native_and_stable
+                  userRef: user-123
+                  source: { chainId: '8453', assetId: 'BASE_USDC_ASSET_ID_FROM_CAPABILITIES', amount: '10.00' }
+                  outputs:
+                    - { id: native, kind: native, chainId: '42161', receiverAddress: 'GAS_RECEIVER_ADDRESS', allocationUsd: '2.00' }
+                    - { id: stable, kind: stable, chainId: '1500', assetId: 'STELLAR_USDC_ASSET_ID_FROM_CAPABILITIES', receiverAddress: 'READY_STELLAR_ADDRESS', allocation: remainder, minimumAmount: '7.00' }
+                  limits: { maxTotalFeesUsd: '1.00' }
+              stellarOnboarding:
+                summary: New Stellar account, USDC plus 1 USD of spendable XLM
+                value:
+                  mode: stellar_onboarding
+                  userRef: user-123
+                  ownershipProofId: 'OWNERSHIP_PROOF_ID'
+                  signerProfileId: 'SIGNER_PROFILE_ID_FROM_CAPABILITIES'
+                  signerPreflight: { passed: true, checkedAt: '2026-10-12T00:00:00Z' }
+                  reserveMode: sponsored
+                  source: { chainId: '8453', assetId: 'BASE_USDC_ASSET_ID_FROM_CAPABILITIES', amount: '10.00' }
+                  outputs:
+                    - { id: stable, kind: stable, chainId: '1500', assetId: 'STELLAR_USDC_ASSET_ID_FROM_CAPABILITIES', receiverAddress: 'NEW_STELLAR_ADDRESS', allocation: remainder }
+                    - { id: native, kind: native, chainId: '1500', receiverAddress: 'NEW_STELLAR_ADDRESS', allocationUsd: '1.00' }
+      responses:
+        '201':
+          description: Quote created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quote' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/quotes/{quoteId}:
+    get:
+      tags: [Quotes]
+      operationId: getFundingQuote
+      security: [{ apiKey: [] }, {}]
+      summary: Read a quote created by this app
+      parameters:
+        - $ref: '#/components/parameters/QuoteId'
+      responses:
+        '200':
+          description: The quote
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quote' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/orders:
+    get:
+      tags: [Orders]
+      operationId: getFundingOrderByOrderId
+      summary: Look up an order by the caller's own orderId
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9_.:-]+$' }
+      responses:
+        '200':
+          description: The order
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [Orders]
+      operationId: createFundingOrder
+      security: [{ apiKey: [] }, {}]
+      summary: Turn an approved quote into a payable order
+      description: |
+        Atomically re-checks the app grant, the quote (unexpired, unconsumed,
+        same planDigest), the ownership proof (Stellar onboarding), limits and
+        inventory; reserves inventory and quota; consumes the quote and
+        returns the one-time deposit instruction and the planned legs.
+
+        Retrying with the same `Idempotency-Key` and the same body returns the
+        same order (`200`). The same key with a different body returns
+        `409 idempotency_conflict`. A consumed quote cannot create a second
+        order.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrderRequest' }
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '200':
+          description: Idempotent replay of an existing order
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '410': { $ref: '#/components/responses/Error' }
+        '500': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/orders/{fundingId}:
+    get:
+      tags: [Orders]
+      operationId: getFundingOrder
+      security: [{ apiKey: [] }, {}]
+      summary: Order status, per-leg status, pending user actions and recovery
+      description: |
+        Only the app that created the order can read it; knowing a deposit or
+        receiver address grants no access.
+      parameters:
+        - $ref: '#/components/parameters/FundingId'
+      responses:
+        '200':
+          description: The order
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/orders/{fundingId}/signing-requests:
+    post:
+      tags: [Stellar signing]
+      operationId: createStellarSigningRequest
+      summary: Build the versioned Stellar onboarding transaction for the user to sign
+      description: |
+        **Not yet available in 1.0.0 gated beta**: `stellar_onboarding` is
+        reported `disabled` (reason `executor_unavailable`) by capabilities, so
+        no order can reach `action_required`; this endpoint answers
+        `409 state_changed` until it is enabled. The contract below is final.
+
+        Only valid while the order shows a `sign_stellar_onboarding` action.
+        Returns the unsigned XDR, its hash, the template version, a
+        human-readable operation list and an expiry. Every call that has to
+        rebuild (expired template, changed account state) returns a new
+        `signingRequestId` and hash; an old signature never carries over.
+        Answers `409 channel_busy` (retryable) when no channel account is free.
+      parameters:
+        - $ref: '#/components/parameters/FundingId'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SigningRequestCreate' }
+      responses:
+        '201':
+          description: Signing request created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SigningRequest' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/signing-requests/{signingRequestId}:
+    get:
+      tags: [Stellar signing]
+      operationId: getStellarSigningRequest
+      summary: Status of a signing request
+      description: Not yet available in 1.0.0 gated beta (answers 404); see createStellarSigningRequest.
+      parameters:
+        - $ref: '#/components/parameters/SigningRequestId'
+      responses:
+        '200':
+          description: The signing request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SigningRequest' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+  /funding/signing-requests/{signingRequestId}/submit:
+    post:
+      tags: [Stellar signing]
+      operationId: submitStellarSigningRequest
+      summary: Submit the user-signed XDR
+      description: |
+        Not yet available in 1.0.0 gated beta (answers 404); see createStellarSigningRequest.
+
+        The server re-validates the signed transaction byte-for-byte against the
+        request (same hash, the user's signature only, no extra signers), adds
+        the service signatures and submits it. `submitted` is not delivery:
+        poll the order until the stable and native legs are `confirmed`.
+        Submitting the same signed XDR again is idempotent.
+      parameters:
+        - $ref: '#/components/parameters/SigningRequestId'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SigningSubmitRequest' }
+      responses:
+        '202':
+          description: Accepted for submission
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SigningRequest' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '410': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+
+# Webhook events are part of the contract but are NOT emitted in the 1.0.0
+# gated beta: poll GET /funding/orders/{fundingId} (the source of truth).
+webhooks:
+  funding.action_required:
+    post:
+      operationId: webhookFundingActionRequired
+      summary: The user must act (pay the source, sign a Stellar transaction)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FundingWebhookEvent' }
+      responses:
+        '200': { description: 'Acknowledged' }
+  funding.leg_confirmed:
+    post:
+      operationId: webhookFundingLegConfirmed
+      summary: One output was confirmed on chain (not the whole order)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FundingWebhookEvent' }
+      responses:
+        '200': { description: 'Acknowledged' }
+  funding.completed:
+    post:
+      operationId: webhookFundingCompleted
+      summary: Every output is confirmed; the only terminal success event
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FundingWebhookEvent' }
+      responses:
+        '200': { description: 'Acknowledged' }
+  funding.recovery_required:
+    post:
+      operationId: webhookFundingRecoveryRequired
+      summary: The order needs operator recovery (late/short payment, failed leg, expiry)
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FundingWebhookEvent' }
+      responses:
+        '200': { description: 'Acknowledged' }
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Server-to-server key from https://partners.rozo.ai. Bound to one app (for example `wallet_<slug>`).
+
+  parameters:
+    FundingId:
+      name: fundingId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    QuoteId:
+      name: quoteId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SigningRequestId:
+      name: signingRequestId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Unique per intended order, 8 to 128 characters of `[A-Za-z0-9_.:-]`.
+      schema: { type: string, pattern: '^[A-Za-z0-9_.:-]{8,128}$' }
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      description: Echoed in errors; generated when absent.
+      schema: { type: string, maxLength: 128 }
+
+  responses:
+    Error:
+      description: |
+        Error. Status mapping: unauthorized 401; app_not_enabled 403; not_found 404;
+        idempotency_conflict, quote_consumed, plan_mismatch, inventory_unavailable,
+        state_changed, channel_busy, recovery_required 409; quote_expired,
+        challenge_expired, template_expired 410; other validation codes 400/422;
+        rate_limited 429 (keyless callers); internal_error 500 (retry with the same Idempotency-Key);
+        funding_disabled, price_unavailable 503.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Decimal:
+      type: string
+      pattern: '^\d+(\.\d+)?$'
+      description: Non-negative decimal string in the asset's own unit.
+    UsdAmount:
+      type: string
+      pattern: '^\d+(\.\d{1,2})?$'
+      description: USD decimal string, at most 2 decimals.
+    ChainId:
+      type: string
+      pattern: '^\d+$'
+      description: 'ROZO chain id as a string: 1, 8453, 42161, 137, 56, 999 (EVM), 900 (Solana), 1500 (Stellar).'
+    AssetId:
+      type: string
+      description: |
+        Opaque asset identifier taken from capabilities. Format, for reference:
+        `native`, `erc20:<contract>`, `spl:<mint>`, `stellar:<CODE>:<ISSUER>`.
+        Ticker similarity never implies support (USDT0 and bridged variants
+        are separate assets).
+    Mode:
+      type: string
+      enum: [native_only, native_and_stable, stellar_onboarding]
+    CapabilityStatus:
+      type: string
+      enum: [supported, disabled, temporarily_unavailable]
+    QuoteStatus:
+      type: string
+      enum: [quoted, expired, consumed]
+      description: Status of the quote resource. Orders never have a `quoted` status.
+    OrderStatus:
+      type: string
+      enum:
+        - awaiting_payment
+        - source_confirming
+        - funds_confirmed
+        - executing
+        - action_required
+        - completed
+        - recovery_required
+        - expired_unpaid
+        - cancelled_unpaid
+      description: |
+        `completed` only when every leg is `confirmed`. A partial delivery stays
+        `executing` or `recovery_required` and lists which legs are delivered
+        and which are still owed.
+    LegStatus:
+      type: string
+      enum: [planned, reserved, ready, submitting, unknown, confirmed, failed_confirmed]
+      description: |
+        `unknown` means the outcome is being reconciled against the executor by
+        the leg's fixed execution key; it is never re-sent or refunded blindly.
+    ErrorCode:
+      type: string
+      enum:
+        - unauthorized
+        - funding_disabled
+        - app_not_enabled
+        - invalid_request
+        - unsupported_mode
+        - unsupported_route
+        - unsupported_asset
+        - unsupported_target
+        - limit_exceeded
+        - fees_exceed_limit
+        - price_unavailable
+        - inventory_unavailable
+        - quote_expired
+        - quote_consumed
+        - plan_mismatch
+        - idempotency_conflict
+        - ownership_required
+        - ownership_invalid
+        - challenge_expired
+        - signer_unsupported
+        - stellar_account_not_ready
+        - state_changed
+        - channel_busy
+        - signature_invalid
+        - template_expired
+        - recovery_required
+        - not_found
+        - rate_limited
+        - internal_error
+    NextAction:
+      type: string
+      enum: [none, retry, requote, verify_ownership, change_request, contact_support, poll_order, rebuild_signing_request]
+    Error:
+      type: object
+      required: [code, message, retryable, nextAction, correlationId]
+      properties:
+        code: { $ref: '#/components/schemas/ErrorCode' }
+        message: { type: string }
+        retryable: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        correlationId: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+
+    Capabilities:
+      type: object
+      required: [contractVersion, appId, enabled, configVersion, generatedAt, validUntil, modes, sourceAssets, nativeOutputs, stableOutputs, routes, limits, fees, stellar]
+      properties:
+        contractVersion: { type: string, const: '1.1.0' }
+        appId: { type: string }
+        enabled: { type: boolean, description: 'false when the product or this app''s grant is off; then every mode is disabled with a reason.' }
+        configVersion: { type: integer }
+        generatedAt: { type: string, format: date-time }
+        validUntil: { type: string, format: date-time }
+        modes:
+          type: array
+          items:
+            type: object
+            required: [mode, status]
+            properties:
+              mode: { $ref: '#/components/schemas/Mode' }
+              status: { $ref: '#/components/schemas/CapabilityStatus' }
+              reason: { type: [string, 'null'] }
+        sourceAssets:
+          type: array
+          items:
+            type: object
+            required: [chainId, assetId, symbol, decimals, minAmount, maxAmount, status]
+            properties:
+              chainId: { $ref: '#/components/schemas/ChainId' }
+              assetId: { $ref: '#/components/schemas/AssetId' }
+              symbol: { type: string }
+              decimals: { type: integer }
+              minAmount: { $ref: '#/components/schemas/Decimal' }
+              maxAmount: { $ref: '#/components/schemas/Decimal' }
+              status: { $ref: '#/components/schemas/CapabilityStatus' }
+              reason: { type: [string, 'null'] }
+        nativeOutputs:
+          type: array
+          items:
+            type: object
+            required: [chainId, assetId, symbol, decimals, status, minUsd, maxUsd, stepUsd, targets]
+            properties:
+              chainId: { $ref: '#/components/schemas/ChainId' }
+              assetId: { $ref: '#/components/schemas/AssetId' }
+              symbol: { type: string }
+              decimals: { type: integer }
+              status: { $ref: '#/components/schemas/CapabilityStatus' }
+              reason: { type: [string, 'null'] }
+              minUsd: { $ref: '#/components/schemas/UsdAmount' }
+              maxUsd: { $ref: '#/components/schemas/UsdAmount' }
+              stepUsd: { $ref: '#/components/schemas/UsdAmount' }
+              targets:
+                type: array
+                description: Receiver kinds this output can deliver to.
+                items:
+                  type: object
+                  required: [kind, status]
+                  properties:
+                    kind: { type: string, enum: [evm_address, solana_address, stellar_account_ready, stellar_account_unfunded, stellar_contract, stellar_memo_required] }
+                    status: { $ref: '#/components/schemas/CapabilityStatus' }
+                    reason: { type: [string, 'null'] }
+        stableOutputs:
+          type: array
+          items:
+            type: object
+            required: [chainId, assetId, symbol, decimals, status, minAmount]
+            properties:
+              chainId: { $ref: '#/components/schemas/ChainId' }
+              assetId: { $ref: '#/components/schemas/AssetId' }
+              symbol: { type: string }
+              decimals: { type: integer }
+              status: { $ref: '#/components/schemas/CapabilityStatus' }
+              reason: { type: [string, 'null'] }
+              minAmount: { $ref: '#/components/schemas/Decimal' }
+        routes:
+          type: array
+          description: Every allowed combination. A combination not listed is unsupported.
+          items:
+            type: object
+            required: [mode, sourceChainId, sourceAssetId, status]
+            properties:
+              mode: { $ref: '#/components/schemas/Mode' }
+              sourceChainId: { $ref: '#/components/schemas/ChainId' }
+              sourceAssetId: { $ref: '#/components/schemas/AssetId' }
+              nativeChainId: { oneOf: [{ $ref: '#/components/schemas/ChainId' }, { type: 'null' }] }
+              stableChainId: { oneOf: [{ $ref: '#/components/schemas/ChainId' }, { type: 'null' }] }
+              stableAssetId: { oneOf: [{ $ref: '#/components/schemas/AssetId' }, { type: 'null' }] }
+              status: { $ref: '#/components/schemas/CapabilityStatus' }
+              reason: { type: [string, 'null'] }
+        limits:
+          type: object
+          required: [nativeMaxUsdPerOrder, sourceMaxUsdPerOrder, quoteTtlSeconds, confirmationGraceSeconds]
+          properties:
+            nativeMaxUsdPerOrder: { $ref: '#/components/schemas/UsdAmount' }
+            sourceMaxUsdPerOrder: { $ref: '#/components/schemas/UsdAmount' }
+            quoteTtlSeconds: { type: integer }
+            confirmationGraceSeconds: { type: integer }
+        fees:
+          type: object
+          required: [nativeSpreadBps, nativeFixedFeeUsd, sharedFeeUsd, stableFeeBps]
+          properties:
+            nativeSpreadBps: { type: integer }
+            nativeFixedFeeUsd: { $ref: '#/components/schemas/UsdAmount' }
+            sharedFeeUsd: { $ref: '#/components/schemas/UsdAmount' }
+            stableFeeBps: { type: integer }
+            externalSourceFee: { type: string, const: unknown, description: 'Fees charged by the user''s source wallet or exchange are outside this API.' }
+        stellar:
+          type: object
+          required: [reserveModes, signerProfiles, onboardingTemplateVersion]
+          properties:
+            reserveModes:
+              type: array
+              items: { type: string, enum: [sponsored] }
+            onboardingTemplateVersion: { type: [string, 'null'] }
+            signerProfiles:
+              type: array
+              items:
+                type: object
+                required: [signerProfileId, wallet, templateVersion, status]
+                properties:
+                  signerProfileId: { type: string }
+                  wallet: { type: string }
+                  walletVersion: { type: [string, 'null'] }
+                  platform: { type: [string, 'null'] }
+                  templateVersion: { type: string }
+                  status: { $ref: '#/components/schemas/CapabilityStatus' }
+
+    OwnershipChallengeRequest:
+      type: object
+      required: [chainId, address, userRef]
+      additionalProperties: false
+      properties:
+        chainId: { type: string, const: '1500' }
+        address: { type: string, pattern: '^G[A-Z2-7]{55}$' }
+        userRef: { type: string, minLength: 1, maxLength: 128 }
+        purpose: { type: string, const: stellar_onboarding, default: stellar_onboarding }
+    OwnershipChallenge:
+      type: object
+      required: [challengeId, chainId, address, userRef, purpose, message, signatureScheme, expiresAt]
+      properties:
+        challengeId: { type: string, format: uuid }
+        chainId: { type: string }
+        address: { type: string }
+        userRef: { type: string }
+        purpose: { type: string }
+        message: { type: string, description: 'Sign exactly these bytes (UTF-8).' }
+        signatureScheme: { type: string, const: sep53, description: 'ed25519 over SHA-256("Stellar Signed Message:\n" + message).' }
+        expiresAt: { type: string, format: date-time }
+    OwnershipVerifyRequest:
+      type: object
+      required: [challengeId, signature]
+      additionalProperties: false
+      properties:
+        challengeId: { type: string, format: uuid }
+        signature: { type: string, description: 'Base64 ed25519 signature (64 bytes).' }
+    OwnershipProof:
+      type: object
+      required: [ownershipProofId, chainId, address, userRef, purpose, expiresAt]
+      properties:
+        ownershipProofId: { type: string, format: uuid }
+        chainId: { type: string }
+        address: { type: string }
+        userRef: { type: string }
+        purpose: { type: string }
+        expiresAt: { type: string, format: date-time }
+
+    QuoteSource:
+      type: object
+      required: [chainId, assetId, amount]
+      additionalProperties: false
+      properties:
+        chainId: { $ref: '#/components/schemas/ChainId' }
+        assetId: { $ref: '#/components/schemas/AssetId' }
+        amount: { $ref: '#/components/schemas/Decimal' }
+    QuoteOutputRequest:
+      type: object
+      required: [id, kind, chainId, receiverAddress]
+      additionalProperties: false
+      properties:
+        id: { type: string, enum: [native, stable] }
+        kind: { type: string, enum: [native, stable] }
+        chainId: { $ref: '#/components/schemas/ChainId' }
+        assetId: { $ref: '#/components/schemas/AssetId', description: 'Required for stable outputs; ignored for native (implied by chain).' }
+        receiverAddress: { type: string, minLength: 1, maxLength: 128 }
+        allocationUsd: { $ref: '#/components/schemas/UsdAmount', description: 'Native outputs in native_and_stable / stellar_onboarding: total USD budget of this leg (coin principal plus this leg''s fees).' }
+        allocation:
+          type: string
+          enum: [all_after_fees, remainder]
+          description: '`all_after_fees` for the single native output of native_only; `remainder` for the stable output.'
+        minimumAmount: { $ref: '#/components/schemas/Decimal', description: 'Reject the quote if this output would deliver less.' }
+    QuoteRequest:
+      type: object
+      required: [mode, source, outputs, userRef]
+      additionalProperties: false
+      properties:
+        mode: { $ref: '#/components/schemas/Mode' }
+        userRef: { type: string, minLength: 1, maxLength: 128, description: 'The caller''s stable id for the end user (quota and ownership binding).' }
+        source: { $ref: '#/components/schemas/QuoteSource' }
+        outputs:
+          type: array
+          minItems: 1
+          maxItems: 2
+          items: { $ref: '#/components/schemas/QuoteOutputRequest' }
+        limits:
+          type: object
+          additionalProperties: false
+          properties:
+            maxTotalFeesUsd: { $ref: '#/components/schemas/UsdAmount' }
+        ownershipProofId: { type: string, format: uuid, description: 'Required for stellar_onboarding.' }
+        signerProfileId: { type: string, description: 'Required for stellar_onboarding.' }
+        signerPreflight:
+          type: object
+          description: Required for stellar_onboarding. The app's in-browser check that the user's wallet can sign the template.
+          required: [passed, checkedAt]
+          properties:
+            passed: { type: boolean }
+            checkedAt: { type: string, format: date-time }
+        reserveMode: { type: string, enum: [sponsored], description: 'stellar_onboarding only; v1 supports sponsored only.' }
+
+    FeeLine:
+      type: object
+      required: [kind, usd, refundable, appliesTo]
+      properties:
+        kind: { type: string, enum: [native_spread, native_fixed, native_network, shared_routing, stable_service, stellar_sponsor_fee] }
+        usd: { $ref: '#/components/schemas/UsdAmount' }
+        refundable: { type: boolean, description: 'Refunded when the service it pays for never happened.' }
+        appliesTo: { type: string, description: 'Leg id, or `shared`.' }
+    PlannedLeg:
+      type: object
+      required: [legId, outputId, kind, chainId, assetId, symbol, receiverAddress, minimumAmount, sourceAllocationAmount, status]
+      properties:
+        legId: { type: string, description: 'Order leg UUID. On a quote (no order yet) it equals outputId.' }
+        outputId: { type: string, enum: [native, stable] }
+        kind: { type: string, enum: [native, stable] }
+        chainId: { $ref: '#/components/schemas/ChainId' }
+        assetId: { $ref: '#/components/schemas/AssetId' }
+        symbol: { type: string }
+        receiverAddress: { type: string }
+        minimumAmount: { $ref: '#/components/schemas/Decimal', description: 'Guaranteed minimum delivered amount when the source is paid in full and on time.' }
+        budgetUsd: { $ref: '#/components/schemas/UsdAmount', description: 'Native legs: N = principal + this leg''s fees.' }
+        principalUsd: { $ref: '#/components/schemas/UsdAmount' }
+        nativePriceUsd: { type: [string, 'null'] }
+        sourceAllocationAmount: { $ref: '#/components/schemas/Decimal', description: 'Share of the source amount backing this leg (basis for refunds of an undelivered leg).' }
+        stellar:
+          type: [object, 'null']
+          description: Native XLM breakdown for Stellar legs.
+          properties:
+            totalXlm: { $ref: '#/components/schemas/Decimal' }
+            reserveXlm: { $ref: '#/components/schemas/Decimal', description: 'Locked as the account''s minimum balance (not spendable). Zero when sponsored.' }
+            spendableXlm: { $ref: '#/components/schemas/Decimal' }
+            actionKind: { type: string, enum: [payment, create_account, onboarding_template] }
+        status: { $ref: '#/components/schemas/LegStatus' }
+        deliveredAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }] }
+        txHash: { type: [string, 'null'] }
+    UserAction:
+      type: object
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [pay_source, sign_stellar_onboarding] }
+        legIds:
+          type: array
+          items: { type: string }
+        dueBy: { type: [string, 'null'], format: date-time }
+    Quote:
+      type: object
+      required: [quoteId, status, mode, appId, userRef, expiresAt, source, legs, fees, totals, userActions, planDigest, settlement, externalSourceFee, configVersion, confirmationGraceSeconds]
+      properties:
+        quoteId: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/QuoteStatus' }
+        mode: { $ref: '#/components/schemas/Mode' }
+        appId: { type: string }
+        userRef: { type: string }
+        createdAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time, description: 'Also the latest source payment time (payBefore) of an order created from this quote.' }
+        source:
+          type: object
+          required: [chainId, assetId, symbol, amount, valuationUsd, priceUsd, priceAt]
+          properties:
+            chainId: { $ref: '#/components/schemas/ChainId' }
+            assetId: { $ref: '#/components/schemas/AssetId' }
+            symbol: { type: string }
+            amount: { $ref: '#/components/schemas/Decimal' }
+            valuationUsd: { $ref: '#/components/schemas/UsdAmount' }
+            priceUsd: { type: string, description: 'USD value of one unit of the source asset used for this quote (1 USDT is not assumed to be 1 USD).' }
+            priceAt: { type: string, format: date-time }
+        legs:
+          type: array
+          items: { $ref: '#/components/schemas/PlannedLeg' }
+        fees:
+          type: array
+          items: { $ref: '#/components/schemas/FeeLine' }
+        totals:
+          type: object
+          required: [sourceValueUsd, nativeBudgetsUsd, stableDeliveryUsd, sharedFeesUsd, roundingRemainderUsd, roundingRemainderOwner, totalFeesUsd]
+          description: |
+            sourceValueUsd = nativeBudgetsUsd + stableDeliveryUsd + sharedFeesUsd + roundingRemainderUsd,
+            exactly (computed in integer micro-dollars; the displayed 2-decimal strings are floors).
+            nativeBudgetsUsd = value of the native coin delivered + native-leg fees.
+            sharedFeesUsd = every fee not owned by a native leg (routing, stable service, Stellar sponsor fee).
+            roundingRemainderUsd = value left by flooring delivered amounts to their precision.
+          properties:
+            sourceValueUsd: { $ref: '#/components/schemas/UsdAmount' }
+            nativeBudgetsUsd: { $ref: '#/components/schemas/UsdAmount' }
+            stableDeliveryUsd: { $ref: '#/components/schemas/UsdAmount' }
+            sharedFeesUsd: { $ref: '#/components/schemas/UsdAmount' }
+            roundingRemainderUsd: { type: string, description: 'Up to 6 decimals; value left by flooring native/stable amounts.' }
+            roundingRemainderOwner: { type: string, enum: [user_refundable, rozo_disclosed] }
+            totalFeesUsd: { $ref: '#/components/schemas/UsdAmount' }
+        userActions:
+          type: array
+          items: { $ref: '#/components/schemas/UserAction' }
+        dependencies:
+          type: array
+          description: Execution dependencies the user should know about (for example `stellar_user_signature`).
+          items: { type: string }
+        planDigest: { type: string, pattern: '^[0-9a-f]{64}$', description: 'SHA-256 of the frozen plan. Send it back on create to prove the user approved this exact plan.' }
+        settlement:
+          type: object
+          required: [type, note]
+          properties:
+            type: { type: string, const: internal_settlement }
+            note: { type: string }
+        externalSourceFee: { type: string, const: unknown }
+        configVersion: { type: integer }
+        confirmationGraceSeconds: { type: integer }
+        ownershipProofId: { type: [string, 'null'] }
+        signerProfileId: { type: [string, 'null'] }
+
+    CreateOrderRequest:
+      type: object
+      required: [quoteId, planDigest, orderId]
+      additionalProperties: false
+      properties:
+        quoteId: { type: string, format: uuid }
+        planDigest: { type: string, pattern: '^[0-9a-f]{64}$' }
+        orderId: { type: string, minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9_.:-]+$', description: 'Caller''s own order reference, unique per app.' }
+
+    Deposit:
+      type: object
+      required: [chainId, assetId, symbol, address, amount, payBefore]
+      properties:
+        chainId: { $ref: '#/components/schemas/ChainId' }
+        assetId: { $ref: '#/components/schemas/AssetId' }
+        symbol: { type: string }
+        address: { type: string, description: 'One-time deposit address for this order only. Never reuse it.' }
+        memo: { type: [string, 'null'], description: 'Required when present (Stellar).' }
+        amount: { $ref: '#/components/schemas/Decimal', description: 'Send exactly this amount.' }
+        payBefore: { type: string, format: date-time }
+    SourceState:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [awaiting, detected, confirming, confirmed, late, short, over, wrong_asset] }
+        receivedAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }] }
+        txHash: { type: [string, 'null'] }
+        confirmedAt: { type: [string, 'null'], format: date-time }
+    Recovery:
+      type: object
+      required: [state]
+      properties:
+        state: { type: string, enum: [none, open, resolved] }
+        reason: { type: [string, 'null'] }
+        deliveredLegIds:
+          type: array
+          items: { type: string }
+        owedLegIds:
+          type: array
+          items: { type: string }
+    Order:
+      type: object
+      required: [fundingId, appId, orderId, mode, status, stateVersion, quoteId, planDigest, deposit, source, legs, pendingActions, recovery, createdAt, updatedAt]
+      properties:
+        fundingId: { type: string, format: uuid }
+        appId: { type: string }
+        orderId: { type: string }
+        userRef: { type: string }
+        mode: { $ref: '#/components/schemas/Mode' }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        stateVersion: { type: integer, description: 'Increases on every change.' }
+        quoteId: { type: string, format: uuid }
+        planDigest: { type: string }
+        deposit: { $ref: '#/components/schemas/Deposit' }
+        source: { $ref: '#/components/schemas/SourceState' }
+        legs:
+          type: array
+          items: { $ref: '#/components/schemas/PlannedLeg' }
+        fees:
+          type: array
+          items: { $ref: '#/components/schemas/FeeLine' }
+        totals: { $ref: '#/components/schemas/Quote/properties/totals' }
+        pendingActions:
+          type: array
+          items: { $ref: '#/components/schemas/UserAction' }
+        recovery: { $ref: '#/components/schemas/Recovery' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    SigningRequestCreate:
+      type: object
+      required: [walletAddress, signerProfileId]
+      additionalProperties: false
+      properties:
+        walletAddress: { type: string, pattern: '^G[A-Z2-7]{55}$', description: 'Must equal the order''s frozen Stellar receiver.' }
+        signerProfileId: { type: string }
+    SigningOperation:
+      type: object
+      required: [index, type, summary]
+      properties:
+        index: { type: integer }
+        type: { type: string }
+        source: { type: [string, 'null'] }
+        summary: { type: string }
+    SigningRequest:
+      type: object
+      required: [signingRequestId, fundingId, status, templateVersion, networkPassphrase, xdr, txHash, expiresAt, operations]
+      properties:
+        signingRequestId: { type: string, format: uuid }
+        fundingId: { type: string, format: uuid }
+        status: { type: string, enum: [awaiting_signature, submitting, submitted, confirmed, failed, expired, superseded] }
+        templateVersion: { type: string }
+        networkPassphrase: { type: string }
+        xdr: { type: string, description: 'Unsigned transaction envelope (base64). Only pass it to the user''s wallet.' }
+        txHash: { type: string, pattern: '^[0-9a-f]{64}$' }
+        expiresAt: { type: string, format: date-time }
+        operations:
+          type: array
+          items: { $ref: '#/components/schemas/SigningOperation' }
+        submittedTxHash: { type: [string, 'null'] }
+        lastError: { type: [string, 'null'] }
+    SigningSubmitRequest:
+      type: object
+      required: [signedXdr]
+      additionalProperties: false
+      properties:
+        signedXdr: { type: string, description: 'The envelope returned by the user''s wallet (base64).' }
+
+    FundingWebhookEvent:
+      type: object
+      required: [eventId, type, fundingId, orderId, appId, status, stateVersion, occurredAt]
+      description: |
+        Signed with the app's webhook secret (same HMAC headers as payment
+        webhooks). Deduplicate on `eventId`; events may be retried and arrive
+        out of order: compare `stateVersion` and re-read the order.
+      properties:
+        eventId: { type: string, format: uuid }
+        type: { type: string, enum: [funding.action_required, funding.leg_confirmed, funding.completed, funding.recovery_required] }
+        fundingId: { type: string, format: uuid }
+        orderId: { type: string }
+        appId: { type: string }
+        legId: { type: [string, 'null'] }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        stateVersion: { type: integer }
+        occurredAt: { type: string, format: date-time }
