@@ -13,7 +13,9 @@
 ##      moved pages; these entries are the explicit backstop.
 ##
 ## Deliberately left as 404 (no meaningful destination):
-##   /blogs, /products-1, /integration/api-doc/api-for-advanced-used
+##   /blogs, /products-1, /integration/api-doc/api-for-advanced-used, /blog/en
+##   Templated API paths such as /payments/{paymentId} are not pages; Google
+##   extracts them from the GitBook/Apidog hydration JSON. Leave them as 404.
 
 redirects:
   # group 1: unpublished directories
@@ -41,3 +43,9 @@ redirects:
   contact/terms-of-service: contact/contact-us/terms-of-service.md
   contact/privacy-policy: contact/contact-us/privacy-policy.md
   contact/faqs: contact/faqs.md
+  # group 3: legacy URLs still crawled (2026-10-12 Search Console 404 report)
+  integration/deposit-api: integration/api-doc/deposit-api.md
+  start/intent-based-earn: products/intent-based-bridge/README.md
+  start/intent-based-earn/rss.xml: products/intent-based-bridge/README.md
+  start/supported-tokens-and-chains/rss.xml: integration/api-doc/supported-tokens-and-chains.md
+  blog/en/faq: contact/faqs.md
