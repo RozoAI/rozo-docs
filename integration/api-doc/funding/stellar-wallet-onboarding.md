@@ -1,15 +1,26 @@
 ---
 description: >-
   stellar_onboarding: a new or not yet ready Stellar account gets a USDC
-  trustline, USDC and optional spendable XLM with one user funding signature.
-  Contract published; not yet available.
+  trustline, USDC and optional spendable XLM with one payment and one user
+  signature. Available to approved apps.
 ---
 
 # Stellar Wallet Onboarding (`stellar_onboarding`)
 
-{% hint style="danger" %}
-**Not yet available.** The contract below is final (OpenAPI `1.0.0`), but capabilities report this mode as `disabled` with reason `executor_unavailable`, quotes are refused, and the signing endpoints answer `409 state_changed` / `404`. Build against it, but do not offer it to users until capabilities show `supported`.
+{% hint style="info" %}
+**Available to approved apps.** The mode is enabled per app and needs an API key: the signing step must be tied to the app that created the order, so the keyless public app does not offer it. Check `GET /funding/capabilities`: `stellar_onboarding` must show `supported`. Ask the ROZO team to enable it for your app.
 {% endhint %}
+
+## Pricing and limits
+
+| Item | Value |
+| --- | --- |
+| Account opening fee | **0.50 USDC per order**, taken from the USDC output. It covers the account and trustline reserves ROZO sponsors. |
+| Address already has a USDC trustline | No claimable balance and **no signature**: the USDC is sent directly and the opening fee is not charged. |
+| XLM output (optional) | 1 to 2 USD per order, about 5 % spread. |
+| Source payment | 1 to 20 USD in Base USDC. |
+
+Always read the live values from the quote: `fees` and `totals` are authoritative, this table is not.
 
 For a user whose Stellar account does not exist yet, or exists without a USDC trustline. The user pays one stablecoin deposit on a supported chain and, after it is confirmed, signs **one** Stellar transaction that:
 
@@ -18,6 +29,8 @@ For a user whose Stellar account does not exist yet, or exists without a USDC tr
 3. claims the USDC that ROZO set aside for this order,
 4. pays the disclosed sponsor fee in USDC,
 5. (optional) receives spendable XLM.
+
+Everything above lands in **one Stellar transaction**: either all of it happens or none of it does.
 
 ROZO never adds a trustline on the user's behalf without that signature, and never sees the user's secret key.
 
