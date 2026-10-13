@@ -31,7 +31,7 @@ The merchant directory lives at [checkout.rozo.ai/services](https://checkout.roz
 
 ### Web
 
-Open [checkout.rozo.ai](https://checkout.rozo.ai), paste the payment link, pick a coin and send the exact amount shown.
+Open [checkout.rozo.ai](https://checkout.rozo.ai), paste the payment link, pick a coin and send the exact amount shown. To pay with ZEC (Beta), open [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) instead.
 
 ### CLI
 
