@@ -1,13 +1,13 @@
 ---
 description: >-
   native_and_stable: one stablecoin payment delivers a native gas token and a
-  stablecoin, each tracked and confirmed separately. Gated beta.
+  stablecoin, each tracked and confirmed separately. On request, API key apps.
 ---
 
 # Gas + Stablecoin Funding (`native_and_stable`)
 
 {% hint style="warning" %}
-Gated beta. Read the [Funding API overview](README.md) first. Only combinations listed in `capabilities.routes` are available.
+**On request, for apps with an API key.** The keyless public app does not offer this mode. Read the [Funding API overview](README.md) first; only combinations listed in `capabilities.routes` for your app are available. For a new Stellar wallet (USDC plus XLM, one signature, no key) use [Open a Stellar Wallet](stellar-wallet-onboarding.md).
 {% endhint %}
 
 One deposit funds **two outputs**: a native gas token and a stablecoin (USDC where supported). They can be on the same chain or on two different supported chains, for example ETH on Arbitrum plus USDC on Stellar. Each output is its own leg with its own status and transaction hash. The order is `completed` only when **both** are confirmed.
@@ -37,7 +37,7 @@ curl -s -X POST https://intentapiv4.rozo.ai/functions/v1/payment-api/funding/quo
 ## Receivers
 
 * Both receiver addresses, assets and amounts are frozen into the plan the user approves (`planDigest`). They cannot change after the deposit is paid.
-* A Stellar USDC output needs an existing account **with** a USDC trustline. If the account is not ready, the quote fails with `stellar_account_not_ready` and `details.suggestedMode = stellar_onboarding`; it never switches mode silently.
+* A Stellar USDC output needs an existing account **with** a USDC trustline. If the account is not ready, the quote fails with `stellar_account_not_ready` and `details.suggestedMode = stellar_onboarding` ([Open a Stellar Wallet](stellar-wallet-onboarding.md)); it never switches mode silently.
 
 ## Create, pay, track
 

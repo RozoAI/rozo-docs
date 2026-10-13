@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: ROZO Funding API (native gas, gas + stablecoin, Stellar onboarding)
-  version: 1.0.0
+  version: 1.2.0
   x-contract-id: rozo-funding-v1
   description: |
     One stablecoin payment from the user funds one of three delivery modes:
@@ -12,15 +12,47 @@ info:
     | `native_and_stable` | one native output and one stablecoin output, same chain or two supported chains. Each output is tracked and confirmed separately. |
     | `stellar_onboarding` | a new or not-yet-ready Stellar G-account gets a USDC trustline and USDC (and optionally spendable XLM) through one funding signature by the user. |
 
-    **Status: gated beta, not generally available.** Every endpoint answers
-    `503 funding_disabled` until the operator turns the product on, and each
-    app must be explicitly granted modes, routes and limits. Discover what is
+    **Status (1.2.0, 2026-10-13)**: live. The keyless public app
+    `rozoNativeGas` offers `stellar_onboarding` and `native_only` (XLM) to
+    everyone. Apps with an API key are granted modes, routes and limits per
+    app; `native_and_stable` is available on request. Discover what is
     actually available with `GET /funding/capabilities`; never hard-code chains,
     assets, minimums or maximums from this document.
 
+    **Changes in 1.2.0** (additive, no field removed): keyless
+    `stellar_onboarding` with one user signature; ownership proof,
+    `signerProfileId` and `signerPreflight` are optional; `usdGas` fixed XLM
+    tiers with `gasOptions` in capabilities; USDC or USDT on any enabled EVM
+    source chain accepted 1:1; per-IP daily source limit for keyless callers.
+
     ## Authentication
 
-    Every endpoint, including `GET`, requires `X-API-Key` (server-to-server).
+    Every endpoint, including `GET`, accepts `X-API-Key` (server-to-server).
+
+    **Keyless public app `rozoNativeGas`**: callers that have not
+    registered may call `GET /funding/capabilities`, `POST /funding/quotes`,
+    `GET /funding/quotes/{quoteId}`, `POST /funding/orders` and
+    `GET /funding/orders/{fundingId}` WITHOUT a key. Such calls run as app
+    `rozoNativeGas` (`stellar_onboarding` and `native_only`; 1 to 1000 USD
+    per order, 2000 USD per client IP per day, 10000 USD per day for the app;
+    XLM budget up to 10 USD per order), are rate limited per client IP
+    (`429 rate_limited`), and `userRef` is replaced by a per-IP value. Keep the `fundingId` private: it is the only handle to a keyless
+    order (anyone holding it can read that order). The public app holds at
+    most a few unpaid orders at once; when busy, quotes or orders answer
+    `limit_exceeded` / `inventory_unavailable`: retry later or register an app. Lookup by `orderId` and ownership proofs always need a
+    key.
+
+    **Keyless Stellar onboarding (1.2.0)**: the public app's grant lists
+    `stellar_onboarding` (see capabilities), so a keyless
+    caller can also run Path B end to end: quote and order (no
+    `ownershipProofId`, `signerProfileId` or `signerPreflight` needed), pay,
+    then `POST /funding/orders/{fundingId}/signing-requests`,
+    `GET /funding/signing-requests/{signingRequestId}` and
+    `POST /funding/signing-requests/{signingRequestId}/submit`. The
+    `fundingId` is the credential; `walletAddress` must equal the order's
+    Stellar receiver and only that address's signature on the exact template
+    is accepted, so the user signs exactly once. Signing and submit are rate
+    limited per client IP.
     The key's app is authoritative: a body `appId` is ignored and never widens
     access. Browsers and agents must call through their own trusted backend;
     never ship the API key to a client. The API key does not authorize spending
@@ -29,10 +61,12 @@ info:
 
     ## Flow
 
-    1. `GET /funding/capabilities` - modes, source assets, outputs, limits.
-    2. Stellar onboarding only: `POST /funding/ownership/challenges`, the user
-       signs the returned message, `POST /funding/ownership/verify`.
-    3. `POST /funding/quotes` - read-only plan with every fee and per-output
+    1. `GET /funding/capabilities`: modes, source assets, outputs, limits.
+    2. Optional, Stellar onboarding with an API key only:
+       `POST /funding/ownership/challenges`, the user signs the returned
+       message, `POST /funding/ownership/verify`. Not needed: the claim
+       transaction itself must carry the receiver's signature.
+    3. `POST /funding/quotes`: read-only plan with every fee and per-output
        minimum. No deposit address, nothing reserved.
     4. Show the plan; the user approves it.
     5. `POST /funding/orders` with `quoteId`, the quote's `planDigest` and an
@@ -47,6 +81,39 @@ info:
        the XDR in their wallet, then `POST /funding/signing-requests/{id}/submit`.
     8. The order is `completed` only after every output is confirmed on chain.
 
+    ## Stellar onboarding
+
+    * XLM comes only as a fixed `usdGas` tier from capabilities
+      `gasOptions["1500"]`: `"0"` = none, `"0.5"` = 1.6 XLM, `"1"` = 3.2 XLM.
+      Default `"0.5"` when the address needs onboarding (new account or no
+      USDC trustline), `"0"` when it already has a USDC trustline.
+    * The USDC part pays the `/payments` bridge fee (`bridge_fee`: 0.1 %,
+      minimum 0.01 USDC, Ethereum minimum 0.10 USDC). A paid `usdGas` tier is
+      the onboarding fee; the bridge sponsor fee (`stellar_sponsor_fee`) is
+      charged only with `usdGas` `"0"` on an address that needs onboarding.
+      With a paid tier the claim still carries a 0.0000001 USDC sponsor fee
+      payment (the smallest the claim accepts).
+
+    * After the source is final the service checks the receiver on Stellar.
+      If it already holds the official USDC trustline, no claimable balance
+      and no signature are needed: USDC and any XLM tier are delivered directly and the order completes like
+      `native_and_stable`.
+    * Otherwise a claimable balance of the gross USDC is created for the
+      receiver (claimable by the receiver until `claimExpiresAt`, after that
+      by ROZO custody) and the order becomes `action_required` with
+      `sign_stellar_onboarding` (`dueBy` = 24 h before the balance expires).
+    * A signing request is valid for at most 300 s and always ends at least
+      24 h before the balance expires; when that leaves less than 120 s the
+      request is refused with `claim_expiring`.
+    * If the receiver claims the balance outside the template, the order
+      completes with the USDC delivered (no sponsor fee collected) and any XLM
+      output is sent separately.
+    * If the balance expires unclaimed and custody reclaims it, the order goes
+      to `recovery_required`; the user is still owed (no automatic refund).
+    * A submit whose outcome is uncertain stays `submitting` until the
+      transaction hash is found or `maxTime` passes (`expired`). Never re-sign
+      a new request while one is `submitting`.
+
     ## Money format
 
     Public amounts are decimal strings in the asset's own unit (`"10.00"`,
@@ -58,8 +125,12 @@ info:
     * `exactIn` only: the source amount is fixed; outputs have frozen minimums.
     * A quote never becomes payable by itself; only an order has a deposit.
     * After the source is paid, receiver addresses, assets and amounts cannot
-      change. A late, short, over- or wrong-asset payment goes to
-      `recovery_required`; it is never re-priced silently.
+      change. USDC or USDT on any enabled EVM source chain is accepted 1:1
+      against the quoted amount (the deposit address is the same on every
+      enabled chain). A payment that covers the amount, including an
+      overpayment, completes the order; the excess is not refunded
+      automatically. A late or short payment, or any other asset or chain,
+      goes to `recovery_required`; it is never re-priced silently.
     * A leg in `unknown` is being reconciled; it is neither re-sent nor refunded
       until its outcome is known.
     * The `internal_settlement` in a quote is where the source payment settles
@@ -72,19 +143,19 @@ info:
     url: https://rozo.ai
 servers:
   - url: https://intentapiv4.rozo.ai/functions/v1/payment-api
-    description: Production (gated; answers funding_disabled until enabled)
+    description: Production
 
 tags:
   - name: Discovery
     description: What the calling app may fund.
   - name: Ownership
-    description: Prove control of a Stellar address before onboarding.
+    description: Optional proof of control of a Stellar address (API key apps only).
   - name: Quotes
     description: Read-only, frozen funding plans.
   - name: Orders
     description: Payable orders, per-leg status and recovery.
   - name: Stellar signing
-    description: User-signed Stellar onboarding transaction (gated).
+    description: User-signed Stellar onboarding transaction (keyless or API key).
 
 security:
   - apiKey: []
@@ -94,6 +165,7 @@ paths:
     get:
       tags: [Discovery]
       operationId: getFundingCapabilities
+      security: [{ apiKey: [] }, {}]
       summary: What this app may fund right now
       description: |
         Returns the modes, source assets, outputs, route combinations, limits,
@@ -116,7 +188,10 @@ paths:
       operationId: createOwnershipChallenge
       summary: Create a no-funds signing challenge for a Stellar address
       description: |
-        Required before quoting `stellar_onboarding`. The server builds the
+        Optional (1.2.0). An app with an API key may attach the resulting
+        `ownershipProofId` to a `stellar_onboarding` quote; it is not required
+        because the claim transaction must carry the receiver's signature
+        anyway. Not available to keyless callers. The server builds the
         message (domain, purpose, app, userRef, address, nonce, expiry). The
         user signs it with their wallet's message-signing function (SEP-53).
         A challenge can be verified once.
@@ -173,6 +248,7 @@ paths:
     post:
       tags: [Quotes]
       operationId: createFundingQuote
+      security: [{ apiKey: [] }, {}]
       summary: Price a funding plan (read-only)
       description: |
         Validates the mode, route, assets, receivers and limits for this app and
@@ -206,18 +282,15 @@ paths:
                     - { id: stable, kind: stable, chainId: '1500', assetId: 'STELLAR_USDC_ASSET_ID_FROM_CAPABILITIES', receiverAddress: 'READY_STELLAR_ADDRESS', allocation: remainder, minimumAmount: '7.00' }
                   limits: { maxTotalFeesUsd: '1.00' }
               stellarOnboarding:
-                summary: New Stellar account, USDC plus 1 USD of spendable XLM
+                summary: New Stellar account, USDC plus 1.6 spendable XLM (usdGas 0.5)
                 value:
+                  usdGas: '0.5'
                   mode: stellar_onboarding
                   userRef: user-123
-                  ownershipProofId: 'OWNERSHIP_PROOF_ID'
-                  signerProfileId: 'SIGNER_PROFILE_ID_FROM_CAPABILITIES'
-                  signerPreflight: { passed: true, checkedAt: '2026-10-12T00:00:00Z' }
                   reserveMode: sponsored
                   source: { chainId: '8453', assetId: 'BASE_USDC_ASSET_ID_FROM_CAPABILITIES', amount: '10.00' }
                   outputs:
                     - { id: stable, kind: stable, chainId: '1500', assetId: 'STELLAR_USDC_ASSET_ID_FROM_CAPABILITIES', receiverAddress: 'NEW_STELLAR_ADDRESS', allocation: remainder }
-                    - { id: native, kind: native, chainId: '1500', receiverAddress: 'NEW_STELLAR_ADDRESS', allocationUsd: '1.00' }
       responses:
         '201':
           description: Quote created
@@ -235,6 +308,7 @@ paths:
     get:
       tags: [Quotes]
       operationId: getFundingQuote
+      security: [{ apiKey: [] }, {}]
       summary: Read a quote created by this app
       parameters:
         - $ref: '#/components/parameters/QuoteId'
@@ -270,6 +344,7 @@ paths:
     post:
       tags: [Orders]
       operationId: createFundingOrder
+      security: [{ apiKey: [] }, {}]
       summary: Turn an approved quote into a payable order
       description: |
         Atomically re-checks the app grant, the quote (unexpired, unconsumed,
@@ -314,6 +389,7 @@ paths:
     get:
       tags: [Orders]
       operationId: getFundingOrder
+      security: [{ apiKey: [] }, {}]
       summary: Order status, per-leg status, pending user actions and recovery
       description: |
         Only the app that created the order can read it; knowing a deposit or
@@ -334,19 +410,21 @@ paths:
     post:
       tags: [Stellar signing]
       operationId: createStellarSigningRequest
+      security: [{ apiKey: [] }, {}]
       summary: Build the versioned Stellar onboarding transaction for the user to sign
       description: |
-        **Not yet available in 1.0.0 gated beta**: `stellar_onboarding` is
-        reported `disabled` (reason `executor_unavailable`) by capabilities, so
-        no order can reach `action_required`; this endpoint answers
-        `409 state_changed` until it is enabled. The contract below is final.
+        Available when capabilities report `stellar_onboarding` supported for
+        the calling app (a grant must list the mode; the keyless public app
+        too when its grant lists it: then the `fundingId` is the credential).
 
         Only valid while the order shows a `sign_stellar_onboarding` action.
         Returns the unsigned XDR, its hash, the template version, a
         human-readable operation list and an expiry. Every call that has to
         rebuild (expired template, changed account state) returns a new
         `signingRequestId` and hash; an old signature never carries over.
-        Answers `409 channel_busy` (retryable) when no channel account is free.
+        Answers `409 channel_busy` (retryable) when no channel account is free,
+        `409 state_changed` while a previous request is `submitting`, and
+        `410 claim_expiring` when the balance is too close to expiry.
       parameters:
         - $ref: '#/components/parameters/FundingId'
         - $ref: '#/components/parameters/CorrelationId'
@@ -372,8 +450,9 @@ paths:
     get:
       tags: [Stellar signing]
       operationId: getStellarSigningRequest
+      security: [{ apiKey: [] }, {}]
       summary: Status of a signing request
-      description: Not yet available in 1.0.0 gated beta (answers 404); see createStellarSigningRequest.
+      description: Owner app only. A `submitting` / `submitted` request is resolved against the chain by its hash on read.
       parameters:
         - $ref: '#/components/parameters/SigningRequestId'
       responses:
@@ -390,15 +469,17 @@ paths:
     post:
       tags: [Stellar signing]
       operationId: submitStellarSigningRequest
+      security: [{ apiKey: [] }, {}]
       summary: Submit the user-signed XDR
       description: |
-        Not yet available in 1.0.0 gated beta (answers 404); see createStellarSigningRequest.
-
         The server re-validates the signed transaction byte-for-byte against the
         request (same hash, the user's signature only, no extra signers), adds
         the service signatures and submits it. `submitted` is not delivery:
         poll the order until the stable and native legs are `confirmed`.
-        Submitting the same signed XDR again is idempotent.
+        Submitting the same signed XDR again is idempotent. `200` when the
+        transaction is already confirmed, `202` otherwise. If the signer
+        refuses, the request becomes `failed` (`409 state_changed`) and a new
+        signing request can be built.
       parameters:
         - $ref: '#/components/parameters/SigningRequestId'
         - $ref: '#/components/parameters/CorrelationId'
@@ -408,6 +489,11 @@ paths:
           application/json:
             schema: { $ref: '#/components/schemas/SigningSubmitRequest' }
       responses:
+        '200':
+          description: Confirmed on chain
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SigningRequest' }
         '202':
           description: Accepted for submission
           content:
@@ -421,8 +507,8 @@ paths:
         '422': { $ref: '#/components/responses/Error' }
         '503': { $ref: '#/components/responses/Error' }
 
-# Webhook events are part of the contract but are NOT emitted in the 1.0.0
-# gated beta: poll GET /funding/orders/{fundingId} (the source of truth).
+# Webhook events are part of the contract but are NOT emitted yet:
+# poll GET /funding/orders/{fundingId} (the source of truth).
 webhooks:
   funding.action_required:
     post:
@@ -508,8 +594,8 @@ components:
         Error. Status mapping: unauthorized 401; app_not_enabled 403; not_found 404;
         idempotency_conflict, quote_consumed, plan_mismatch, inventory_unavailable,
         state_changed, channel_busy, recovery_required 409; quote_expired,
-        challenge_expired, template_expired 410; other validation codes 400/422;
-        internal_error 500 (retry with the same Idempotency-Key);
+        challenge_expired, template_expired, claim_expiring 410; other validation codes 400/422;
+        rate_limited 429 (keyless callers); internal_error 500 (retry with the same Idempotency-Key);
         funding_disabled, price_unavailable 503.
       content:
         application/json:
@@ -595,8 +681,10 @@ components:
         - channel_busy
         - signature_invalid
         - template_expired
+        - claim_expiring
         - recovery_required
         - not_found
+        - rate_limited
         - internal_error
     NextAction:
       type: string
@@ -618,8 +706,27 @@ components:
       type: object
       required: [contractVersion, appId, enabled, configVersion, generatedAt, validUntil, modes, sourceAssets, nativeOutputs, stableOutputs, routes, limits, fees, stellar]
       properties:
-        contractVersion: { type: string, const: '1.0.0' }
+        contractVersion: { type: string, description: 'Wire contract version reported by the server ("1.1.0" today). Document version 1.2.0 is additive over it.' }
         appId: { type: string }
+        gasOptions:
+          type: object
+          description: usdGas options per destination chainId (stellar_onboarding today).
+          additionalProperties:
+            type: object
+            properties:
+              gasAsset: { type: string }
+              options:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    usdGas: { type: string }
+                    gasAmount: { type: string }
+              defaults:
+                type: object
+                properties:
+                  needsOnboarding: { type: string }
+                  ready: { type: string }
         enabled: { type: boolean, description: 'false when the product or this app''s grant is off; then every mode is disabled with a reason.' }
         configVersion: { type: integer }
         generatedAt: { type: string, format: date-time }
@@ -819,22 +926,34 @@ components:
           additionalProperties: false
           properties:
             maxTotalFeesUsd: { $ref: '#/components/schemas/UsdAmount' }
-        ownershipProofId: { type: string, format: uuid, description: 'Required for stellar_onboarding.' }
-        signerProfileId: { type: string, description: 'Required for stellar_onboarding.' }
+        ownershipProofId: { type: string, format: uuid, description: 'Optional (stellar_onboarding). When passed it must be valid for the receiver and is consumed by the order.' }
+        signerProfileId: { type: string, description: 'Optional (stellar_onboarding). Default: the supported profile from capabilities (js-stellar-sdk-local-key when several).' }
         signerPreflight:
           type: object
-          description: Required for stellar_onboarding. The app's in-browser check that the user's wallet can sign the template.
+          description: Optional (stellar_onboarding); absent = passed. A client hint that the user's wallet can sign the template; the server verifies the exact signed transaction anyway.
           required: [passed, checkedAt]
           properties:
             passed: { type: boolean }
             checkedAt: { type: string, format: date-time }
         reserveMode: { type: string, enum: [sponsored], description: 'stellar_onboarding only; v1 supports sponsored only.' }
+        usdGas:
+          type: string
+          description: >-
+            stellar_onboarding only (2026-10-13): USD spent on destination gas, one of the
+            values in capabilities `gasOptions[chainId].options` (Stellar: "0" = no XLM,
+            "0.5" = 1.6 XLM, "1" = 3.2 XLM; fixed amounts, no spread). Omitted: "0.5" when the
+            address needs onboarding (new account or no USDC trustline), "0" when it already has
+            a USDC trustline. Replaces the former native output with allocationUsd, which is no
+            longer accepted for stellar_onboarding. The quote echoes usdGas, gasAmount,
+            gasAsset and gasDefaulted. The rest of the source pays the /payments bridge fee
+            (bridge_fee) and, only for an address that needs onboarding, the same Stellar
+            sponsor fee as the bridge (stellar_sponsor_fee).
 
     FeeLine:
       type: object
       required: [kind, usd, refundable, appliesTo]
       properties:
-        kind: { type: string, enum: [native_spread, native_fixed, native_network, shared_routing, stable_service, stellar_sponsor_fee] }
+        kind: { type: string, enum: [native_spread, native_fixed, native_network, shared_routing, stable_service, bridge_fee, stellar_sponsor_fee] }
         usd: { $ref: '#/components/schemas/UsdAmount' }
         refundable: { type: boolean, description: 'Refunded when the service it pays for never happened.' }
         appliesTo: { type: string, description: 'Leg id, or `shared`.' }
@@ -938,6 +1057,10 @@ components:
         confirmationGraceSeconds: { type: integer }
         ownershipProofId: { type: [string, 'null'] }
         signerProfileId: { type: [string, 'null'] }
+        usdGas: { type: [string, 'null'], description: 'stellar_onboarding: the chosen usdGas option; null on other modes.' }
+        gasAmount: { type: [string, 'null'], description: 'Native gas delivered for usdGas, in gasAsset units (e.g. "1.6").' }
+        gasAsset: { type: [string, 'null'], description: 'Native gas asset symbol (XLM for Stellar).' }
+        gasDefaulted: { type: [boolean, 'null'], description: 'true when the caller omitted usdGas and the default applied.' }
 
     CreateOrderRequest:
       type: object
@@ -1010,11 +1133,11 @@ components:
 
     SigningRequestCreate:
       type: object
-      required: [walletAddress, signerProfileId]
+      required: [walletAddress]
       additionalProperties: false
       properties:
         walletAddress: { type: string, pattern: '^G[A-Z2-7]{55}$', description: 'Must equal the order''s frozen Stellar receiver.' }
-        signerProfileId: { type: string }
+        signerProfileId: { type: string, description: 'Optional; when passed it must be the profile the order was quoted for.' }
     SigningOperation:
       type: object
       required: [index, type, summary]
@@ -1034,7 +1157,9 @@ components:
         networkPassphrase: { type: string }
         xdr: { type: string, description: 'Unsigned transaction envelope (base64). Only pass it to the user''s wallet.' }
         txHash: { type: string, pattern: '^[0-9a-f]{64}$' }
-        expiresAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time, description: 'maxTime of the transaction as a date.' }
+        maxTime: { type: integer, description: 'Transaction maxTime (unix seconds). Additive 2026-10-12.' }
+        accountState: { type: string, enum: [missing, missing_trustline, ready], description: 'Receiver account state the template was built for. Additive 2026-10-12.' }
         operations:
           type: array
           items: { $ref: '#/components/schemas/SigningOperation' }
