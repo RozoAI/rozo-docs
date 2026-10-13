@@ -33,7 +33,8 @@ You send USDC or USDT from Base, Ethereum, Arbitrum or Polygon. We deliver USDC 
 | USDC on Stellar | `stellar:USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN` |
 
 - Always quote with the chain's USDC `assetId`. When you pay, USDC or USDT (the contracts above) on any of the four chains is accepted 1:1.
-- Live list: `GET /funding/capabilities` (`sourceAssets`, `stableOutputs`, `gasOptions`, `limits`).
+- Live list: `GET /funding/capabilities` (`sourceAssets`, `stableOutputs`, `gasOptions`, `limits`, `rozoAccounts`).
+- `sourceAssets[].minAmount` is the smallest amount a quote accepts. An order's `deposit.minAcceptedAmount` is a different number: the smallest payment still delivered after repricing on the amount received, and it can be lower.
 
 ## Limits
 
@@ -51,8 +52,8 @@ The per-order limit is checked at quote time and the daily limits when you creat
 | Fee | When | Amount |
 | --- | --- | --- |
 | Bridge fee | Every order | Same as the ROZO bridge: 0.1 %, minimum 0.01 USDC (Ethereum minimum 0.10 USDC) |
-| XLM and account opening (`usdGas`) | Optional | `"0"` = no XLM, `"0.5"` = 1.6 XLM, `"1"` = 3.2 XLM. Fixed amounts, no price spread. For a new address this also covers the account and trustline: there is no other opening fee |
-| Sponsor fee | Only if the address is new or has no USDC trustline **and** `usdGas` is `"0"` | Same as the ROZO bridge (about 0.44 USDC) |
+| XLM and account opening (`usdGas`) | Optional | `"0"` = no XLM, `"0.5"` = 1.6 XLM, `"1"` = 3.2 XLM. Fixed XLM amounts at a fixed USD price. The part of the price above the XLM's market value covers opening the account and trustline (there is no other opening fee); the quote shows it as `gas_tier_price_adjustment` |
+| Sponsor fee | Only if the address is new or has no USDC trustline | With `usdGas` `"0"`: same as the ROZO bridge (about 0.44 USDC). With a paid `usdGas` tier: 0.0000001 USDC, the smallest amount the claim accepts |
 
 `usdGas` default: `"0.5"` if the address is new or has no USDC trustline; `"0"` if it already has a USDC trustline. Set it yourself to override. The smallest USDC delivery is 0.01.
 
@@ -64,6 +65,17 @@ The per-order limit is checked at quote time and the daily limits when you creat
 | 10 USDC | Has USDC trustline | `"0"` (default) | about 9.99 USDC, no signature |
 
 The quote is authoritative: read `fees` and `totals` from it.
+
+Every deduction between what you send (at face value, 1 stablecoin = 1 USD) and what lands is one `fees` line, each with a 6 decimal `usdExact` next to the 2 decimal `usd`:
+
+| `kind` | What it is |
+| --- | --- |
+| `bridge_fee` | The ROZO bridge fee above |
+| `stellar_sponsor_fee` | Paid from the claimed USDC to ROZO claim custody when you sign. `amount` and `asset` give it exactly, also when it is 0.0000001 USDC and `usd` shows 0.00 |
+| `gas_tier_price_adjustment` | The `usdGas` price minus the value of its fixed XLM at the quote's XLM price. It pays for opening the account and trustline. Negative if XLM is worth more than the tier price |
+| `source_price_adjustment` | Your stablecoin valued at its market price (for example 0.9998) instead of 1 USD. Not a ROZO fee. Negative if it trades above 1 USD |
+
+`totals.sourceFaceUsd` minus `totals.deliveredUsd` equals `totals.totalDeductionsUsd`, and that equals the sum of `usdExact` plus `roundingRemainderUsd`. `totalFeesUsd` stays the ROZO fees only. A live 1 USDC quote on 2026-10-14 (new address, default `usdGas`): `bridge_fee` 0.010000, `stellar_sponsor_fee` 0.0000001 USDC, `gas_tier_price_adjustment` 0.193060 (1.6 XLM worth 0.306940 at 0.191838), `source_price_adjustment` 0.000171, rounding 0.000001, `totalDeductionsUsd` 0.203232.
 
 ## Step by step: 10 USDC on Ethereum to a new Stellar address
 
@@ -124,7 +136,7 @@ Retrying the order with the same `Idempotency-Key` and body returns the same ord
 
 ## What a real order returns
 
-These are the responses of a real 1 USDC order on Base to a new address (2026-10-12), read back afterwards with the GET endpoints. Ids, addresses and hashes are shortened; long fields are trimmed (`...`).
+These are the responses of a real 1 USDC order on Base to a new address (2026-10-12), read back afterwards with the GET endpoints. Ids, addresses and hashes are shortened; long fields are trimmed (`...`). Quotes made since 2026-10-14 also carry `usdExact` on every fee line, the `stellar_sponsor_fee`, `gas_tier_price_adjustment` and `source_price_adjustment` lines and the `sourceFaceUsd`, `deliveredUsd` and `totalDeductionsUsd` totals (see [Fees](#fees)).
 
 **Quote** (`POST /funding/quotes`, also `GET /funding/quotes/{quoteId}`):
 
@@ -250,6 +262,8 @@ async function claim(fundingId) {
     method: "POST", headers: H, body: JSON.stringify({ walletAddress: kp.publicKey() }),
   })).json();
   const tx = TransactionBuilder.fromXDR(req.xdr, Networks.PUBLIC);
+  if (tx.hash().toString("hex") !== req.txHash) throw new Error("decoded hash != txHash: do not sign");
+  // also check req.operations against the checklist below before signing
   tx.sign(kp);                                                     // do not modify the transaction
   await fetch(`${BASE}/funding/signing-requests/${req.signingRequestId}/submit`, {
     method: "POST", headers: H, body: JSON.stringify({ signedXdr: tx.toEnvelope().toXDR("base64") }),
@@ -323,14 +337,20 @@ Steps:
    node sign.mjs <G address>, which only checks that the key matches. If the key lives in a wallet app
    (Freighter, LOBSTR), tell me and I will sign the XDR there myself.
 2. Call funding_capabilities. Stop if stellarOnboarding.status is not "supported". Check my amount is within
-   sourceAssets minAmount/maxAmount and my XLM tier is one of gasOptions.options.
+   sourceAssets minAmount/maxAmount and my XLM tier is one of gasOptions.options. sourceAssets minAmount is
+   the smallest amount a quote accepts; the order's deposit.minAcceptedAmount (step 5) is the smallest
+   payment still delivered after repricing, a different and possibly lower number. Save rozoAccounts:
+   ROZO's own Stellar accounts, used in step 7.
 3. Call stellar_wallet_quote with receiverAddress, sourceChain, amountUsd (decimal string, e.g. "10") and
-   usdGas (leave it out for "default"). Show me receives.usdcMinimum, receives.xlm, fees, totals,
-   signatureNeeded and expiresAt. Wait for my yes. The quote is valid about 10 minutes.
+   usdGas (leave it out for "default"). Show me receives.usdcMinimum, receives.xlm, every fees line (kind
+   and usdExact), totals.totalDeductionsUsd, signatureNeeded and expiresAt. Check that the usdExact values
+   plus totals.roundingRemainderUsd add up to totals.totalDeductionsUsd. Wait for my yes. The quote is
+   valid about 10 minutes.
 4. Call stellar_wallet_create_order with quoteId, planDigest and a new orderId (8 to 128 chars of
    A-Z a-z 0-9 _ . : -, for example agent-stellar-20261013-0001). Save fundingId and orderId to a local file
-   before paying. Keep fundingId private. If the call fails, retry with the same quoteId and orderId: it
-   returns the same order, never a second one.
+   before paying. Keep fundingId private: never echo it into logs, printed tool output, commits or shared
+   files (anyone holding it can read the order). If the call fails, retry with the same quoteId and
+   orderId: it returns the same order, never a second one.
 5. Pay: one ERC-20 transfer from my EVM wallet on the chosen chain to deposit.address. Use the USDC or USDT
    contract for that chain from deposit.acceptedTokens (both use 6 decimals). Amount: with amountPolicy
    "exact", send exactly deposit.amount; with "any_amount", send deposit.amount (anything from
@@ -352,11 +372,20 @@ Steps:
    beginSponsoringFutureReserves, createAccount and the XLM payment to me; from my address, changeTrust
    (USDC), endSponsoringFutureReserves, claimClaimableBalance and that one fee payment. Refuse any other
    operation (for example setOptions) or any other source. The transaction source must not be my address
-   (it is a ROZO channel account that pays the network fee).
+   (it is a ROZO channel account that pays the network fee). Every ROZO account must be one of
+   funding_capabilities rozoAccounts: the transaction source is in transactionSources, the sponsoring and
+   createAccount operations come from reserveSponsor, the XLM payment comes from xlmPayer, and the fee goes
+   to claimCustody. Current as of 2026-10-14 (confirm with funding_capabilities, they can rotate):
+   claim custody GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE, reserve sponsor
+   GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U, XLM payer
+   GAFYWMVXY2FI7PVBRT7H3P5O4WOK3COEO6SGMPVBDIETC6EX6LROC7Y7, transaction sources
+   GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U, GB4EDWTTIOLYJZHCB3GIOG2TEVF2TF3YES2MDP2S3J7BQWCTCNHAN44A,
+   GDRLDKMRO2B2CDZ6YZIMQWFTG5CR6LSKNCFQW7MZG37Q72FDSYF4O2FW, GB52UAWSQOTBP4SOMRAHSJEAKQN6G3UP753HKH7A2Q74BPSNTUU54543.
    The XDR shows only the claimable balance id: the claimed amount is in the operations list, and
    https://horizon.stellar.org/claimable_balances/<id> confirms it. Decode the XDR locally (code below)
-   and confirm every field, including operation sources, matches the operations list.
-8. Sign with the code below and call stellar_wallet_submit_signed with signingRequestId and the signed
+   and confirm every field, including operation sources, matches the operations list, and that the hash
+   of the locally decoded transaction equals the txHash the signing request returned.
+8. Sign with the code below (it refuses when the hash differs from txHash) and call stellar_wallet_submit_signed with signingRequestId and the signed
    XDR. A signing request expires after about 5 minutes; if it expired or submit says failed, just call
    stellar_wallet_get_signing_request again (it replaces the old one) and sign the new XDR. Submitting the
    same signed XDR twice is safe.
@@ -378,21 +407,24 @@ Node code (npm i @stellar/stellar-sdk), two small ES module files:
   writeFileSync("stellar-wallet.secret", kp.secret() + "\n", { mode: 0o600, flag: "wx" });
   console.log(kp.publicKey()); // the G address: the only part you share
 
-  // sign.mjs: node sign.mjs <G address>            checks the local key controls that address
-  //           node sign.mjs <G address> "<xdr>"    prints the full decoded transaction, signs nothing
-  //           node sign.mjs <G address> "<xdr>" --sign   prints the signed XDR (after you checked it)
+  // sign.mjs: node sign.mjs <G address>                       checks the local key controls that address
+  //           node sign.mjs <G address> "<xdr>" <txHash>       prints the decoded transaction, signs nothing
+  //           node sign.mjs <G address> "<xdr>" <txHash> --sign   prints the signed XDR (after you checked it)
   import { Keypair, TransactionBuilder } from "@stellar/stellar-sdk";
   import { readFileSync } from "node:fs";
-  const [address, xdr, flag] = process.argv.slice(2);
+  const [address, xdr, txHash, flag] = process.argv.slice(2);
   const networkPassphrase = "Public Global Stellar Network ; September 2015";
   const kp = Keypair.fromSecret(readFileSync(process.env.STELLAR_SECRET_FILE ?? "stellar-wallet.secret", "utf8").trim());
   if (kp.publicKey() !== address) throw new Error("this key does not control " + address);
   if (!xdr) { console.error("signer ok"); process.exit(0); }
   const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
-  console.error(JSON.stringify({ source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
+  const hash = tx.hash().toString("hex");
+  if (!txHash || hash !== txHash.toLowerCase()) throw new Error("decoded hash " + hash + " does not match the signing request txHash");
+  console.error(JSON.stringify({ hash, source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
   // Expect: claimed gross = minimumAmount + sponsor fee; the only payment from <G address> is the sponsor fee
   // in USDC to GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE; the XLM payment to you = the XLM leg;
-  // no other operation types (no setOptions) and no other sources; tx.source is a ROZO channel, never <G address>.
+  // no other operation types (no setOptions) and no other sources; tx.source is a ROZO channel, never <G address>;
+  // every ROZO source is in funding_capabilities rozoAccounts.
   // Anything else: do not sign.
   if (flag !== "--sign") process.exit(0);
   tx.sign(kp); // signs the server transaction as is, nothing is changed
@@ -404,8 +436,16 @@ Through the MCP, rate limits count against the MCP server's outbound address, wh
 ## Checklist for agents and integrators
 
 - **Never pay twice.** Save `fundingId` and the order `Idempotency-Key` before paying. After a crash, resume by polling the order; do not create a new order for the same intent.
-- **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order.
-- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; at most one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` (0.0000001 USDC with a paid `usdGas` tier, the quoted `stellar_sponsor_fee` with `usdGas` `"0"`, none if the address needed no onboarding); and an XLM payment to you equal to the XLM leg's `minimumAmount`. Decode the XDR locally and refuse any operation type or source not in the list above (for example `setOptions`). The transaction source must be a ROZO channel account, never your address. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. Refuse to sign anything else.
+- **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order. Never echo it into logs, printed tool output, commits or shared files.
+- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; at most one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` (0.0000001 USDC with a paid `usdGas` tier, the quoted `stellar_sponsor_fee` with `usdGas` `"0"`, none if the address needed no onboarding); and an XLM payment to you equal to the XLM leg's `minimumAmount`. Decode the XDR locally and refuse any operation type or source not in the list above (for example `setOptions`). The transaction source must be a ROZO channel account, never your address. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. The hash of the locally decoded transaction must equal the `txHash` the signing request returned. Refuse to sign anything else.
+- **Check ROZO's accounts.** Every ROZO account in the transaction must be in `GET /funding/capabilities` `rozoAccounts.stellar`: the transaction source in `transactionSources`, the `beginSponsoringFutureReserves` and `createAccount` operations from `reserveSponsor`, the XLM payment from `xlmPayer`, the sponsor fee to `claimCustody`. They can rotate, so read them before signing. Current as of 2026-10-14:
+
+  | Role | Address |
+  | --- | --- |
+  | Claim custody (receives the sponsor fee) | `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` |
+  | Reserve sponsor | `GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U` |
+  | XLM payer | `GAFYWMVXY2FI7PVBRT7H3P5O4WOK3COEO6SGMPVBDIETC6EX6LROC7Y7` |
+  | Transaction sources (channels, pay the network fee) | `GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U`, `GB4EDWTTIOLYJZHCB3GIOG2TEVF2TF3YES2MDP2S3J7BQWCTCNHAN44A`, `GDRLDKMRO2B2CDZ6YZIMQWFTG5CR6LSKNCFQW7MZG37Q72FDSYF4O2FW`, `GB52UAWSQOTBP4SOMRAHSJEAKQN6G3UP753HKH7A2Q74BPSNTUU54543` |
 - **A new account with 0 XLM balance is fine.** Reserves are sponsored by ROZO, so readiness checks must not require a minimum XLM balance.
 - **Quote first, pay second.** If the quote expired before the order, quote again. Pay before `payBefore`; a late payment is not delivered automatically and goes to manual handling.
 - **Current output amounts.** Show the quote before payment. After payment, read the refreshed order: a valid smaller deposit can deliver less USDC than the original quote. Sign only the exact server-provided XDR for that order; do not modify its operations or amounts.
