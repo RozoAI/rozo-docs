@@ -347,7 +347,11 @@ Steps:
    stable leg minimumAmount from order status plus the sponsor fee (it can differ from the quote after
    repricing); the only payment out of my address is that sponsor fee in USDC to ROZO claim custody
    GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE (0.0000001 USDC with a paid XLM tier, the
-   quoted stellar_sponsor_fee with usdGas "0"); the XLM payment to me equals the XLM leg minimumAmount.
+   quoted stellar_sponsor_fee with usdGas "0", none if my address needed no onboarding); the XLM payment
+   to me equals the XLM leg minimumAmount. The only operations allowed are: ROZO-sourced
+   beginSponsoringFutureReserves, createAccount and the XLM payment to me; from my address, changeTrust
+   (USDC), endSponsoringFutureReserves, claimClaimableBalance and that one fee payment. Refuse any other
+   operation (for example setOptions) or any other source.
    The XDR shows only the claimable balance id: the claimed amount is in the operations list, and
    https://horizon.stellar.org/claimable_balances/<id> confirms it. Decode the XDR locally (code below)
    and confirm every field, including operation sources, matches the operations list.
@@ -386,7 +390,8 @@ Node code (npm i @stellar/stellar-sdk), two small ES module files:
   const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
   console.error(JSON.stringify({ source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
   // Expect: claimed gross = minimumAmount + sponsor fee; the only payment from <G address> is the sponsor fee
-  // in USDC to GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE; the XLM payment to you = the XLM leg.
+  // in USDC to GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE; the XLM payment to you = the XLM leg;
+  // no other operation types (no setOptions) and no other sources. Anything else: do not sign.
   if (flag !== "--sign") process.exit(0);
   tx.sign(kp); // signs the server transaction as is, nothing is changed
   console.log(tx.toXDR()); // signed XDR, base64: pass it to stellar_wallet_submit_signed
@@ -398,7 +403,7 @@ Through the MCP, rate limits count against the MCP server's outbound address, wh
 
 - **Never pay twice.** Save `fundingId` and the order `Idempotency-Key` before paying. After a crash, resume by polling the order; do not create a new order for the same intent.
 - **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order.
-- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; exactly one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE`; and an XLM payment to you equal to the XLM leg's `minimumAmount`. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. Refuse to sign anything else.
+- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; at most one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` (0.0000001 USDC with a paid `usdGas` tier, the quoted `stellar_sponsor_fee` with `usdGas` `"0"`, none if the address needed no onboarding); and an XLM payment to you equal to the XLM leg's `minimumAmount`. Decode the XDR locally and refuse any operation type or source not in the list above (for example `setOptions`). The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. Refuse to sign anything else.
 - **A new account with 0 XLM balance is fine.** Reserves are sponsored by ROZO, so readiness checks must not require a minimum XLM balance.
 - **Quote first, pay second.** If the quote expired before the order, quote again. Pay before `payBefore`; a late payment is not delivered automatically and goes to manual handling.
 - **Current output amounts.** Show the quote before payment. After payment, read the refreshed order: a valid smaller deposit can deliver less USDC than the original quote. Sign only the exact server-provided XDR for that order; do not modify its operations or amounts.
