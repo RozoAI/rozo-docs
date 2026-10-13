@@ -343,13 +343,18 @@ Steps:
    stellar_wallet_get_signing_request with fundingId and the receiving G address. Before signing check:
    networkPassphrase is "Public Global Stellar Network ; September 2015"; the operations create or use
    my address; the trustline and the claimed balance are USDC issued by
-   GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN; the claimed USDC minus the disclosed sponsor
-   fee payment equals the current stable leg minimumAmount from order status (it can differ from the quote
-   after repricing); the XLM payment to me matches my tier. Decode the XDR locally (code below) and
-   confirm every field, including operation sources, matches the operations list.
+   GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN; the claimed USDC (gross) equals the current
+   stable leg minimumAmount from order status plus the sponsor fee (it can differ from the quote after
+   repricing); the only payment out of my address is that sponsor fee in USDC to ROZO claim custody
+   GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE (0.0000001 USDC with a paid XLM tier, the
+   quoted stellar_sponsor_fee with usdGas "0"); the XLM payment to me equals the XLM leg minimumAmount.
+   The XDR shows only the claimable balance id: the claimed amount is in the operations list, and
+   https://horizon.stellar.org/claimable_balances/<id> confirms it. Decode the XDR locally (code below)
+   and confirm every field, including operation sources, matches the operations list.
 8. Sign with the code below and call stellar_wallet_submit_signed with signingRequestId and the signed
-   XDR. A signing request expires after about 5 minutes; if it expired or submit says failed, get a new
-   signing request and sign again. Submitting the same signed XDR twice is safe.
+   XDR. A signing request expires after about 5 minutes; if it expired or submit says failed, just call
+   stellar_wallet_get_signing_request again (it replaces the old one) and sign the new XDR. Submitting the
+   same signed XDR twice is safe.
 9. Keep polling until status is "completed" (every leg confirmed). Report the USDC and XLM delivered
    and each leg's txHash.
 
@@ -380,6 +385,8 @@ Node code (npm i @stellar/stellar-sdk), two small ES module files:
   if (!xdr) { console.error("signer ok"); process.exit(0); }
   const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
   console.error(JSON.stringify({ source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
+  // Expect: claimed gross = minimumAmount + sponsor fee; the only payment from <G address> is the sponsor fee
+  // in USDC to GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE; the XLM payment to you = the XLM leg.
   if (flag !== "--sign") process.exit(0);
   tx.sign(kp); // signs the server transaction as is, nothing is changed
   console.log(tx.toXDR()); // signed XDR, base64: pass it to stellar_wallet_submit_signed
@@ -391,7 +398,7 @@ Through the MCP, rate limits count against the MCP server's outbound address, wh
 
 - **Never pay twice.** Save `fundingId` and the order `Idempotency-Key` before paying. After a crash, resume by polling the order; do not create a new order for the same intent.
 - **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order.
-- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address, the USDC amount in the current order's refreshed `legs[].minimumAmount`, and the unchanged XLM tier from `usdGas`. Refuse to sign anything else.
+- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; exactly one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE`; and an XLM payment to you equal to the XLM leg's `minimumAmount`. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. Refuse to sign anything else.
 - **A new account with 0 XLM balance is fine.** Reserves are sponsored by ROZO, so readiness checks must not require a minimum XLM balance.
 - **Quote first, pay second.** If the quote expired before the order, quote again. Pay before `payBefore`; a late payment is not delivered automatically and goes to manual handling.
 - **Current output amounts.** Show the quote before payment. After payment, read the refreshed order: a valid smaller deposit can deliver less USDC than the original quote. Sign only the exact server-provided XDR for that order; do not modify its operations or amounts.
