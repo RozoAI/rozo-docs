@@ -318,6 +318,10 @@ Steps:
 1. New address only: generate the keypair locally with the Node code below. It saves the secret to
    ./stellar-wallet.secret (mode 600, refuses to overwrite). Tell me the file path and the G address.
    Make sure the file is not inside a git repo and ask me to back it up.
+   Existing address: if it may need a signature (new account or no USDC trustline), make sure you can sign
+   for it before paying: point STELLAR_SECRET_FILE at its local secret file and run
+   node sign.mjs <G address>, which only checks that the key matches. If the key lives in a wallet app
+   (Freighter, LOBSTR), tell me and I will sign the XDR there myself.
 2. Call funding_capabilities. Stop if stellarOnboarding.status is not "supported". Check my amount is within
    sourceAssets minAmount/maxAmount and my XLM tier is one of gasOptions.options.
 3. Call stellar_wallet_quote with receiverAddress, sourceChain, amountUsd (decimal string, e.g. "10") and
@@ -338,9 +342,11 @@ Steps:
 7. When signatureNeeded is true (pendingActions has sign_stellar_onboarding), call
    stellar_wallet_get_signing_request with fundingId and the receiving G address. Before signing check:
    networkPassphrase is "Public Global Stellar Network ; September 2015"; the operations create or use
-   my address, add the USDC trustline, claim USDC equal to the current stable leg minimumAmount from
-   order status (it can differ from the quote after repricing) and pay me the XLM of my tier. Decode the
-   XDR locally (code below) and confirm it matches the operations list.
+   my address; the trustline and the claimed balance are USDC issued by
+   GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN; the claimed USDC minus the disclosed sponsor
+   fee payment equals the current stable leg minimumAmount from order status (it can differ from the quote
+   after repricing); the XLM payment to me matches my tier. Decode the XDR locally (code below) and
+   confirm every field, including operation sources, matches the operations list.
 8. Sign with the code below and call stellar_wallet_submit_signed with signingRequestId and the signed
    XDR. A signing request expires after about 5 minutes; if it expired or submit says failed, get a new
    signing request and sign again. Submitting the same signed XDR twice is safe.
@@ -362,15 +368,19 @@ Node code (npm i @stellar/stellar-sdk), two small ES module files:
   writeFileSync("stellar-wallet.secret", kp.secret() + "\n", { mode: 0o600, flag: "wx" });
   console.log(kp.publicKey()); // the G address: the only part you share
 
-  // sign.mjs (steps 7 and 8). First run: node sign.mjs "<xdr>" prints the decoded operations only.
-  // After they match, run: node sign.mjs "<xdr>" --sign to print the signed XDR.
+  // sign.mjs: node sign.mjs <G address>            checks the local key controls that address
+  //           node sign.mjs <G address> "<xdr>"    prints the full decoded transaction, signs nothing
+  //           node sign.mjs <G address> "<xdr>" --sign   prints the signed XDR (after you checked it)
   import { Keypair, TransactionBuilder } from "@stellar/stellar-sdk";
   import { readFileSync } from "node:fs";
+  const [address, xdr, flag] = process.argv.slice(2);
   const networkPassphrase = "Public Global Stellar Network ; September 2015";
-  const kp = Keypair.fromSecret(readFileSync("stellar-wallet.secret", "utf8").trim());
-  const tx = TransactionBuilder.fromXDR(process.argv[2], networkPassphrase);
-  console.error(tx.operations.map((op) => [op.type, op.destination ?? op.source ?? "", op.amount ?? "", op.asset?.code ?? op.line?.code ?? ""]));
-  if (process.argv[3] !== "--sign") process.exit(0);
+  const kp = Keypair.fromSecret(readFileSync(process.env.STELLAR_SECRET_FILE ?? "stellar-wallet.secret", "utf8").trim());
+  if (kp.publicKey() !== address) throw new Error("this key does not control " + address);
+  if (!xdr) { console.error("signer ok"); process.exit(0); }
+  const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
+  console.error(JSON.stringify({ source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
+  if (flag !== "--sign") process.exit(0);
   tx.sign(kp); // signs the server transaction as is, nothing is changed
   console.log(tx.toXDR()); // signed XDR, base64: pass it to stellar_wallet_submit_signed
 ```
