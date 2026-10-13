@@ -43,7 +43,7 @@ Register on [partners.rozo.ai](https://partners.rozo.ai) for an app id and a ser
 2. `POST /funding/quotes`: a read-only, frozen plan with every fee and each output's guaranteed minimum. No deposit address yet, nothing reserved.
 3. Show the plan to the user. They approve it.
 4. `POST /funding/orders` with `quoteId`, the quote's `planDigest`, your `orderId` and an `Idempotency-Key` header. Inventory and limits are reserved atomically and a **one-time deposit** is returned.
-5. The user sends **exactly** `deposit.amount` of USDC or USDT on an enabled source chain to `deposit.address` before `deposit.payBefore` (the quote's expiry, 10 minutes after quoting).
+5. The user sends one payment to `deposit.address` before `deposit.payBefore` (the quote's expiry, 10 minutes after quoting). Follow `deposit.amountPolicy`: `exact` requires the quoted amount; Stellar onboarding with `any_amount` uses the accepted range described below.
 6. Poll `GET /funding/orders/{fundingId}` until `completed` (or `recovery_required`). For `stellar_onboarding`, sign once when the order asks for it.
 
 ## Discover what you can do
@@ -60,7 +60,8 @@ The response lists `modes`, `sourceAssets` (with `assetId`, min and max), `nativ
 ## Amounts and fees
 
 * Amounts are **decimal strings** in the asset's own unit (`"10.00"`, `"0.0021"`), never JSON numbers.
-* The source amount is fixed (`exactIn`). Outputs have a **guaranteed minimum** (`legs[].minimumAmount`) when the deposit is paid in full and on time.
+* Read `source.amountPolicy` on the quote and `deposit.amountPolicy` on the order. `exact` (also the fallback when the field is absent) requires the quoted amount. Outputs have a **guaranteed minimum** (`legs[].minimumAmount`) when that deposit is paid in full and on time.
+* For Stellar onboarding with `any_amount`, `deposit.amount` is the suggested amount. A single on-time payment at or above `minAcceptedAmount` is priced on the amount received, using frozen prices and fees. The XLM tier stays the same; the remaining USDC is recalculated. Only up to `maxPricedAmount` and the remaining daily allowance is priced; excess is held for manual handling, with no automatic refund. If the remaining allowance cannot cover a deliverable amount, the whole payment requires recovery. Below the minimum, a wrong chain or asset, a late payment or a second payment requires recovery. Read the refreshed order's `legs`, `fees`, `totals` and `repricing` before signing. This XLM-tier behavior does not apply to other Funding modes.
 * Every quote balances exactly: `sourceValueUsd = nativeBudgetsUsd + stableDeliveryUsd + sharedFeesUsd + roundingRemainderUsd`. Each fee line says which output it belongs to and whether it is refundable.
 * Quote with the chain's USDC `assetId`. At payment, USDC or USDT on any enabled source chain is accepted 1:1 against the quoted amount; the one-time deposit address is the same on every enabled chain.
 * Fees charged by the user's own wallet or exchange for the deposit transfer are outside this API: `externalSourceFee` is always `unknown`. The API cannot pay the gas of the user's first deposit transfer.

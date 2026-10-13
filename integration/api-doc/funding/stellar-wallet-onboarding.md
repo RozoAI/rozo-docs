@@ -91,8 +91,10 @@ curl -s -X POST $BASE/funding/orders -H "Content-Type: application/json" -H "$UA
   -d '{ "quoteId": "<quoteId>", "planDigest": "<planDigest>", "orderId": "my-order-0001" }'
 # -> fundingId, deposit.address (0x...), deposit.amount, deposit.payBefore
 
-# 3. Pay: send exactly deposit.amount of USDC or USDT to deposit.address
-#    on Base, Ethereum, Arbitrum or Polygon, before payBefore.
+# 3. Pay once before payBefore, following deposit.amountPolicy.
+#    exact (or absent): send deposit.amount. any_amount: read
+#    minAcceptedAmount/maxPricedAmount; deposit.amount is suggested.
+#    Use USDC or USDT on an enabled Base, Ethereum, Arbitrum or Polygon route.
 
 # 4. Poll until pendingActions contains sign_stellar_onboarding (or status is completed)
 curl -s $BASE/funding/orders/<fundingId> -H "$UA"
@@ -282,16 +284,18 @@ The submit call is the claim: in that one transaction the account is created, th
 
 - **Never pay twice.** Save `fundingId` and the order `Idempotency-Key` before paying. After a crash, resume by polling the order; do not create a new order for the same intent.
 - **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order.
-- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address, a USDC claim at least the quote's minimum, the XLM amount from `usdGas`. Refuse to sign anything else.
+- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address, the USDC amount in the current order's refreshed `legs[].minimumAmount`, and the unchanged XLM tier from `usdGas`. Refuse to sign anything else.
 - **A new account with 0 XLM balance is fine.** Reserves are sponsored by ROZO, so readiness checks must not require a minimum XLM balance.
 - **Quote first, pay second.** If the quote expired before the order, quote again. Pay before `payBefore`; a late payment is not delivered automatically and goes to manual handling.
-- **Exact amounts.** Read output amounts from the quote; never assume fees.
+- **Current output amounts.** Show the quote before payment. After payment, read the refreshed order: a valid smaller deposit can deliver less USDC than the original quote. Sign only the exact server-provided XDR for that order; do not modify its operations or amounts.
 - **Partial delivery is visible.** Each leg (USDC, XLM) has its own status and tx hash in the order. Show both to the user.
 - **Mainnet only.** There is no testnet endpoint today; test with 1 USDC orders.
 
 ## Good to know
 
-- Pay the exact amount. Underpayment, other chains (for example BSC) or other tokens are not delivered and need manual handling. Overpayment completes the order but the extra is not refunded automatically.
+- Read `deposit.amountPolicy`. With `exact` or an absent field, follow the quoted deposit amount; a short payment requires recovery and overpayment does not increase delivery. With `any_amount`, `deposit.amount` is suggested: a single on-time payment at or above `minAcceptedAmount` is repriced using frozen prices and fees. The quoted XLM tier stays unchanged and USDC adjusts after fees. A payment below the minimum cannot cover the tier, fees and minimum USDC output, so it requires recovery.
+- `maxPricedAmount` is the per-order pricing ceiling. The remaining daily allowance can impose a lower ceiling. Only the amount that fits is delivered; the excess is held for manual handling, not automatically refunded. If the remaining allowance is below the deliverable minimum, nothing is delivered automatically. Unsupported chains (for example BSC), wrong assets, late payments and a second payment also require manual handling. Never send another payment to top up a short order.
+- For a repriced order, `repricing` reports `quotedAmount`, `receivedAmount`, `pricedAmount`, `excessAmount` and `quotedPlanDigest`; otherwise it is `null`. The order's current `planDigest`, `legs`, `fees` and `totals` reflect the priced amount. For example, a 1 USDC quote paid with 0.80 USDC can keep its XLM tier and deliver less USDC if 0.80 meets the returned minimum; paying 1.30 can increase USDC if it fits the returned ceiling and daily allowance. Calculate the net amounts from the actual frozen plan, not these example numbers.
 - If the user pays but never signs, the USDC waits in a claimable balance only that address can claim, for 30 days. After that ROZO reclaims it and the order is handled manually (refund on request).
 - Never send to a deposit address after its order has expired. Request a new quote.
 
