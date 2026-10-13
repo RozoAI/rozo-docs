@@ -72,8 +72,9 @@ info:
     5. `POST /funding/orders` with `quoteId`, the quote's `planDigest` and an
        `Idempotency-Key`. Inventory and limits are reserved atomically and a
        one-time deposit instruction is returned.
-    6. The user sends exactly `deposit.amount` of `deposit.assetId` before
-       `deposit.payBefore`.
+    6. The user pays once before `deposit.payBefore`, following
+       `deposit.amountPolicy`: exact (or absent) uses the quoted amount;
+       any_amount exposes an accepted minimum and a pricing ceiling.
     7. Poll `GET /funding/orders/{fundingId}` (webhooks are a convenience,
        polling is the source of truth). For Stellar onboarding, when an action
        `sign_stellar_onboarding` appears, call
@@ -122,15 +123,20 @@ info:
 
     ## Contract rules
 
-    * `exactIn` only: the source amount is fixed; outputs have frozen minimums.
+    * Read source.amountPolicy / deposit.amountPolicy. exact (or absent)
+      keeps the quoted output minimums. Stellar onboarding with any_amount
+      keeps its XLM tier and recalculates USDC on the received amount using
+      frozen prices and fees, before any leg or signing request is executed.
     * A quote never becomes payable by itself; only an order has a deposit.
-    * After the source is paid, receiver addresses, assets and amounts cannot
-      change. USDC or USDT on any enabled EVM source chain is accepted 1:1
-      against the quoted amount (the deposit address is the same on every
-      enabled chain). A payment that covers the amount, including an
-      overpayment, completes the order; the excess is not refunded
-      automatically. A late or short payment, or any other asset or chain,
-      goes to `recovery_required`; it is never re-priced silently.
+    * Receiver addresses, output assets and signing constraints never change.
+      With any_amount, one on-time payment at or above minAcceptedAmount is
+      priced up to maxPricedAmount and the remaining daily allowance. Excess
+      is held for manual handling, without an automatic refund. If the remaining
+      allowance cannot cover a deliverable amount, the payment requires recovery. Below-minimum,
+      late, wrong-asset, wrong-chain and second payments require recovery.
+      For exact, short payments require recovery and overpayments keep the
+      quoted delivery. Before signing, read the current order's legs and
+      repricing; sign only its exact server-provided XDR.
     * A leg in `unknown` is being reconciled; it is neither re-sent nor refunded
       until its outcome is known.
     * The `internal_settlement` in a quote is where the source payment settles
@@ -1015,6 +1021,9 @@ components:
             valuationUsd: { $ref: '#/components/schemas/UsdAmount' }
             priceUsd: { type: string, description: 'USD value of one unit of the source asset used for this quote (1 USDT is not assumed to be 1 USD).' }
             priceAt: { type: string, format: date-time }
+            amountPolicy: { type: string, enum: [exact, any_amount], description: 'Missing means exact. any_amount prices an accepted payment on the amount received.' }
+            minAcceptedAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }], description: 'Minimum single payment that can be delivered; null for exact.' }
+            maxPricedAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }], description: 'Per-order pricing ceiling; daily allowance can further reduce it. Excess needs manual handling, not an automatic refund.' }
         legs:
           type: array
           items: { $ref: '#/components/schemas/PlannedLeg' }
@@ -1080,8 +1089,20 @@ components:
         symbol: { type: string }
         address: { type: string, description: 'One-time deposit address for this order only. Never reuse it.' }
         memo: { type: [string, 'null'], description: 'Required when present (Stellar).' }
-        amount: { $ref: '#/components/schemas/Decimal', description: 'Send exactly this amount.' }
+        amount: { $ref: '#/components/schemas/Decimal', description: 'Suggested amount for any_amount; required amount for exact or an absent amountPolicy.' }
         payBefore: { type: string, format: date-time }
+        amountPolicy: { type: string, enum: [exact, any_amount], description: 'Missing means exact. any_amount prices an accepted payment on the amount received.' }
+        minAcceptedAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }], description: 'Minimum single payment that can be delivered; null for exact.' }
+        maxPricedAmount: { oneOf: [{ $ref: '#/components/schemas/Decimal' }, { type: 'null' }], description: 'Per-order pricing ceiling; daily allowance can further reduce it. Excess needs manual handling, not an automatic refund.' }
+    Repricing:
+      type: object
+      required: [quotedAmount, receivedAmount, pricedAmount, excessAmount, quotedPlanDigest]
+      properties:
+        quotedAmount: { $ref: '#/components/schemas/Decimal' }
+        receivedAmount: { $ref: '#/components/schemas/Decimal' }
+        pricedAmount: { $ref: '#/components/schemas/Decimal' }
+        excessAmount: { $ref: '#/components/schemas/Decimal', description: 'Received minus priced; held for manual handling.' }
+        quotedPlanDigest: { type: string, pattern: '^[0-9a-f]{64}$' }
     SourceState:
       type: object
       required: [status]
@@ -1117,6 +1138,7 @@ components:
         planDigest: { type: string }
         deposit: { $ref: '#/components/schemas/Deposit' }
         source: { $ref: '#/components/schemas/SourceState' }
+        repricing: { oneOf: [{ $ref: '#/components/schemas/Repricing' }, { type: 'null' }], description: 'Set after actual-amount repricing. Current legs, fees, totals and planDigest reflect the priced amount.' }
         legs:
           type: array
           items: { $ref: '#/components/schemas/PlannedLeg' }
