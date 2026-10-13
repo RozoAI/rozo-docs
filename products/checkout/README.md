@@ -21,7 +21,18 @@ There is no account to create and no private key to share. You pay from your own
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 | Zcash (Beta) | ZEC on Zcash, paid to a one-time transparent (t1) address on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only |
 
-On-chain Bitcoin and Tron are not accepted. Native coins and Arbitrum stablecoins are available on [checkout.rozo.ai](https://checkout.rozo.ai) only. The CLI, MCP server and skill take USDC or USDT on Solana, Ethereum, BNB Chain or Polygon, USDC on Base or Stellar, and BTC over Lightning.
+On-chain Bitcoin and Tron are not accepted, and USDT is not accepted on Base or Stellar.
+
+Where each one works:
+
+| Coin | Web ([checkout.rozo.ai](https://checkout.rozo.ai)) | CLI (`@rozoai/checkout` 0.1.21 or later) and skill | MCP server |
+| --- | --- | --- | --- |
+| BTC over Lightning | Yes | Yes | Yes |
+| Stablecoins, including Arbitrum | Yes | Yes | Yes |
+| Native coins | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin |
+| ZEC (Beta) | [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only | No: the CLI does not create ZEC orders and points to /zec | No: points to /zec |
+
+A native coin is offered only for invoices up to $2,000 (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
 
 ## Supported merchants
 
@@ -40,7 +51,7 @@ npx @rozoai/checkout quote <coinbase-link>
 npx @rozoai/checkout pay <coinbase-link> --with usdt-solana --yes
 ```
 
-`quote` is read-only. `pay` prints a deposit address (or a Lightning invoice) and waits until the invoice settles. No private key, no environment variable, no configuration. Agents and scripts should always pass `--with`; there is no default coin. Source: [RozoAI/rozo-checkout-skill](https://github.com/RozoAI/rozo-checkout-skill).
+`quote` is read-only. `pay` prints a deposit address (or a Lightning invoice) and waits until the invoice settles. `--with` takes `usdt-solana`, `usdc-solana`, `usdt-bnb`, `usdc-bnb`, `usdt-ethereum`, `usdc-ethereum`, `usdt-polygon`, `usdc-polygon`, `usdt-arbitrum`, `usdc-arbitrum`, `usdc-base`, `usdc-stellar`, `btc-lightning`, and the native coins `eth-ethereum`, `eth-base`, `eth-arbitrum`, `bnb-bnb` (or `bnb`), `sol-solana` (or `sol`) and `pol-polygon` (or `pol`). No private key, no environment variable, no configuration. Agents and scripts should always pass `--with`; there is no default coin. Source: [RozoAI/rozo-checkout-skill](https://github.com/RozoAI/rozo-checkout-skill).
 
 ### MCP server
 
@@ -91,6 +102,7 @@ Paying x402 APIs from an agent? Top up a ROZO balance once with the coin you hol
 * **Fee.** ROZO's service fee is included in the quote, shown before you pay. You pay the full invoice amount plus the fee, as the exact deposit amount in your order. The network fee for sending your coin goes to the blockchain, not to ROZO. Lightning and native coin payments also include a conversion spread built into the coin amount.
 * **Quote validity.** A quote (`quoteReceipt`) is valid for about 60 seconds. Creating the order takes a fresh quote.
 * **Order deadline.** Each deposit order has its own expiry, returned when the order is created (`expiresAt`). It is also bounded by the expiry of the Coinbase link itself. Send well before the earlier of the two: settlement needs a few minutes after your payment confirms, and the CLI shows the safe-send window (`order.expiry`) for each order. If the window has passed, create a new order instead of paying old deposit details.
+* **ZEC (Beta).** Paid on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) to a one-time transparent (t1) deposit address; the deposit address is public on chain, so this is not a shielded or private checkout. The price is held for 10 minutes if your payment is detected in that window. The top-up starts after 1 confirmation when the amount is under $110, and after 2 from $110. A Zcash block takes about 75 seconds on average and sometimes longer, so there is no fixed arrival time. If a ZEC payment arrives late or short, do not send more; contact support with your transaction hash.
 * **Refunds.** Crypto top-ups to OpenRouter are never refundable. That is OpenRouter's policy. Check the credit amount before you pay.
 * **Minimum.** OpenRouter sets its own minimum top-up; see [Pay OpenRouter with crypto](https://checkout.rozo.ai/blog/pay-openrouter-with-crypto).
 

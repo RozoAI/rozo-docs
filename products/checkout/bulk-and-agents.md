@@ -40,7 +40,7 @@ rozo-checkout receipt <rozoPaymentId> --json
 
 Or without installing: `npx @rozoai/checkout pay <coinbase-link> --with usdt-solana --yes --json --no-watch`.
 
-* `--with` is required for scripts and agents; there is no default coin. Accepted values: `usdt-solana`, `usdc-solana`, `usdt-bnb`, `usdc-bnb`, `usdt-ethereum`, `usdc-ethereum`, `usdt-polygon`, `usdc-polygon`, `usdc-base`, `usdc-stellar`, `btc-lightning`.
+* `--with` is required for scripts and agents; there is no default coin. Accepted values: `usdt-solana`, `usdc-solana`, `usdt-bnb`, `usdc-bnb`, `usdt-ethereum`, `usdc-ethereum`, `usdt-polygon`, `usdc-polygon`, `usdt-arbitrum`, `usdc-arbitrum`, `usdc-base`, `usdc-stellar`, `btc-lightning`, and the native coins `eth-ethereum`, `eth-base`, `eth-arbitrum`, `bnb-bnb` (or `bnb`), `sol-solana` (or `sol`), `pol-polygon` (or `pol`). Native coins and Arbitrum need CLI 0.1.21 or later. There is no ZEC value; a payer holding ZEC uses [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec).
 * `--yes` is required when stdin is not a terminal. `--json` prints exactly one JSON object on stdout.
 * `--no-watch` returns as soon as the deposit details exist. Without it, `pay --json` waits for settlement before printing anything.
 * A successful `pay --no-watch` means the order and its deposit details exist. **No money has moved yet.** The payer then sends the exact amount in `order.deposit`.
@@ -111,13 +111,14 @@ The full agent-oriented reference for these calls, including every safety check,
 
 ## Supported pay-in rails
 
-| Type | What you can pay with | CLI and MCP | Raw HTTP and web |
+| Type | What you can pay with | CLI (0.1.21 or later) and MCP | Raw HTTP and web |
 | --- | --- | --- | --- |
-| Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain or Polygon; USDC on Base or Stellar | Yes | Yes |
-| Stablecoins | USDC or USDT on Arbitrum | No | Yes |
+| Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar | Yes | Yes |
 | Bitcoin | BTC over Lightning | Yes | Yes |
-| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon | No | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
-| Zcash (Beta) | ZEC on Zcash | No | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
+| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon | Yes, when the quote lists the coin and the invoice is within the native limit below | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
+| Zcash (Beta) | ZEC on Zcash, to a one-time transparent (t1) address | No. Both point to [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
+
+The public `payments/supported` list on the payment-record API is the intents backend's full rail list (it also shows EURC, XLM, USDT0 and other pairs). It is not the list of coins accepted for an OpenRouter or Coinbase invoice; use `quote-invoice` (`supportedSources`) or the MCP `supported_coins` tool for that.
 
 USDT is not accepted on Base or Stellar. On-chain Bitcoin and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Native coin orders are limited to $2,000 per invoice, fee included; above that, `create-invoice` answers `UNSUPPORTED_SOURCE`, so pay large invoices with a stablecoin.
 
