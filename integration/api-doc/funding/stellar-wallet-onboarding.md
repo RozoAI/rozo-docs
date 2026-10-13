@@ -16,8 +16,8 @@ You send USDC or USDT from Base, Ethereum, Arbitrum or Polygon. We deliver USDC 
 | Way | For | How |
 | --- | --- | --- |
 | API | Apps, backends, agents | The steps below. No key |
-| Web page | People, no code | Coming soon: connect any Stellar wallet, pick amount and chain, pay, sign once |
-| MCP | AI agents (Claude, Cursor, ...) | Coming soon: Rozo MCP tools `stellar_wallet_quote`, `stellar_wallet_create_order`, `stellar_wallet_order_status`, `stellar_wallet_get_signing_request`, `stellar_wallet_submit_signed`. The MCP never holds keys: your agent's wallet pays and signs |
+| Web page | People, no code | [intents.rozo.ai/stellar-wallet](https://intents.rozo.ai/stellar-wallet): connect any Stellar wallet, pick amount and chain, pay, sign once |
+| MCP | AI agents (Claude Code, Codex, Cursor, ...) | Rozo MCP at `https://mcp.rozo.ai/mcp` with tools `funding_capabilities`, `stellar_wallet_quote`, `stellar_wallet_create_order`, `stellar_wallet_order_status`, `stellar_wallet_get_signing_request`, `stellar_wallet_submit_signed`. The MCP never holds keys: your agent's wallet pays and signs. See [Prompt for your agent](#prompt-for-your-agent) |
 
 ## Supported chains and tokens
 
@@ -42,7 +42,7 @@ You send USDC or USDT from Base, Ethereum, Arbitrum or Polygon. We deliver USDC 
 | Per order | 1 to 1,000 USD, on every chain |
 | Per client IP | 2,000 USD per day (UTC) |
 | All keyless traffic together | 10,000 USD per day (UTC) |
-| Request rate | Limited per client IP (`429 rate_limited`) |
+| Request rate | Per client IP, per 10 minutes: 30 quotes, 6 orders, 20 signing requests, 10 submits. Order reads are not limited (`429 rate_limited`) |
 
 The per-order limit is checked at quote time and the daily limits when you create the order. Either way the answer is `limit_exceeded`.
 
@@ -216,6 +216,20 @@ With a paid `usdGas` option the sponsor fee is 0.0000001 USDC, the smallest amou
 
 **A. Secret key (agents, servers, scripts): full flow after payment**
 
+No Stellar address yet? Create one locally first and keep the secret on that machine (never send it to any server, including ROZO):
+
+```js
+// npm i @stellar/stellar-sdk   (Node 18+), run once
+import { Keypair } from "@stellar/stellar-sdk";
+import { writeFileSync } from "node:fs";
+
+const kp = Keypair.random();
+writeFileSync("stellar-wallet.secret", kp.secret() + "\n", { mode: 0o600, flag: "wx" }); // never overwrites
+console.log(kp.publicKey()); // the G-address: use it as receiverAddress
+```
+
+Then, after payment:
+
 ```js
 // npm i @stellar/stellar-sdk   (Node 18+)
 import { Keypair, TransactionBuilder, Networks } from "@stellar/stellar-sdk";
@@ -279,6 +293,99 @@ await fetch(`${BASE}/funding/signing-requests/${req.signingRequestId}/submit`, {
 **C. Freighter only**: `import { signTransaction } from "@stellar/freighter-api"`, then `signTransaction(xdr, { networkPassphrase: "Public Global Stellar Network ; September 2015", address })` returns `{ signedTxXdr }`.
 
 The submit call is the claim: in that one transaction the account is created, the USDC trustline is added, and the USDC and XLM arrive. `walletAddress` must be the address you quoted for, and only that address's signature on the exact transaction is accepted. Multisig accounts are not supported.
+
+## Prompt for your agent
+
+Have an AI coding agent (Claude Code, Codex, Cursor) open the wallet for you through the Rozo MCP. Connect it first, for example `claude mcp add --transport http rozo-checkout "https://mcp.rozo.ai/mcp?src=docs"`. The agent needs an EVM wallet it controls on the chosen chain, holding the USDC or USDT plus a little native gas, and Node 18+. The same prompt is in the [MCP README](https://github.com/RozoAI/rozo-checkout-mcp#prompt-for-your-agent-open-a-stellar-wallet).
+
+Fill in the four inputs and paste:
+
+```text
+Open (or top up) a Stellar wallet for me with the rozo-checkout MCP tools.
+
+Inputs:
+- Receiving Stellar address: <G... address, or "generate a new one">
+- Pay from: <base | ethereum | arbitrum | polygon>, USDC or USDT, from the EVM wallet you control
+- Amount in USD: <1 to 1000>
+- XLM tier (usdGas): <"0" = no XLM, "0.5" = 1.6 XLM, "1" = 3.2 XLM, or "default">
+
+Safety rules (never break these):
+- The Stellar secret key (S...) stays on this machine. Never print it, never pass it to any tool, API, MCP or server.
+- Sign the XDR the server returns unchanged. Check its operations before signing; if anything looks wrong, stop and ask me.
+- Pay once, before payBefore, exactly as deposit.amountPolicy says. Never send a second payment to fix a problem.
+
+Steps:
+1. New address only: generate the keypair locally with the Node code below. It saves the secret to
+   ./stellar-wallet.secret (mode 600, refuses to overwrite). Tell me the file path and the G address.
+   Make sure the file is not inside a git repo and ask me to back it up.
+   Existing address: if it may need a signature (new account or no USDC trustline), make sure you can sign
+   for it before paying: point STELLAR_SECRET_FILE at its local secret file and run
+   node sign.mjs <G address>, which only checks that the key matches. If the key lives in a wallet app
+   (Freighter, LOBSTR), tell me and I will sign the XDR there myself.
+2. Call funding_capabilities. Stop if stellarOnboarding.status is not "supported". Check my amount is within
+   sourceAssets minAmount/maxAmount and my XLM tier is one of gasOptions.options.
+3. Call stellar_wallet_quote with receiverAddress, sourceChain, amountUsd (decimal string, e.g. "10") and
+   usdGas (leave it out for "default"). Show me receives.usdcMinimum, receives.xlm, fees, totals,
+   signatureNeeded and expiresAt. Wait for my yes. The quote is valid about 10 minutes.
+4. Call stellar_wallet_create_order with quoteId, planDigest and a new orderId (8 to 128 chars of
+   A-Z a-z 0-9 _ . : -, for example agent-stellar-20261013-0001). Save fundingId and orderId to a local file
+   before paying. Keep fundingId private. If the call fails, retry with the same quoteId and orderId: it
+   returns the same order, never a second one.
+5. Pay: one ERC-20 transfer from my EVM wallet on the chosen chain to deposit.address. Use the USDC or USDT
+   contract for that chain from deposit.acceptedTokens (both use 6 decimals). Amount: with amountPolicy
+   "exact", send exactly deposit.amount; with "any_amount", send deposit.amount (anything from
+   minAcceptedAmount up to maxPricedAmount is accepted and repriced). Send before deposit.payBefore.
+   Check the token balance and native gas first. Pay on one chain only.
+6. Call stellar_wallet_order_status every 15 seconds. source_confirming, funds_confirmed and executing
+   mean the payment was seen: do not pay again. An address that already has a USDC trustline needs no
+   signature and goes straight to completed.
+7. When signatureNeeded is true (pendingActions has sign_stellar_onboarding), call
+   stellar_wallet_get_signing_request with fundingId and the receiving G address. Before signing check:
+   networkPassphrase is "Public Global Stellar Network ; September 2015"; the operations create or use
+   my address; the trustline and the claimed balance are USDC issued by
+   GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN; the claimed USDC minus the disclosed sponsor
+   fee payment equals the current stable leg minimumAmount from order status (it can differ from the quote
+   after repricing); the XLM payment to me matches my tier. Decode the XDR locally (code below) and
+   confirm every field, including operation sources, matches the operations list.
+8. Sign with the code below and call stellar_wallet_submit_signed with signingRequestId and the signed
+   XDR. A signing request expires after about 5 minutes; if it expired or submit says failed, get a new
+   signing request and sign again. Submitting the same signed XDR twice is safe.
+9. Keep polling until status is "completed" (every leg confirmed). Report the USDC and XLM delivered
+   and each leg's txHash.
+
+If something goes wrong:
+- expired_unpaid or cancelled_unpaid: nothing was lost. Quote again with a new orderId.
+- recovery_required, a late or wrong payment, or a closed payment window after you paid: stop, do not
+  pay again, and send the fundingId to hi@rozo.ai.
+- rate_limited: wait a few minutes and retry once. Do not loop.
+
+Node code (npm i @stellar/stellar-sdk), two small ES module files:
+
+  // keygen.mjs (step 1, run once): node keygen.mjs
+  import { Keypair } from "@stellar/stellar-sdk";
+  import { writeFileSync } from "node:fs";
+  const kp = Keypair.random();
+  writeFileSync("stellar-wallet.secret", kp.secret() + "\n", { mode: 0o600, flag: "wx" });
+  console.log(kp.publicKey()); // the G address: the only part you share
+
+  // sign.mjs: node sign.mjs <G address>            checks the local key controls that address
+  //           node sign.mjs <G address> "<xdr>"    prints the full decoded transaction, signs nothing
+  //           node sign.mjs <G address> "<xdr>" --sign   prints the signed XDR (after you checked it)
+  import { Keypair, TransactionBuilder } from "@stellar/stellar-sdk";
+  import { readFileSync } from "node:fs";
+  const [address, xdr, flag] = process.argv.slice(2);
+  const networkPassphrase = "Public Global Stellar Network ; September 2015";
+  const kp = Keypair.fromSecret(readFileSync(process.env.STELLAR_SECRET_FILE ?? "stellar-wallet.secret", "utf8").trim());
+  if (kp.publicKey() !== address) throw new Error("this key does not control " + address);
+  if (!xdr) { console.error("signer ok"); process.exit(0); }
+  const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
+  console.error(JSON.stringify({ source: tx.source, fee: tx.fee, operations: tx.operations }, null, 2));
+  if (flag !== "--sign") process.exit(0);
+  tx.sign(kp); // signs the server transaction as is, nothing is changed
+  console.log(tx.toXDR()); // signed XDR, base64: pass it to stellar_wallet_submit_signed
+```
+
+Through the MCP, rate limits count against the MCP server's outbound address, which other MCP users can share: on `rate_limited`, wait and retry later instead of looping.
 
 ## Checklist for agents and integrators
 
