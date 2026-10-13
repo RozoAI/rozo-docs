@@ -17,6 +17,7 @@ Every payment request includes a `destination.receiverAddress`, and ROZO routes 
 * [Wallet Top-up](api-for-advanced-used/wallet-topup.md) — `anyAmount` deposits: send any amount, the system detects it automatically.
 * [Get Fees](api-for-advanced-used/get-fees.md) — preview fees with `dryrun=true` before creating a payment.
 * [Stellar Smart Account Payments](api-for-advanced-used/stellar-contract-payments.md) — pay from Soroban contract addresses (C-addresses) to EVM and Solana.
+* [Funding API](funding/README.md): one USDC or USDT payment opens a Stellar wallet with USDC and XLM in one signature ([Open a Stellar Wallet](funding/stellar-wallet-onboarding.md)) or buys XLM gas ([Buy Gas Tokens](funding/buy-gas-tokens.md)). No API key needed. Gas plus a stablecoin on other chains ([Gas + Stablecoin Funding](funding/gas-plus-stablecoin.md)) is available on request.
 
 ## Webhooks
 
