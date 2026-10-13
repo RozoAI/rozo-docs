@@ -18,7 +18,7 @@ There is no account to create and no private key to share. You pay from your own
 | --- | --- |
 | Bitcoin | BTC over Lightning |
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar |
-| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon (Beta) |
+| Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 
 On-chain Bitcoin and Tron are not accepted. Native coins and Arbitrum stablecoins are available on [checkout.rozo.ai](https://checkout.rozo.ai) only. The CLI, MCP server and skill take USDC or USDT on Solana, Ethereum, BNB Chain or Polygon, USDC on Base or Stellar, and BTC over Lightning.
 
