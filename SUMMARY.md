@@ -44,6 +44,7 @@
     * [Partner Fee](integration/api-doc/api-for-advanced-used/partner-fee.md)
     * [Look Up by Tx Hash](integration/api-doc/api-for-advanced-used/lookup-by-tx-hash.md)
     * [Stellar Smart Account Payments](integration/api-doc/api-for-advanced-used/stellar-contract-payments.md)
+    * [Exchange Deposits and Withdrawals for Smart Accounts (Beta)](integration/api-doc/api-for-advanced-used/stellar-exchange-deposits-withdrawals.md)
     * [Funding API](integration/api-doc/funding/README.md)
       * [Open a Stellar Wallet](integration/api-doc/funding/stellar-wallet-onboarding.md)
       * [Buy Gas Tokens](integration/api-doc/funding/buy-gas-tokens.md)
