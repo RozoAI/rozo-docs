@@ -34,7 +34,7 @@ Host: `https://iufqieirueyalyxfzszh.supabase.co/functions/v1`
 **Bind or look up the G address**
 
 ```bash
-curl -X POST 'https://iufqieirueyalyxfzszh.supabase.co/functions/v1/stellar-intake' \
+curl -X POST 'https://iufqieirueyalyxfzszh.supabase.co/functions/v1/app_stellar_intake' \
   -H 'Content-Type: application/json' \
   -d '{ "c_address": "C...your smart account..." }'
 ```
@@ -43,39 +43,46 @@ Response (201 on first bind, 200 afterwards):
 
 ```json
 {
+  "id": "7ac81248-...",
   "c_address": "C...",
   "g_address": "G...",
   "network": "public",
-  "status": "active",
+  "status": "allocated",
   "derivation_version": 1,
+  "activation_tx_hash": null,
   "created": true
 }
 ```
+
+`id` is the mapping id used by the receipts endpoint.
 
 `status` is `allocated` until the account is created on chain, then `active`. Only share the `G` address once it is `active`.
 
 **Look up by address**
 
 ```bash
-GET /stellar-intake/c/{c_address}
-GET /stellar-intake/g/{g_address}
+GET /app_stellar_intake/c/{c_address}
+GET /app_stellar_intake/g/{g_address}
 ```
 
 **Monitor incoming deposits**
 
 ```bash
-GET /stellar-intake/{id}/receipts?limit=50
+GET /app_stellar_intake/{id}/receipts?limit=50&offset=0
 ```
 
-Each receipt is one incoming transfer event:
+The response is `{ "mapping_id", "limit", "offset", "receipts": [...] }`. Each receipt is one incoming transfer event:
 
 | Field | Meaning |
 | --- | --- |
 | `tx_hash`, `op_index`, `event_index` | Where the money arrived on chain. One Soroban operation can carry several transfers, so the event index is part of the key |
-| `asset_code`, `amount_stroops` | What arrived, in stroops (7 decimals) |
+| `from_address` | Who sent it |
+| `asset_code`, `asset_issuer`, `amount_stroops` | What arrived, in stroops (7 decimals) |
 | `fee_stroops`, `net_stroops` | Rozo fee and what was forwarded to your `C` |
 | `state` | See below |
-| `forward_tx_hash` | The transaction that moved the funds into your `C` |
+| `batch_id`, `batch_state` | Several receipts can be forwarded together in one batch |
+| `forward_tx_hash` | The Soroban transaction that moved the net amount into your `C` |
+| `fee_tx_hash` | The classic payment that moved the fee |
 
 | `state` | Meaning | What to do |
 | --- | --- | --- |
@@ -151,7 +158,7 @@ Your `C` cannot attach a memo to anything it sends (Soroban transactions have no
 
 ## Monitoring checklist for integrators
 
-- Deposits: poll `GET /stellar-intake/{id}/receipts` or watch your `C` balance. A receipt in `manual_review` or `retryable` for more than an hour is worth a support ticket; include the receipt id.
+- Deposits: poll `GET /app_stellar_intake/{id}/receipts` or watch your `C` balance. A receipt in `manual_review` or `retryable` for more than an hour is worth a support ticket; include the receipt id.
 - Withdrawals: poll the order until `payment_payout_completed`; if it stays `payment_started` for more than 30 minutes after you paid, send us the `paymentId`.
 - Never send XLM to the `G` address. It is not forwarded.
 - The `G` address does not change. If Rozo ever rotates derivation keys, your old `G` keeps working and you will be told the new one in the bind response (`derivation_version` increases).
