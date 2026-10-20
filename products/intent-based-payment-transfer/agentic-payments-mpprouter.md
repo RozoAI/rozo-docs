@@ -131,4 +131,4 @@ MPP Router is the agentic payments rail that lets ROZO's Stellar-native wallets 
 
 ---
 
-_Last updated: 2026-08-11. Service counts verified against the live catalog on that date._
+_Service counts above are dated snapshots. Consult the live catalog for current availability and verification status._

@@ -16,7 +16,7 @@ You send USDC or USDT from Base, Ethereum, Arbitrum or Polygon. We deliver USDC 
 | Way | For | How |
 | --- | --- | --- |
 | API | Apps, backends, agents | The steps below. No key |
-| Web page | People, no code | [intents.rozo.ai/stellar-wallet](https://intents.rozo.ai/stellar-wallet): connect any Stellar wallet, pick amount and chain, pay, sign once |
+| Web page | People, no code | [intents.rozo.ai/stellar-wallet](https://intents.rozo.ai/stellar-wallet): connect a compatible Stellar wallet, pick amount and chain, pay, and sign if required. Check the account and signer requirements below |
 | MCP | AI agents (Claude Code, Codex, Cursor, ...) | Rozo MCP at `https://mcp.rozo.ai/mcp` with tools `funding_capabilities`, `stellar_wallet_quote`, `stellar_wallet_create_order`, `stellar_wallet_order_status`, `stellar_wallet_get_signing_request`, `stellar_wallet_submit_signed`. The MCP never holds keys: your agent's wallet pays and signs. See [Prompt for your agent](#prompt-for-your-agent) |
 
 ## Supported chains and tokens

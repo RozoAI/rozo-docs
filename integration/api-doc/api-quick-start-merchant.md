@@ -2,7 +2,7 @@
 
 Accept a USDC payment into your merchant account in two calls: create a payment, then poll for its status.
 
-App ID: your merchant `appId`. You can try the examples below with our test merchant `pos_rozostudio`, then join our discord to get your own.
+The examples below use the public demo merchant `pos_rozostudio`. Its receiving configuration belongs to the demo merchant, not to your business. Do not use that app ID to collect your own customer payments. For your own merchant, follow [Merchant API Keys](merchant-api-keys.md) to register and use the authenticated request examples.
 
 API Host: https://intentapiv4.rozo.ai/functions/v1
 
@@ -65,13 +65,18 @@ The response returns a payment `id` and a `receiverAddress` on the source chain 
 curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/<payment_id>'
 ```
 
-Poll this endpoint until `status` becomes `payment_completed`. Common statuses:
+Poll the raw `status`. For a routed payment, wait for `payment_payout_completed`; a direct payment can finish as `payment_completed`. Reconcile the destination amount and transaction against your order before treating it as settled.
 
-| Status | Meaning |
+| Raw `status` | Meaning |
 | --- | --- |
-| `payment_unpaid` | Waiting for the customer to send funds |
-| `payment_started` | Funds detected on chain, confirming |
-| `payment_completed` | Settled — fulfill the order |
+| `payment_unpaid` | Waiting for payment |
+| `payment_started` | Payment detected; processing |
+| `payment_payin_completed` | Incoming funds confirmed; payout may still be pending |
+| `payment_payout_started` | Payout in progress |
+| `payment_payout_completed` | Routed payout completed |
+| `payment_completed` | Completed direct-payment flow |
+
+The separate `merchantStatus` field can say `payment_completed` before payout is complete. Do not use it as proof of merchant settlement. See [Reading order status](merchant-api-keys.md#reading-order-status) for the distinction and recovery handling.
 
 > Tip: instead of polling, configure a [Webhook](api-for-advanced-used/webhook.md) to get notified when the payment completes.
 

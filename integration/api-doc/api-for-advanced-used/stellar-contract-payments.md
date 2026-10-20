@@ -54,7 +54,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
         "tokenSymbol": "USDC"
     },
     "destination": {
-        "receiverAddress": "0x000000000000000000000000000000000000dEaD",
+        "receiverAddress": "<YOUR_EVM_RECEIVER_ADDRESS>",
         "chainId": 8453,
         "tokenSymbol": "USDC",
         "amount": "1"
@@ -97,7 +97,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
     },
     "destination": {
         "chainId": "8453",
-        "receiverAddress": "0x000000000000000000000000000000000000dEaD",
+        "receiverAddress": "<YOUR_EVM_RECEIVER_ADDRESS>",
         "receiverMemo": null,
         "tokenSymbol": "USDC",
         "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
