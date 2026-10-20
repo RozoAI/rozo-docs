@@ -31,7 +31,7 @@ These are programmatic API endpoints. Use the partner portal to manage your acco
 
 ## Creating a payment
 
-Use `POST /payments?dryrun=true` to preview a request and `POST /payments` to create an order. Keep the same unique `orderId` when retrying the same request. Before paying, verify the created order's actual amount, asset, destination and expiry.
+Use `POST /payments?dryrun=true` to preview a request and `POST /payments` to create an order. Keep the unique `orderId` for reconciliation. If creation is uncertain, use order lookup before taking further action; do not repeat create. Before paying, verify the created order's actual amount, asset, destination and expiry.
 
 - [Merchant quick start](api-quick-start-merchant.md): leave `destination` unset; settlement uses your configured wallet.
 - [Wallet quick start](api-quick-start.md): use a Wallet app and supply the intended recipient.

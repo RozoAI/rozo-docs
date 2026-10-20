@@ -34,7 +34,7 @@ This uses `POST /payments?dryrun=true`. Check the source amount, expected destin
 
 ## 2. Create the customer order
 
-Set `ROZO_ORDER_ID` in your server environment to your unique purchase reference. Keep the same reference when retrying this request. Then run:
+Set `ROZO_ORDER_ID` in your server environment to your unique purchase reference. If creation has an uncertain outcome, preserve this reference and run `node payment.mjs lookup`; do not repeat create. Then run:
 
 ```bash
 node payment.mjs create

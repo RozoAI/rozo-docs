@@ -27,13 +27,13 @@ New integrations use `X-API-Key`. No additional Bearer token is needed for these
 
 Save the following as `payment.mjs` in your local example directory. It only contacts the API; it never signs or sends a wallet transaction. `quote` is the default mode. The [source file](https://github.com/RozoAI/rozo-docs/blob/main/scripts/examples/payment.mjs) contains the same code.
 
-```js
+```javascript
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 // Node.js 18+. Credentials stay in the server environment.
 const mode = process.argv[2] ?? 'quote';
-if (!['quote', 'create', 'status'].includes(mode)) {
-  throw new Error('Usage: node payment.mjs quote|create|status');
+if (!['quote', 'create', 'status', 'lookup'].includes(mode)) {
+  throw new Error('Usage: node payment.mjs quote|create|status|lookup');
 }
 const apiKey = process.env.ROZO_API_KEY;
 if (!apiKey) throw new Error('Set ROZO_API_KEY in your server environment.');
@@ -56,7 +56,16 @@ async function request(path, body) {
   return data;
 }
 
-if (mode === 'status') {
+if (mode === 'lookup') {
+  const appId = process.env.ROZO_APP_ID;
+  const orderId = process.env.ROZO_ORDER_ID;
+  if (!appId || !orderId) throw new Error('Set ROZO_APP_ID and the original ROZO_ORDER_ID for lookup.');
+  const payment = await request(`/payments/order/${encodeURIComponent(appId)}/${encodeURIComponent(orderId)}`);
+  console.log({ id: payment.id, status: payment.status });
+} else if (mode === 'status') {
+  if (!existsSync(receiptFile)) {
+    throw new Error('No local receipt. If create was attempted, run lookup with the original order reference. Do not create again.');
+  }
   const saved = JSON.parse(readFileSync(receiptFile, 'utf8'));
   if (!saved.id) throw new Error('No payment ID saved.');
   const payment = await request(`/payments/${encodeURIComponent(saved.id)}`);
@@ -79,17 +88,28 @@ if (mode === 'status') {
     }
     body.orderId = process.env.ROZO_ORDER_ID;
   }
-  const result = await request(mode === 'quote' ? '/payments?dryrun=true' : '/payments', body);
+  let result;
+  try {
+    result = await request(mode === 'quote' ? '/payments?dryrun=true' : '/payments', body);
+  } catch (error) {
+    if (mode === 'create') {
+      throw new Error(`${error.message} Create did not complete locally. Run lookup with the original reference before taking further action; do not create or pay again.`);
+    }
+    throw error;
+  }
   if (mode === 'quote') {
     console.log({ status: result.status, sourceAmount: result.source?.amount,
       destinationAmount: result.destination?.amount, sourceFee: result.source?.fee, feeInfo: result.feeInfo });
   } else {
-    if (!result.id) throw new Error('No payment ID returned. Reconcile by order reference before retrying.');
-    writeFileSync(receiptFile, JSON.stringify(result, null, 2), { flag: 'wx', mode: 0o600 });
+    if (!result.id) throw new Error('No payment ID returned. Run lookup with the original order reference. Do not create again.');
+    try {
+      writeFileSync(receiptFile, JSON.stringify(result, null, 2), { flag: 'wx', mode: 0o600 });
+    } catch {
+      throw new Error('Order created, but receipt could not be saved. Run lookup with the original order reference. Do not create or pay again.');
+    }
     console.log('Order saved privately to .rozo-payment.json. No wallet transaction was sent.');
   }
 }
-
 ```
 
 Keep `.rozo-payment.json` private and add it to your project's `.gitignore`. It stores the order response so you can resume status checks. Use a separate example directory for each new order. If a create request times out before the file is saved, keep the same `ROZO_ORDER_ID` and reconcile through [order lookup](merchant-api-keys.md#reading-order-status); do not switch to a new order reference or pay twice.
@@ -97,9 +117,19 @@ Keep `.rozo-payment.json` private and add it to your project's `.gitignore`. It 
 ## 4. Choose a request
 
 - [Merchant quick start](api-quick-start-merchant.md): configure a merchant wallet, quote, create, present payment instructions and reconcile.
-- [Wallet quick start](api-quick-start.md): quote a transfer, set the intended destination, create and check settlement.
+- [Wallet quick start](api-quick-start.md): set the intended destination, quote, create and check settlement.
 
-Each guide supplies `payment-request.json`. Before creating an order, set `ROZO_ORDER_ID` to your application's unique order reference. Keep that reference unchanged when retrying the same request. Wallet transfers require `ROZO_RECEIVER_ADDRESS` before both quoting and creating the order.
+Each guide supplies `payment-request.json`. Before creating an order, set `ROZO_ORDER_ID` to your application's unique order reference. If creation times out or its outcome is uncertain, preserve that reference and run lookup; do not repeat create. Wallet transfers require `ROZO_RECEIVER_ADDRESS` before both quoting and creating the order.
+
+## Recover an uncertain create
+
+Open your app in [partners.rozo.ai](https://partners.rozo.ai) to find its `appId`. Set `ROZO_APP_ID` to that value and keep `ROZO_ORDER_ID` equal to the original reference. Use the same app's API key, then run:
+
+```bash
+node payment.mjs lookup
+```
+
+This only queries the existing order. Do not rerun `create`, change the reference, or pay again when a create request times out, returns an unclear error, or cannot save its receipt. This example does not promise server-side deduplication by `orderId`. If lookup returns `paymentNotFound`, the outcome is still unresolved: verify the app and reference, query again later, or contact support before creating a replacement.
 
 ## Common errors
 
@@ -110,7 +140,7 @@ Each guide supplies `payment-request.json`. Before creating an order, set `ROZO_
 | `email_not_verified` | Complete email verification in the partner portal |
 | `destination_not_allowed` | Use a Wallet app for a caller-selected destination; Merchant apps use their configured wallet |
 | `paymentNotFound` | Check the payment ID and use the same app's key that created it |
-| `authorization_unavailable` or a network timeout | Preserve the order reference and retry later; do not bypass authentication |
+| `authorization_unavailable` or a network timeout | For an uncertain create, run lookup with the original reference; do not repeat create or bypass authentication |
 | A quote or route error | Follow the returned code and [quote error reference](api-for-advanced-used/get-fees.md#error-responses) |
 
 The client reports HTTP status, error code and request ID without printing credentials or the full order. Share the request ID with [support](../../contact/contact-us/README.md) when needed.

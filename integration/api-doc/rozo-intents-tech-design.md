@@ -33,7 +33,7 @@ Track the order until the requested destination result is confirmed. Source-paym
 
 ## Responsibilities at the integration boundary
 
-The payer or authorized wallet signer approves the payment. Your application validates the recipient and amount, keeps request references, verifies notifications and handles retries according to the API's idempotency rules.
+The payer or authorized wallet signer approves the payment. Your application validates the recipient and amount, keeps request references, verifies notifications and reconciles uncertain create results through order lookup before taking further action. Do not assume that repeating a create request is safe.
 
 Rozo executes the selected payment flow and exposes its result through the documented interface. Applications do not need to operate Rozo infrastructure to integrate. If an outcome remains unclear, query the existing order and [contact support](../../contact/contact-us/README.md) before sending again.
 
