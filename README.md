@@ -1,47 +1,36 @@
 ---
 icon: hand-wave
+description: Find the right Rozo integration for merchant payments, wallets and agents.
 ---
 
-# Welcome to ROZO
+# Build with Rozo
 
-Our story begins in the summer of 2025, in a small boba shop in San Francisco that accepted USDC.
+Rozo provides payment and funding tools for merchants, wallets and agents. Start with what you want to do; each guide points to the relevant API, SDK or tool and explains the access requirements.
 
-I scanned their QR code with my mobile USDC wallet, but my app showed error.
+## What are you building?
 
-<figure><img src=".gitbook/assets/Screenshot 2025-11-29 at 5.27.36 PM.png" alt="" width="173"><figcaption></figcaption></figure>
+| Your task | Start here |
+| --- | --- |
+| Accept payments for a merchant or website | [Merchant integration guide](start/merchants.md) |
+| Fund a wallet, move funds across chains, or connect a Stellar smart account | [Wallet integration guide](start/wallets.md) |
+| Let an agent pay an invoice, use a paid API, or fund a Stellar wallet | [Agent integration guide](start/agents.md) |
 
-It turned out the merchant only accept USDC on Base chain, while my wallets only support USDC on Stellar. USDC on Stellar is not the same as USDC on Base.&#x20;
+Not sure which applies? [Choose your integration](start/choose-your-integration.md). Looking for a particular feature? Browse the [capability catalog](start/capabilities.md).
 
-<figure><img src=".gitbook/assets/Screenshot 2025-11-29 at 5.27.39 PM.png" alt="" width="375"><figcaption></figcaption></figure>
+## Which site should I use?
 
-Stablecoins are the best form of money on the Internet, but the user experience is still stuck in the early days. USDC exists on 29 different blockchains, and that’s not even counting USDT.
+| Site | Purpose |
+| --- | --- |
+| **docs.rozo.ai**, this site | Integration guides, API references and tool instructions |
+| [partners.rozo.ai](https://partners.rozo.ai) | Register and manage an app, configure merchant settlement and obtain API keys where required. Some capabilities also require Rozo to enable your app |
+| [checkout.rozo.ai](https://checkout.rozo.ai) | Pay an existing OpenRouter or Coinbase-hosted invoice through a web flow |
+| [Stellar wallet funding](https://intents.rozo.ai/stellar-wallet) | Use the documented Stellar onboarding flow in a browser; see its [requirements](integration/api-doc/funding/stellar-wallet-onboarding.md) |
+| [MPP Router](https://www.mpprouter.dev) | Explore paid API services for agents |
 
-To pay for a coffee, why do we need to understand 29 chains, different stablecoins, different bridges, different fees? That’s _not_ how money should work.<br>
+An API host is a programmatic endpoint, not a dashboard login. Use the host, authentication and completion states in the reference for the integration you choose.
 
-We’re building ROZO, the Visa for Stablecoins. We hide the complexity, and we are building the stablecoin abstrations.  You only need to think in _intents._
+## Before moving funds
 
-> “I want to pay $3.25 for boba with 10% tips.”
->
-> “I want to buy $100 BTC.”
->
-> “I want to earn 10% APY with a pool with $10M+ TVL.”
->
-> “I want my AI agent to pay for this API call, per request, with no API key.”
+Check the route and wallet requirements in the relevant guide. A quote or a created order is not a completed payment. Follow that product's status or receipt instructions, and keep any required wallet approval with the user or their authorized signer.
 
-That last one is [Agentic Payments with MPP Router](products/intent-based-payment-transfer/agentic-payments-mpprouter.md): an agent holding Stellar USDC can call paid API services such as OpenAI, Anthropic, DeepSeek, Perplexity, Exa, Firecrawl and Tavily, and settle each request over a 402 challenge, with no subscription and no card on file.
-
-> "I want to top up OpenRouter with the SOL I already have."
-
-That one is [ROZO Checkout](products/checkout/README.md): paste an OpenRouter or other Coinbase payment link, pay with BTC over Lightning, ETH, SOL, BNB, USDC or USDT, and ROZO settles the invoice in USDC on Base. Agents can pay with stablecoins or Lightning through the CLI, the MCP server or the Claude Code skill.
-
-
-
-Welcome to ROZO.&#x20;
-
-Let's hide the wires and use a new way of transacting.
-
-Building on ROZO? Start with [Choose Your Integration](start/choose-your-integration.md).
-
-## Secret scanning
-
-Enable the local gitleaks pre-commit hook once per clone: `brew install gitleaks pre-commit && pre-commit install` (config in `.pre-commit-config.yaml`). CI also runs a report-only scan in `.github/workflows/secret-scan.yml`.
+For support, use [Contact us](contact/contact-us/README.md). For the background behind Rozo, read [Vision and Missions](start/vision-and-missions.md).

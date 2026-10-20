@@ -78,7 +78,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
   }'
 ```
 
-The response includes the order `id`, its `status` (starts at `unpaid`), and a hosted
+The response includes the order `id`, its `status` (starts at `payment_unpaid`), and a hosted
 payment link / deposit address you can present to the customer.
 
 ## Reading order status
@@ -91,15 +91,26 @@ curl --location \
   --header 'X-API-Key: rz_live_xxx'
 ```
 
-Order status moves through:
+Read the raw `status` field returned by this endpoint. A typical routed payment moves through:
 
-```
-unpaid → payin_completed → payout_completed
+```text
+payment_unpaid → payment_payin_completed → payment_payout_started → payment_payout_completed
 ```
 
-- `unpaid` — order created, customer has not paid yet.
-- `payin_completed` — the customer's funds have arrived.
-- `payout_completed` — funds have settled to your merchant wallet. The order is done.
+Intermediate states can be observed or skipped between polls. Direct payments can finish as `payment_completed`.
+
+| Raw `status` | Meaning |
+| --- | --- |
+| `payment_unpaid` | Order created; waiting for the customer |
+| `payment_started` | Payment detected; processing |
+| `payment_payin_completed` | Incoming funds confirmed; merchant payout may still be pending |
+| `payment_payout_started` | Merchant payout is in progress |
+| `payment_payout_completed` | Routed payout completed |
+| `payment_completed` | Completed direct-payment flow |
+
+For settlement reconciliation, require raw `status` of `payment_payout_completed` or, for a direct payment, `payment_completed`, and reconcile the destination amount and transaction against your order. Handle non-success states through your support/recovery flow instead of fulfilling or paying again.
+
+**Do not use `merchantStatus` as proof of settlement.** It is a separate convenience field: it can already be `payment_completed` at `payment_payin_completed` or `payment_payout_started`, before the merchant's payout finishes.
 
 ## Reading merchant stats (Admin only)
 
@@ -170,7 +181,7 @@ A typical "take a payment and reconcile it" loop:
 
 2. **Give the customer the payment link** returned in the response.
 
-3. **Poll for status** until it reaches `payout_completed`:
+3. **Poll the raw `status`** using the settlement rules above:
 
    ```bash
    curl --location \
@@ -178,8 +189,8 @@ A typical "take a payment and reconcile it" loop:
      --header 'X-API-Key: rz_live_xxx'
    ```
 
-4. **Reconcile**: when status is `payout_completed`, mark the order paid in your own
-   system. For periodic reporting, an Admin-keyed agent calls
+4. **Reconcile**: confirm the raw completion state, destination amount and transaction
+   before marking the order settled in your own system. For periodic reporting, an Admin-keyed agent calls
    `/me/stats?period=today` and writes the numbers to your dashboard.
 
 In pseudocode the agent loop is:
@@ -188,10 +199,15 @@ In pseudocode the agent loop is:
 order = POST /payment-api  { orderId, source }
 present(order.paymentLink)
 loop:
-    status = GET /payment-api/payments/order/{appId}/{orderId}
-    if status == "payout_completed": break
+    payment = GET /payment-api/payments/order/{appId}/{orderId}
+    if payment.status in ["payment_payout_completed", "payment_completed"]:
+        reconcile_destination_amount_and_transaction(payment, order)
+        mark_settled(order)
+        break
+    if requires_recovery(payment):
+        stop_and_contact_support(payment)
+        break
     sleep(interval)
-mark_paid(order)
 ```
 
 ## Security

@@ -2,31 +2,19 @@
 
 ## GETTING STARTED <a href="#start" id="start"></a>
 
-* [Welcome to ROZO](README.md)
-* [Vision and Missions](start/vision-and-missions.md)
+* [Build with Rozo](README.md)
 * [Choose Your Integration](start/choose-your-integration.md)
+* [Capability Catalog](start/capabilities.md)
 * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
+* [Vision and Missions](start/vision-and-missions.md)
 
-## PRODUCTS
+## TASK GUIDES
 
-* [Intent Based Payment](products/intent-based-payment-transfer/README.md)
-  * [How Intent Based Payment Works](products/intent-based-payment-transfer/intent-based-payment.md)
-* [Agentic Payments (MPP Router)](products/intent-based-payment-transfer/agentic-payments-mpprouter.md)
-* [ROZO Checkout](products/checkout/README.md)
-  * [Bulk Purchases and Agents](products/checkout/bulk-and-agents.md)
-  * [x402 Payer](products/checkout/x402-payer.md)
-* [Bridge](products/intent-based-bridge/README.md)
-  * [One-Click Bridge](products/intent-based-bridge/intent-based-bridge.md)
-  * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
-  * [EURC Onramp and Bridge](products/intent-based-bridge/eurc-onramp/README.md)
-  * [CCTP Bridge](products/cctp-bridge/README.md)
-* [Mobile App](products/mobile-app/README.md)
-  * [ROZO POS (Merchant App)](products/mobile-app/pos-merchant-app.md)
-  * [dApp Integration](products/mobile-app/dapp-integration.md)
-  * [Support](products/mobile-app/support.md)
-  * [Privacy Policy](products/mobile-app/privacy.md)
+* [Accept Merchant Payments](start/merchants.md)
+* [Fund and Connect Wallets](start/wallets.md)
+* [Let an Agent Pay](start/agents.md)
 
-## INTEGRATE <a href="#integration" id="integration"></a>
+## API AND SDK REFERENCE <a href="#integration" id="integration"></a>
 
 * [ROZO Intent Pay SDK](integration/rozointentpay/README.md)
   * [Quick Start Guide](integration/rozointentpay/quick-start.md)
@@ -55,6 +43,25 @@
     * [Merchant API Keys](integration/api-doc/merchant-api-keys.md)
     * [API Doc (POSTMAN)](integration/api-doc/api-doc-postman.md)
     * [Webhook](integration/api-doc/api-for-advanced-used/webhook.md)
+
+## PRODUCTS
+
+* [Intent Based Payment](products/intent-based-payment-transfer/README.md)
+  * [How Intent Based Payment Works](products/intent-based-payment-transfer/intent-based-payment.md)
+* [Agentic Payments (MPP Router)](products/intent-based-payment-transfer/agentic-payments-mpprouter.md)
+* [ROZO Checkout](products/checkout/README.md)
+  * [Bulk Purchases and Agents](products/checkout/bulk-and-agents.md)
+  * [x402 Payer](products/checkout/x402-payer.md)
+* [Bridge](products/intent-based-bridge/README.md)
+  * [One-Click Bridge](products/intent-based-bridge/intent-based-bridge.md)
+  * [Wallet Deposit for Apps](products/intent-based-bridge/intent-based-deposit.md)
+  * [EURC Onramp and Bridge](products/intent-based-bridge/eurc-onramp/README.md)
+  * [CCTP Bridge](products/cctp-bridge/README.md)
+* [Mobile App](products/mobile-app/README.md)
+  * [ROZO POS (Merchant App)](products/mobile-app/pos-merchant-app.md)
+  * [dApp Integration](products/mobile-app/dapp-integration.md)
+  * [Support](products/mobile-app/support.md)
+  * [Privacy Policy](products/mobile-app/privacy.md)
 
 ## TECHNICAL REFERENCE <a href="#reference" id="reference"></a>
 

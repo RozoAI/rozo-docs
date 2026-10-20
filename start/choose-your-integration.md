@@ -1,34 +1,29 @@
 ---
-description: >-
-  Choose your ROZO integration. One table to pick between the SDK, the Bridge &
-  Wallet API, the Merchant API, MPP Router, ROZO Checkout and
-  CCTP Bridge.
+description: Choose a Rozo integration by task, then follow one recommended guide.
 icon: signs-post
 ---
 
 # Choose Your Integration
 
-Every ROZO product runs on the same intent rails. Pick the entry point that matches what you are building, then follow its quick start.
+Choose the outcome first. You do not need to learn every Rozo product to get started.
 
-| You are building… | Use | Start here |
+| I want to… | Recommended guide | Main distinction |
 | --- | --- | --- |
-| A web app that accepts payments from any chain, with a drop-in React component | **Intent Pay SDK** | [Quick Start Guide](../integration/rozointentpay/quick-start.md) |
-| A wallet, bridge or app that moves funds to an address you control per request | **Bridge & Wallet API** | [API Quick Start](../integration/api-doc/api-quick-start.md) |
-| A merchant checkout that settles into a preconfigured wallet, with webhooks | **Merchant API** | [API Quick Start (Merchant)](../integration/api-doc/api-quick-start-merchant.md) |
-| An AI agent that pays per API call over HTTP 402, no API keys | **Agentic Payments (MPP Router)** | [MPP Router](../products/intent-based-payment-transfer/agentic-payments-mpprouter.md) |
-| An agent or script that pays an OpenRouter or Coinbase invoice with the coin the user already holds | **ROZO Checkout (CLI / MCP / skill)** | [ROZO Checkout](../products/checkout/README.md) |
-| Native USDC moves between Stellar and Base, Ethereum or Solana, self-custody | **CCTP Bridge** | [CCTP Bridge](../products/cctp-bridge/README.md) |
-| A unique deposit address per user so your app can receive USDC | **Wallet Deposit API** | [Wallet Deposit API](../integration/api-doc/deposit-api.md) |
+| Accept payments into my merchant's configured settlement wallet | [Merchant guide](merchants.md) | The Merchant API uses a receiving wallet configured on your app |
+| Move funds to a wallet address selected for each request | [Wallet guide](wallets.md) | Bridge requests specify the destination; other wallet flows have their own requirements |
+| Let an agent pay for something or prepare a wallet | [Agent guide](agents.md) | Paying an API request, paying an invoice and funding a wallet are separate workflows |
 
-## SDK or API?
+## SDK, API, or an existing tool?
 
-* **SDK** when you ship a browser UI and want the payment flow rendered for you.
-* **API** when you own the UI, run a backend, or integrate from a non-JavaScript stack.
+- **SDK:** use the [Intent Pay SDK](../integration/rozointentpay/quick-start.md) when you need a React payment interface. Check its supported configuration before choosing it for your flow.
+- **API:** use the reference linked from your task guide when you own the interface or run a backend.
+- **CLI, MCP or skill:** use the [Agent guide](agents.md) to select the tool for your task. Tool availability differs by product and payment method.
+- **Web:** use the [existing product links on the home page](../README.md#which-site-should-i-use) if you want to complete a supported task without building an integration.
 
-Both talk to the same intent API, so you can start with the SDK and add API calls later without re-integrating.
+## Where do I register, and where is the API?
 
-## Before you start
+[partners.rozo.ai](https://partners.rozo.ai) manages apps and merchant API keys. It is separate from this documentation site. App registration does not automatically enable every wallet or Beta feature.
 
-* Check [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) for chain IDs and routes.
-* Bridge & Wallet API integrations can be tried end to end on [testnet](../testnet/README.md) before going live. MPP Router is mainnet only; start with small amounts.
-* Questions: [Contact us](../contact/contact-us/README.md) or the [FAQs](../contact/faqs.md).
+Each guide links to the exact API or tool reference, its access requirements and its completion checks. A public demo app, a merchant API key and a wallet app ID are not interchangeable credentials.
+
+For the full list of documented capabilities and access conditions, see the [capability catalog](capabilities.md).
