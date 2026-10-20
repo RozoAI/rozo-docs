@@ -10,7 +10,7 @@ Use this path to accept customer payments into a merchant's configured settlemen
 
 1. Read the [Merchant API overview](../integration/api-doc/merchant-api.md). The receiving wallet is configured on the merchant app, rather than supplied with each order.
 2. Register or manage your app at [partners.rozo.ai](https://partners.rozo.ai). Follow [Merchant API Keys](../integration/api-doc/merchant-api-keys.md) for key creation, scopes and server-side use. Public demo examples do not replace your own merchant setup.
-3. Follow the [merchant quick start](../integration/api-doc/api-quick-start-merchant.md) for the payment flow. Use the authenticated request examples in [Merchant API Keys](../integration/api-doc/merchant-api-keys.md) for your own app.
+3. Follow the [merchant quick start](../integration/api-doc/api-quick-start-merchant.md). It links to a shared Node.js client and provides a request you can run with your own key, starting with a quote.
 4. Present the returned payment instructions to the customer. Track the order through the status endpoint documented for the API you use, or integrate [webhooks](../integration/api-doc/api-for-advanced-used/webhook.md).
 5. Fulfill only after the corresponding API reports successful settlement. Creating an order or detecting an incoming payment is not enough.
 

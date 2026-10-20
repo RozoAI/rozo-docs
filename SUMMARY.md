@@ -24,6 +24,7 @@
   * [Troubleshooting](integration/rozointentpay/troubleshooting.md)
   * [AI Prompts](integration/rozointentpay/ai-prompts.md)
 * [ROZO Intent Pay API](integration/api-doc/README.md)
+  * [Make Your First API Request](integration/api-doc/first-request.md)
   * [Bridge & Wallet API](integration/api-doc/bridge-api.md)
     * [API Quick Start](integration/api-doc/api-quick-start.md)
     * [Wallet Top-up](integration/api-doc/api-for-advanced-used/wallet-topup.md)
@@ -66,8 +67,8 @@
 ## TECHNICAL REFERENCE <a href="#reference" id="reference"></a>
 
 * [🧾 ROZO Lite Paper](start/litepaper.md)
-* [ROZO Intent Pay Tech Doc](rozo-intentpay-techdoc.md)
-* [ROZO Intents Tech Design](integration/api-doc/rozo-intents-tech-design.md)
+* [Payment Integration Lifecycle](rozo-intentpay-techdoc.md)
+* [Intent Payment Flow](integration/api-doc/rozo-intents-tech-design.md)
 * [Contracts & Audits](contact/contracts-and-audits.md)
 
 ## COMPANY <a href="#company" id="company"></a>

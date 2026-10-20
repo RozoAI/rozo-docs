@@ -104,7 +104,7 @@ On `/sign` the CLI retries 429, 500, 502, 504 and the 503 codes `X402_RETRY`, `X
 
 What `https://apiserver.mpprouter.dev/v1/x402/*` returns. Every error body looks like `{"ok":false,"code":"X402_...","error":{"code":"X402_...","message":"..."}}`, sometimes with extra top level fields such as `limitUsd` or `balanceUsd`.
 
-The balance is debited only by the ledger commit inside `/sign`, after signing; every error raised before that commit charges nothing. If `/sign` answers `X402_LEDGER_UNAVAILABLE` or `X402_INTERNAL` the commit may have landed: retry with the same `idempotencyKey`, and a payment that did land comes back as the stored signature (`"replay": true`), never as a second charge. On `/topup` no deposit address is shown on any error, so only pay an address from a 200 response.
+If `/sign` returns `X402_LEDGER_UNAVAILABLE` or `X402_INTERNAL`, the payment result may be uncertain. Retry with the same `idempotencyKey`: an already completed request returns its saved signature with `"replay": true`, without a second charge. Do not create a new key for the retry. On `/topup`, only pay a deposit address returned by a successful 200 response.
 
 | Endpoint | HTTP | Code | Meaning | Charged? | What to do |
 | --- | --- | --- | --- | --- | --- |

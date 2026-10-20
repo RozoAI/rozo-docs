@@ -1,126 +1,74 @@
-# API Quick Start
+---
+description: Quote a Base USDC to Stellar transfer, create an order, and verify settlement.
+---
 
-### Bridge 1 USDC from Base to Stellar
+# Wallet API Quick Start
 
-Base chain ID: `8453`
+This example transfers USDC from Base to a classic Stellar account. Use a **Wallet app** when you choose the recipient for each transfer. For a merchant's configured receiving wallet, use the [Merchant quick start](api-quick-start-merchant.md).
 
-Stellar chain ID: `1500`
+## Before you start
 
-App ID (please join our discord)
+Complete [Make Your First API Request](first-request.md) and save its `payment.mjs` client. You need Node.js 18+, a verified app and its Orders API key in `ROZO_API_KEY`.
 
-API Host : https://intentapiv4.rozo.ai/functions/v1
+You can quote before funding a wallet. To complete a mainnet transfer, the payer needs Base USDC and the gas required by their wallet. The receiving Stellar account must be ready to receive USDC. For an account that is not ready, use [Stellar onboarding](funding/stellar-wallet-onboarding.md). For C-address wallets, use the [smart-account guide](api-for-advanced-used/stellar-contract-payments.md).
 
-<figure><img src="../../.gitbook/assets/Screenshot 2025-12-02 at 10.38.32 AM.png" alt=""><figcaption></figcaption></figure>
+## 1. Preview the transfer
 
-### Request
-
-```
-// Curl
-curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api' \
---header 'Authorization: Bearer <token>' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "appId": "rozodevDemo",
-    "orderId": "order_12345",
-    "type": "exactIn",
-    "display": {
-        "title": "Order #12345",
-        "currency": "USD"
-    },
-    "source": {
-        "chainId": "8453",
-        "tokenSymbol": "USDC",
-        "amount": "1.00"
-    },
-    "destination": {
-        "chainId": "1500",
-        "receiverAddress": "GDFLZTLVMLR3OVO4VSODYB7SGVIOI2AS652WODBCGBUQAMXXXXXXXXXX",
-        "tokenSymbol": "USDC"
-    }
-}'
-```
-
-
-
-### Response
+Save this as `payment-request.json` beside `payment.mjs`:
 
 ```json
 {
-  "id": "c3564ae8-74e0-4007-a8f9-91a1d3e3c81d",
-  "appId": "rozodevDemo",
-  "orderId": "order_12345",
-  "status": "payment_unpaid",
-  "errorCode": null,
   "type": "exactIn",
-  "createdAt": "2025-12-02T02:23:31.743+00:00",
-  "updatedAt": "2025-12-02T02:23:31.743+00:00",
-  "expiresAt": "2025-12-02T03:23:31.743+00:00",
-  "display": {
-    "title": "Order #12345",
-    "description": null,
-    "currency": "USD"
-  },
-  "source": {
-    "chainId": "8453",
-    "tokenSymbol": "USDC",
-    "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "amount": "1.00",
-    "receiverAddress": "0x5B63758b0954fFc9D803dEC550eCB485C9c15861",
-    "receiverMemo": null,
-    "fee": "0.01",
-    "senderAddress": null,
-    "txHash": null,
-    "amountReceived": null,
-    "confirmedAt": null
-  },
-  "destination": {
-    "chainId": "1500",
-    "receiverAddress": "GDFLZTLVMLR3OVO4VSODYB7SGVIOI2AS652WODBCGBUQAMXXXXXXXXXX",
-    "receiverMemo": null,
-    "tokenSymbol": "USDC",
-    "tokenAddress": "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
-    "amount": "0.99",
-    "txHash": null,
-    "confirmedAt": null
-  }
+  "display": { "title": "Wallet transfer", "currency": "USD" },
+  "source": { "chainId": "8453", "tokenSymbol": "USDC", "amount": "10.00" },
+  "destination": { "chainId": "1500", "tokenSymbol": "USDC" }
 }
 ```
 
-### Routing provider (optional)
+`8453` is Base and `1500` is Stellar. The amount is an example, not a minimum or a fee promise. Change it to the amount the user intends to pay.
 
-Every payment is executed on one of two rails. You can leave the choice to Rozo or ask for a rail by name with the optional `provider` field:
-
-```json
-{
-  "appId": "rozodevDemo",
-  "type": "exactIn",
-  "provider": "auto",
-  "source": { "chainId": "42161", "tokenSymbol": "USDC", "amount": "20.00" },
-  "destination": { "chainId": "8453", "tokenSymbol": "USDC", "receiverAddress": "0x..." }
-}
+```bash
+node payment.mjs quote
 ```
 
-| `provider` | Meaning | Fee |
-| --- | --- | --- |
-| `auto` (default) | Rozo picks: our own rails for every route we serve, NEAR Intents only for routes our own rails do not cover. | whichever rail is chosen |
-| `rozo` | Rozo's own rails. | your app tier (public default 0.1%) |
-| `near` | Routed through [NEAR Intents](https://near-intents.org). | flat 0.3% |
+The client calls `POST /payments?dryrun=true`. Expect a dry-run response with source amount, destination amount and fee information. No payment order or usable deposit address is created. A quote does not lock a future price; review the created order before paying.
 
-Notes:
+## 2. Create an order
 
-* Omitting `provider` behaves exactly as before — existing integrations need no change.
-* The response always echoes the **resolved** rail in `provider` (never `auto`) and in `feeInfo.provider`, so you can show users which rail and fee applied (e.g. "0.1% via Rozo" / "0.3% via NEAR Intents").
-* `near` orders can currently settle only on Base (`8453`), Solana (`900`) and Stellar (`1500`). Asking for `near` on a route it cannot serve returns `400 ROUTE_NOT_SUPPORTED_BY_PROVIDER` — it is never silently downgraded.
-* `near` deposit addresses are single-use and expire; never reuse one.
-* Use [`GET /payment-api/payments/supported`](supported-tokens-and-chains.md#live-supported-matrix) to discover which rails serve which chains and tokens.
+Set these in your local or server environment:
 
-Every create and dry-run response includes a `feeInfo` block:
+| Variable | Value |
+| --- | --- |
+| `ROZO_ORDER_ID` | Your unique order reference, reused when retrying this same request |
+| `ROZO_RECEIVER_ADDRESS` | The intended Stellar G-address, obtained from the recipient |
 
-```json
-"feeInfo": {
-  "feePercentage": "0.3%",
-  "minimumFee": "$0.01",
-  "provider": "near",
-  "feeTier": "near-routing"
-}
+After the user approves the amount and destination:
+
+```bash
+node payment.mjs create
 ```
+
+The client calls `POST /payments` and saves the response to `.rozo-payment.json`. It does not send funds. The response supplies `id`, `status`, `source` payment instructions and the `destination`. Check the actual destination, amount, fees and expiry before presenting those instructions in your application.
+
+## 3. Pay and check the result
+
+Have the payer's wallet send the returned `source.amount`, on the returned source network and token, to the returned `source.receiverAddress`. Use the newly created order's instructions, not an address from an example or a previous order.
+
+```bash
+node payment.mjs status
+```
+
+This calls `GET /payments/{id}` for the saved order. For this routed transfer, wait for raw `status = payment_payout_completed`, then reconcile the destination amount and transaction. `payment_payin_completed` means incoming funds are confirmed, not that the recipient has received the payout.
+
+Preserve the order reference if the result is unclear. Resume status checks instead of creating or paying another order. See [status and reconciliation](merchant-api-keys.md#reading-order-status) and [webhooks](api-for-advanced-used/webhook.md).
+
+## Next steps
+
+- [Fee previews and errors](api-for-advanced-used/get-fees.md): handle rejected quotes and read fees from the response.
+- [Supported chains and tokens](supported-tokens-and-chains.md): discover available routes; individual apps can have narrower support.
+- [Wallet top-up](api-for-advanced-used/wallet-topup.md): variable-amount deposits.
+- [Testnet](../../testnet/README.md): the separate Base Sepolia to Stellar test flow.
+
+## Routing provider (optional)
+
+Routing is automatic by default. The optional `provider` field accepts `auto`, `rozo` or `near`. Check the live supported matrix and quote result before selecting a provider; unsupported combinations return an error. Deposit addresses for NEAR-routed orders are single-use and expire.

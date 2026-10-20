@@ -153,7 +153,7 @@ The body is a small envelope wrapped around the same Payment object you get from
 
 These are **omitted** from webhook payloads even though they appear on `GET /payment-api/payments/{id}`:
 
-* `metadata` — internal channel only.
+* `metadata`: not included in the public webhook payload.
 * `webhookUrl`, `webhookSecretSource` — self-referential.
 * `paymentLink` — you generated this flow; you don't need the link.
 * `merchant` — branding fields you already configured.

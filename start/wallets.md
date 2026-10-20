@@ -10,7 +10,7 @@ Choose the direction and account type before choosing an API. A classic Stellar 
 
 | Task | Start here | Access and scope |
 | --- | --- | --- |
-| Transfer across chains to an address chosen for this request | [Bridge & Wallet API](../integration/api-doc/bridge-api.md) | App-based integration; check route and destination requirements |
+| Transfer across chains to an address chosen for this request | [Bridge & Wallet API](../integration/api-doc/bridge-api.md) | Wallet app and Orders API key; check route and destination requirements |
 | Prepare a Stellar account and receive USDC, with optional XLM | [Open a Stellar Wallet](../integration/api-doc/funding/stellar-wallet-onboarding.md) | Public keyless Funding flow, subject to live capabilities and signer support; do not assume C-address or passkey support |
 | Buy native gas | [Buy Gas Tokens](../integration/api-doc/funding/buy-gas-tokens.md) | Check Funding capabilities for available outputs and limits |
 | Give an app a deposit address for a Stellar recipient | [Wallet Deposit API](../integration/api-doc/deposit-api.md) | Requires an app ID; check supported source assets and G/C recipient rules |
