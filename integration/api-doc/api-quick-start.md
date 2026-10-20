@@ -10,9 +10,11 @@ This example transfers USDC from Base to a classic Stellar account. Use a **Wall
 
 Complete [Make Your First API Request](first-request.md) and save its `payment.mjs` client. You need Node.js 18+, a verified app and its Orders API key in `ROZO_API_KEY`.
 
-You can quote before funding a wallet. To complete a mainnet transfer, the payer needs Base USDC and the gas required by their wallet. The receiving Stellar account must be ready to receive USDC. For an account that is not ready, use [Stellar onboarding](funding/stellar-wallet-onboarding.md). For C-address wallets, use the [smart-account guide](api-for-advanced-used/stellar-contract-payments.md).
+Quoting does not move funds. To complete a mainnet transfer, the payer needs Base USDC and the gas required by their wallet. The receiving Stellar account must be ready to receive USDC. For an account that is not ready, use [Stellar onboarding](funding/stellar-wallet-onboarding.md). For C-address wallets, use the [smart-account guide](api-for-advanced-used/stellar-contract-payments.md).
 
 ## 1. Preview the transfer
+
+Set `ROZO_RECEIVER_ADDRESS` in your local or server environment to the intended Stellar G-address obtained from the recipient. The client uses the same destination for the quote and the created order.
 
 Save this as `payment-request.json` beside `payment.mjs`:
 

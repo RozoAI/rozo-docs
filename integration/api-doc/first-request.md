@@ -64,6 +64,12 @@ if (mode === 'status') {
     destinationTxHash: payment.destination?.txHash });
 } else {
   const body = JSON.parse(readFileSync('payment-request.json', 'utf8'));
+  if (body.destination) {
+    if (!process.env.ROZO_RECEIVER_ADDRESS) {
+      throw new Error('Set ROZO_RECEIVER_ADDRESS before quoting or creating a wallet transfer.');
+    }
+    body.destination.receiverAddress = process.env.ROZO_RECEIVER_ADDRESS;
+  }
   if (mode === 'create') {
     if (existsSync(receiptFile)) {
       throw new Error('An order is already saved. Run status to resume it.');
@@ -72,12 +78,6 @@ if (mode === 'status') {
       throw new Error('Set ROZO_ORDER_ID to your own stable, unique order reference.');
     }
     body.orderId = process.env.ROZO_ORDER_ID;
-    if (body.destination) {
-      if (!process.env.ROZO_RECEIVER_ADDRESS) {
-        throw new Error('Set ROZO_RECEIVER_ADDRESS to the intended destination.');
-      }
-      body.destination.receiverAddress = process.env.ROZO_RECEIVER_ADDRESS;
-    }
   }
   const result = await request(mode === 'quote' ? '/payments?dryrun=true' : '/payments', body);
   if (mode === 'quote') {
@@ -99,7 +99,7 @@ Keep `.rozo-payment.json` private and add it to your project's `.gitignore`. It 
 - [Merchant quick start](api-quick-start-merchant.md): configure a merchant wallet, quote, create, present payment instructions and reconcile.
 - [Wallet quick start](api-quick-start.md): quote a transfer, set the intended destination, create and check settlement.
 
-Each guide supplies `payment-request.json`. Before creating an order, set `ROZO_ORDER_ID` to your application's unique order reference. Keep that reference unchanged when retrying the same request. Wallet transfers also require `ROZO_RECEIVER_ADDRESS`.
+Each guide supplies `payment-request.json`. Before creating an order, set `ROZO_ORDER_ID` to your application's unique order reference. Keep that reference unchanged when retrying the same request. Wallet transfers require `ROZO_RECEIVER_ADDRESS` before both quoting and creating the order.
 
 ## Common errors
 
