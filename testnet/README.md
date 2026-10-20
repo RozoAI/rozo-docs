@@ -1,109 +1,78 @@
-# Base Sepolia → Stellar Testnet
+# Base Sepolia to Stellar Testnet
 
-End-to-end testnet bridges from **Base Sepolia USDC** to **Stellar testnet USDC**, covering both Stellar destination types:
+Use this guide to try a Base Sepolia USDC payment to a Stellar testnet recipient. It covers classic Stellar accounts (`G` addresses) and compatible Soroban contract accounts (`C` addresses). These are test networks: do not send mainnet funds.
 
-* **G-address** (classic Stellar account) — payout via Horizon `Operation.payment`
-* **C-address** (Soroban smart-contract account, e.g. smart wallets, AMMs) — payout via the **Stellar Asset Contract (SAC)** `transfer(from, to, i128)` over Soroban RPC
+## Before you start
 
-Both flows hit the public testnet API at:
+- Use a wallet you control on Base Sepolia, with test USDC and test ETH for transaction fees. Test tokens are available from the [Circle USDC faucet](https://faucet.circle.com/) and [Alchemy Base Sepolia faucet](https://www.alchemy.com/faucets/base-sepolia).
+- Choose your own Stellar **testnet** recipient. Confirm that it can receive the test USDC asset. A `C` address must identify the intended compatible contract on testnet.
+- The documented source amount range is 0.01 to 1.00 test USDC. The order response supplies the actual payment instructions and expiry.
+- This endpoint does not require an authentication header. Its test app ID is not a production app registration.
 
+API base URL:
+
+```text
+https://intentapitestnet.rozo.ai/functions/v1/payment-api
 ```
-https://intentapitestnet.rozo.ai
-```
 
-No auth header required. USDC only. Amount range 0.01–1.00. Order TTL 10 min.
+## 1. Create a test order
 
-***
-
-## Scripts
-
-| Script                                                                                                               | Destination      | Default amount |
-| -------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------- |
-| [`testnet-base-to-stellar.sh`](https://github.com/RozoAI/rozo-docs/blob/main/testnet/testnet-base-to-stellar.sh)     | G-address (`G…`) | `0.01`         |
-| [`testnet-base-to-stellar-c.sh`](https://github.com/RozoAI/rozo-docs/blob/main/testnet/testnet-base-to-stellar-c.sh) | C-address (`C…`) | `0.02`         |
-
-Both scripts:
-
-1. `POST /payments` with `type=exactIn`, `source.chainId=84532` (Base Sepolia), `destination.chainId=1500` (Stellar testnet).
-2. Print the returned `source.receiverAddress` (Rozo hub) and `source.amount` (may be auto-incremented by $0.01 for collision avoidance).
-3. Either pause for a manual deposit, or — with `AUTO=1` — auto-broadcast using the test keys in `.env.dev`.
-4. Poll `GET /payments/{id}` until `payment_completed`, `payment_bounced`, or `payment_expired`.
-
-***
-
-## Quick start
+Replace `YOUR_STELLAR_TESTNET_RECEIVER` with your recipient and choose a unique `orderId` for this test. The placeholder is deliberately not a payable address.
 
 ```bash
-# Manual deposit (you send the USDC yourself from any wallet)
-bash testnet/testnet-base-to-stellar.sh 0.01
-bash testnet/testnet-base-to-stellar-c.sh 0.02
-
-# Auto-deposit using TEST_EVM_PAYER_PRIVATE_KEY
-AUTO=1 bash testnet/testnet-base-to-stellar.sh 0.01
-AUTO=1 bash testnet/testnet-base-to-stellar-c.sh 0.02
+curl -sS -X POST 'https://intentapitestnet.rozo.ai/functions/v1/payment-api/payments' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "appId": "testnet-base-to-stellar",
+    "orderId": "YOUR_UNIQUE_TEST_ORDER_ID",
+    "type": "exactIn",
+    "source": {
+      "chainId": "84532",
+      "tokenSymbol": "USDC",
+      "amount": "0.01"
+    },
+    "destination": {
+      "chainId": "1500",
+      "receiverAddress": "YOUR_STELLAR_TESTNET_RECEIVER",
+      "tokenSymbol": "USDC"
+    }
+  }'
 ```
 
-Override the C-address destination:
+Save the returned payment `id`. Read `source.receiverAddress`, `source.amount` and `expiresAt` from that response. The required source amount can differ from the amount requested; follow the returned instructions instead of calculating a deposit amount yourself.
+
+## 2. Pay with your test wallet
+
+In your Base Sepolia wallet, send the returned amount of test USDC to the returned source address before the order expires. Check the network and asset before approving the transfer.
+
+Use your wallet's normal signing flow. No private key needs to be pasted into these API requests or shared with Rozo. Do not reuse a deposit address copied from an old order or documentation example.
+
+## 3. Read the result
+
+Replace `YOUR_PAYMENT_ID` with the ID from step 1:
 
 ```bash
-AUTO=1 bash testnet/testnet-base-to-stellar-c.sh 0.02 CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
+curl -sS 'https://intentapitestnet.rozo.ai/functions/v1/payment-api/payments/YOUR_PAYMENT_ID'
 ```
 
-***
+| Testnet `status` | What to do |
+| --- | --- |
+| `payment_unpaid` | Waiting for the source payment |
+| `payment_payin_completed` | Source payment confirmed; keep checking the destination result |
+| `payment_completed` | Check the destination amount and transaction against your test order |
+| `payment_expired` | If unpaid, create a new order; if you already paid, contact support before sending again |
+| `payment_bounced` | Stop and contact support with the payment ID and error details |
 
-## `.env.dev` requirements
+A created order or source transaction is not proof of destination delivery. Confirm the resulting transaction on Stellar testnet and the amount credited to your chosen recipient. If an error or interruption leaves the outcome unclear, resume checking the existing order rather than paying again.
 
-| Variable                                                | Purpose                           |
-| ------------------------------------------------------- | --------------------------------- |
-| `TEST_EVM_PAYER_PRIVATE_KEY` + `TEST_EVM_PAYER_ADDRESS` | Source-side signer (Base Sepolia) |
-| `TEST_STELLAR_RECEIVER_ADDRESS`                         | Default G-address destination     |
-| `TEST_STELLAR_C_RECEIVER_ADDRESS`                       | Default C-address destination     |
+## G and C recipient differences
 
-Generate fresh test keys: `npx tsx scripts/gen-hub-keys.ts --test-wallets`. Fund payer at the [Circle USDC faucet](https://faucet.circle.com/) and [Alchemy Base Sepolia faucet](https://www.alchemy.com/faucets/base-sepolia).
+- A classic `G` account receives a Stellar payment operation; its account and asset trustline must be ready to receive the asset.
+- A compatible `C` account receives through the Stellar Asset Contract token transfer. Do not use this path for an exchange deposit that requires a classic payment memo.
+- If your integration decodes Soroban transaction results itself, use an SDK that supports the transaction metadata returned by the network. A server-side payout error requires Rozo support; your application does not deploy the payout service.
 
-***
+The request selects the recipient through `destination.receiverAddress`. Do not infer support for a particular passkey wallet or contract solely from the address prefix.
 
-## What's different about the C-address payout
+## Next steps
 
-A Stellar **C-address** is a Soroban contract identifier, not a classic account. Three differences vs. the G-path:
-
-1. **No `memo_text`.** Soroban contract calls have no memo field. Any memo passed in the order is dropped with a log warning.
-2. **SAC contract call, not `payment` op.** The hub invokes `transfer(from, to, i128)` on the auto-deployed Stellar Asset Contract for USDC. The contract id is derived deterministically from `(asset, networkPassphrase)`.
-3. **Submitted via Soroban RPC**, not Horizon. Status is polled with `getTransaction(hash)` and the `meta` returned is Protocol-23 `TransactionMeta v4` — make sure any client decoding it uses `@stellar/stellar-sdk` ≥ 15 (older SDKs throw `Bad union switch: 4` on the decode).
-
-The order schema is identical for both — clients pass `destination.receiverAddress` as either a `G…` or a `C…` and the API routes correctly.
-
-***
-
-## Verified end-to-end run
-
-A run of `testnet-base-to-stellar-c.sh 0.02` against `CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV`:
-
-```
-Payment id : pay_ewHL66ke5XdqP7GLZ8xnkVPh
-Send TO    : 0x4843B70de3Aa77CFbfDA0BAf468e3C4f32B1FA34
-Send AMOUNT: 0.03 USDC (Base Sepolia)   ← 0.02 + $0.01 collision step
-Dest C-addr: CCYO2DDE3ZWBGGRTGOWJOV4KO2HLXHCT7WN7TH7BOYUGQMXTGKWU4IGV
-…
-[1] status = payment_unpaid
-[2] status = payment_completed
-```
-
-| Leg                                         | Tx hash                                                              | Confirmation                                                     |
-| ------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Base Sepolia payin (USDC → hub)             | `0x92d4ed6ab6270c9d7e0db4b251ccd2c8aef41f9be311678491e6cf6caa199237` | block 41065985, success                                          |
-| Stellar payout (SAC `transfer` → C-address) | `e7eedc04fb5605550a0e5c8c98ad310fe26f93b3bee5c6bf65af24d6477c4572`   | ledger 2378571, SUCCESS, 0.0300000 USDC credited to the contract |
-
-End-to-end time: \~10 seconds.
-
-***
-
-## Status transitions
-
-```
-payment_unpaid → payment_payin_completed → payment_completed   (happy path)
-payment_unpaid → payment_expired                                 (TTL)
-              ↘ payment_bounced                                   (payout error)
-```
-
-`payment_bounced` with `errorMessage: "Bad union switch: 4"` on a C-address destination means the deployed payout function is on an outdated `@stellar/stellar-sdk` (Protocol 23 `TransactionMeta` decoding broke pre-15.0). Bump the SDK and redeploy.
+See the [Wallet guide](../start/wallets.md) for production integrations and access requirements. Testnet coverage here does not imply testnet support for every Funding, Checkout or MPP feature. For a failed or unclear test, [contact Rozo](../contact/contact-us/README.md) with the payment ID and relevant transaction hashes; never include a private key.

@@ -1,95 +1,53 @@
-# Merchant API Keys — Admin vs Orders scope, and using them from an AI agent
+# API Keys and Payment Status
 
-Rozo merchant API keys let you create and reconcile payments programmatically — from a
-POS, a backend service, or an autonomous AI agent. Every key carries a **scope** that
-controls what it can do. This page explains the two scopes, when to use each, the
-endpoints they unlock, and how to wire a key into an AI agent safely.
-
-All keys share the `rz_live_` prefix and are passed in the `X-API-Key` header.
+Use an API key to create and read payments from your own backend. The key identifies your app; it does not authorize spending from a customer's wallet.
 
 ## Scopes at a glance
 
-| Scope | What it can do | Where it's safe | Default |
-| ----- | -------------- | --------------- | ------- |
-| **Orders** | Create payments + read payment status | Backend, POS, server-rendered checkout | ✅ Recommended default |
-| **Admin** | Everything Orders can do **+ read merchant stats** | Your own backend only | Only when explicitly chosen |
+| Scope | Access | Recommended use |
+| --- | --- | --- |
+| **Orders** | Create payments and read order status | Payment integration on your backend |
+| **Admin** | Orders access plus merchant statistics | Your private reporting backend, only if needed |
 
-- **Orders key** — the default and recommended choice. It can create payment orders and
-  read their status. This is everything a checkout flow needs. Because it cannot read
-  account-level stats or change settings, it is safe to place in a POS terminal, a backend
-  payment service, or a server-rendered checkout.
-- **Admin key** — a full-power key. In addition to creating and reading orders, it can read
-  your merchant statistics (volume, payment counts, payouts). It is sensitive and must
-  **never** ship to a frontend, a mobile app, or a shared device. Keep it on a server you
-  control.
-
-When you create a key, the scope defaults to **Orders**. You only get an Admin key if you
-explicitly select the Admin scope.
-
-## API hosts
-
-Different capabilities live behind two services. Use the right base URL for each call.
-
-| Capability | Service | Base URL |
-| ---------- | ------- | -------- |
-| Create / read orders | `payment-api` | `https://intentapiv4.rozo.ai/functions/v1/payment-api` |
-| Read merchant stats | `merchant-api` | `https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api` |
-
-Authenticate every request with your key:
-
-```
-X-API-Key: rz_live_xxx
-```
+Start with an Orders key. Keep all API keys on your backend or trusted server-side tool. Do not embed them in browser JavaScript, distributable apps, shared prompts or source control. If an agent uses a tool backed by the key, keep the credential inside the tool's server environment rather than exposing it to the model.
 
 ## Getting a key
 
-1. Sign in at [partners.rozo.ai](https://partners.rozo.ai) with your email (one-time
-   passcode / OTP login).
-2. Go to **Settings → API Keys**.
-3. Click **New key** and choose the scope (**Orders** by default, or **Admin** if you need
-   stats).
-4. **Copy the full key immediately — it is shown only once.** Store it in your secret
-   manager. If you lose it, revoke it and issue a new one.
+1. Sign in at [partners.rozo.ai](https://partners.rozo.ai) and complete email verification.
+2. Configure the app for your integration. Merchant apps use their configured settlement wallet; Wallet apps accept a per-request recipient.
+3. Open **Settings → API Keys**, create an **Orders** key, and save it in your secret manager. The full key is shown only once.
+4. Set `ROZO_API_KEY` for your backend process. If the key is lost or exposed, revoke it and create a replacement through the portal.
 
-## Creating a payment order
+The server sends the key in `X-API-Key`. Follow [Make Your First API Request](first-request.md) for a Node.js example that reads it from the environment, without passing credentials in command-line arguments.
 
-Both Orders and Admin keys can create orders. Use the `payment-api` host.
+## API hosts
 
-- Leave `destination` **unset** — the payout is locked to your merchant wallet on the
-  server side. You only declare what the customer pays (`source`).
-- `orderId` is **idempotent**: re-sending the same `orderId` returns the existing order
-  instead of creating a duplicate. Use your own internal order reference.
+| Operation | Base URL |
+| --- | --- |
+| Quote, create and read payments | `https://intentapiv4.rozo.ai/functions/v1/payment-api` |
+| Merchant statistics and delivery history | `https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api` |
 
-```bash
-curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api' \
-  --header 'X-API-Key: rz_live_xxx' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-    "type": "exactIn",
-    "orderId": "order_123",
-    "display": {
-      "name": "Cappuccino"
-    },
-    "source": {
-      "chainId": "8453",
-      "tokenSymbol": "USDC",
-      "amount": "5.00"
-    }
-  }'
-```
+These are programmatic API endpoints. Use the partner portal to manage your account.
 
-The response includes the order `id`, its `status` (starts at `payment_unpaid`), and a hosted
-payment link / deposit address you can present to the customer.
+## Creating a payment
+
+Use `POST /payments?dryrun=true` to preview a request and `POST /payments` to create an order. Keep the same unique `orderId` when retrying the same request. Before paying, verify the created order's actual amount, asset, destination and expiry.
+
+- [Merchant quick start](api-quick-start-merchant.md): leave `destination` unset; settlement uses your configured wallet.
+- [Wallet quick start](api-quick-start.md): use a Wallet app and supply the intended recipient.
+
+Do not use a shared demo app to accept your own customer payments.
 
 ## Reading order status
 
-Both scopes can read orders. Poll this endpoint to reconcile.
+Use your app's key with either:
 
-```bash
-curl --location \
-  'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/order/<appId>/<orderId>' \
-  --header 'X-API-Key: rz_live_xxx'
+```text
+GET /payments/{paymentId}
+GET /payments/order/{appId}/{orderId}
 ```
+
+The second path is useful when a create request timed out and you retained your own order reference. URL-encode path values. A missing order or an ID belonging to another app returns `paymentNotFound`; it is not a reason to send funds again.
 
 Read the raw `status` field returned by this endpoint. A typical routed payment moves through:
 
@@ -112,114 +70,25 @@ For settlement reconciliation, require raw `status` of `payment_payout_completed
 
 **Do not use `merchantStatus` as proof of settlement.** It is a separate convenience field: it can already be `payment_completed` at `payment_payin_completed` or `payment_payout_started`, before the merchant's payout finishes.
 
-## Reading merchant stats (Admin only)
+## Reading merchant statistics
 
-Stats live on the `merchant-api` host and require an **Admin** key. Calling this endpoint
-with an Orders key returns `403 scope_insufficient`.
+Use an Admin key only when you need statistics. An Orders key is sufficient for the normal payment flow.
 
-```bash
-curl --location \
-  'https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api/me/stats?period=7d' \
-  --header 'X-API-Key: rz_live_xxx'
+```js
+// Run on your reporting server, with an Admin key in ROZO_API_KEY.
+const apiKey = process.env.ROZO_API_KEY;
+if (!apiKey) throw new Error('Set ROZO_API_KEY in your server environment.');
+const response = await fetch(
+  'https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api/me/stats?period=7d',
+  { headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(30_000) },
+);
+if (!response.ok) throw new Error(`Statistics request failed: HTTP ${response.status}`);
+const stats = await response.json();
+// Use stats in your private dashboard; never log the credential.
 ```
 
-`period` accepts `today`, `7d`, or `30d`.
+`period` accepts `today`, `7d` or `30d`. An Orders key cannot read this endpoint and returns `403 scope_insufficient`. Payment endpoints can use different permission-error codes; check the endpoint's response instead of assuming every service has the same error vocabulary.
 
-```json
-{
-  "period": "7d",
-  "volumeUsdc": "1240.50",
-  "paymentCount": 248,
-  "avgOrderUsdc": "5.00",
-  "netToWalletUsdc": "1228.10",
-  "chart": [
-    { "date": "2026-06-02", "volumeUsdc": "180.00", "paymentCount": 36 },
-    { "date": "2026-06-03", "volumeUsdc": "210.50", "paymentCount": 42 }
-  ]
-}
-```
+## Webhooks and troubleshooting
 
-If you call it with an Orders key:
-
-```json
-{
-  "error": "scope_insufficient",
-  "message": "This endpoint requires an admin-scope API key."
-}
-```
-
-## Using a key from an AI agent
-
-A common AI-native pattern is to hand a single API key to an autonomous backend agent that
-operates the merchant account programmatically — taking payments and reporting on them
-without a human in the loop.
-
-Match the scope to what the agent does:
-
-- **Taking payments / reconciling** → give the agent an **Orders** key. It can create
-  collection orders for a customer and poll them to confirm settlement. Nothing more.
-- **Building reports / dashboards** → give the agent an **Admin** key so it can pull
-  `/me/stats`. Only do this if the agent runs entirely on infrastructure you control.
-
-### Example agent workflow
-
-A typical "take a payment and reconcile it" loop:
-
-1. **Create the order** (Orders or Admin key):
-
-   ```bash
-   curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api' \
-     --header 'X-API-Key: rz_live_xxx' \
-     --header 'Content-Type: application/json' \
-     --data-raw '{
-       "type": "exactIn",
-       "orderId": "order_123",
-       "display": { "name": "AI agent invoice" },
-       "source": { "chainId": "8453", "tokenSymbol": "USDC", "amount": "5.00" }
-     }'
-   ```
-
-2. **Give the customer the payment link** returned in the response.
-
-3. **Poll the raw `status`** using the settlement rules above:
-
-   ```bash
-   curl --location \
-     'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/order/yourAppId/order_123' \
-     --header 'X-API-Key: rz_live_xxx'
-   ```
-
-4. **Reconcile**: confirm the raw completion state, destination amount and transaction
-   before marking the order settled in your own system. For periodic reporting, an Admin-keyed agent calls
-   `/me/stats?period=today` and writes the numbers to your dashboard.
-
-In pseudocode the agent loop is:
-
-```
-order = POST /payment-api  { orderId, source }
-present(order.paymentLink)
-loop:
-    payment = GET /payment-api/payments/order/{appId}/{orderId}
-    if payment.status in ["payment_payout_completed", "payment_completed"]:
-        reconcile_destination_amount_and_transaction(payment, order)
-        mark_settled(order)
-        break
-    if requires_recovery(payment):
-        stop_and_contact_support(payment)
-        break
-    sleep(interval)
-```
-
-## Security
-
-- Treat every key as a **server-side secret**. Store it in environment variables or a
-  secret manager (not in code).
-- **Never** put a key in git, in a frontend bundle, in a mobile app, in logs, or in a chat
-  message.
-- An **Admin** key is full-power — keep it on your own backend only. If your agent's code
-  or runtime could be touched by a third party, give it an **Orders** key, never Admin.
-- Keys are shown **only once** at creation. If a key leaks, **revoke it in the
-  [partners.rozo.ai](https://partners.rozo.ai) dashboard and issue a new one** immediately.
-
-> **Tip:** Start with an Orders key. Only mint an Admin key when you have a concrete need
-> to read stats, and scope it to a single backend process you fully control.
+Use the [webhook guide](api-for-advanced-used/webhook.md) for signature verification, retries and your delivery log. Consult [common setup errors](first-request.md#common-errors) for email verification, key scope and app-type mistakes. Preserve the order reference and request ID when reporting a problem, and never send your API key to support.

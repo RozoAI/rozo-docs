@@ -8,25 +8,13 @@ Use the `dryrun` parameter to preview the fee calculation without creating an ac
 
 ## Request
 
+Use the authenticated Node.js client in [Make Your First API Request](../first-request.md), with the request body from the [Wallet quick start](../api-quick-start.md) or [Merchant quick start](../api-quick-start-merchant.md):
+
 ```bash
-curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments?dryrun=true' \
---header 'Authorization: Bearer <token>' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "appId": "yourAppId",
-    "type": "anyAmount",
-    "source": {
-        "chainId": "8453",
-        "tokenSymbol": "USDC",
-        "amount": "100.00"
-    },
-    "destination": {
-        "chainId": "1500",
-        "receiverAddress": "GDFLZTLVMLR3OVO4VSODYB7SGVIOI2AS652WODBCGBUQAMXXXXXXXXXX",
-        "tokenSymbol": "USDC"
-    }
-}'
+node payment.mjs quote
 ```
+
+The client sends `POST /payments?dryrun=true` with your server-side `X-API-Key`. It does not create a payable order. Select the app and route you intend to use for the eventual payment.
 
 ## Response
 
@@ -87,7 +75,7 @@ curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported'
 }
 ```
 
-These numbers are indicative. The binding fee for a specific order is always the dry-run `feeInfo`.
+These numbers are indicative. Read the dry-run `feeInfo` for the preview, then check the actual created order before paying. A dry-run does not lock a future price.
 
 ## Errors specific to NEAR-routed quotes
 
@@ -101,7 +89,7 @@ These numbers are indicative. The binding fee for a specific order is always the
 
 Errors from this endpoint use `error.code` and `error.message`, plus a `requestId` you can share with support. Route-specific details, when present, are in the top-level `data` object: read `data.errorCode`, not `error.details.errorCode`. Some errors have no `data` object.
 
-The examples below are generated from the API's response-building code using illustrative inputs. They show the full JSON shape, not captured customer responses. Amounts are examples, not fixed route minimums; the placeholder `requestId` is replaced by a generated ID in real responses. These examples are not an exhaustive error catalog.
+The examples below use illustrative inputs. They show the full JSON shape, not captured customer responses. Amounts are examples, not fixed route minimums; the placeholder `requestId` is replaced by a generated ID in real responses. These examples are not an exhaustive error catalog.
 
 All five examples return **HTTP 400 Bad Request** with **Content-Type: application/json**.
 

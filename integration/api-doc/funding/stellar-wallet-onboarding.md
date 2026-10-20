@@ -365,8 +365,7 @@ Steps:
    my address; the trustline and the claimed balance are USDC issued by
    GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN; the claimed USDC (gross) equals the current
    stable leg minimumAmount from order status plus the sponsor fee (it can differ from the quote after
-   repricing); the only payment out of my address is that sponsor fee in USDC to ROZO claim custody
-   GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE (0.0000001 USDC with a paid XLM tier, the
+   repricing); the only payment out of my address is that sponsor fee in USDC to the current `rozoAccounts.stellar.claimCustody` (0.0000001 USDC with a paid XLM tier, the
    quoted stellar_sponsor_fee with usdGas "0", none if my address needed no onboarding); the XLM payment
    to me equals the XLM leg minimumAmount. The only operations allowed are: ROZO-sourced
    beginSponsoringFutureReserves, createAccount and the XLM payment to me; from my address, changeTrust
@@ -375,12 +374,8 @@ Steps:
    (it is a ROZO channel account that pays the network fee). Every ROZO account must be one of
    funding_capabilities rozoAccounts: the transaction source is in transactionSources, the sponsoring and
    createAccount operations come from reserveSponsor, the XLM payment comes from xlmPayer, and the fee goes
-   to claimCustody. Current as of 2026-10-14 (confirm with funding_capabilities, they can rotate):
-   claim custody GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE, reserve sponsor
-   GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U, XLM payer
-   GAFYWMVXY2FI7PVBRT7H3P5O4WOK3COEO6SGMPVBDIETC6EX6LROC7Y7, transaction sources
-   GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U, GB4EDWTTIOLYJZHCB3GIOG2TEVF2TF3YES2MDP2S3J7BQWCTCNHAN44A,
-   GDRLDKMRO2B2CDZ6YZIMQWFTG5CR6LSKNCFQW7MZG37Q72FDSYF4O2FW, GB52UAWSQOTBP4SOMRAHSJEAKQN6G3UP753HKH7A2Q74BPSNTUU54543.
+   to claimCustody. Read these account identities from the current capabilities response before signing;
+   do not use a historical account list.
    The XDR shows only the claimable balance id: the claimed amount is in the operations list, and
    https://horizon.stellar.org/claimable_balances/<id> confirms it. Decode the XDR locally (code below)
    and confirm every field, including operation sources, matches the operations list, and that the hash
@@ -437,15 +432,8 @@ Through the MCP, rate limits count against the MCP server's outbound address, wh
 
 - **Never pay twice.** Save `fundingId` and the order `Idempotency-Key` before paying. After a crash, resume by polling the order; do not create a new order for the same intent.
 - **Keep `fundingId` private.** Without an API key it is the only handle to the order: anyone holding it can read the order. Never echo it into logs, printed tool output, commits or shared files.
-- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; at most one payment out of your address, the sponsor fee in USDC to ROZO claim custody `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` (0.0000001 USDC with a paid `usdGas` tier, the quoted `stellar_sponsor_fee` with `usdGas` `"0"`, none if the address needed no onboarding); and an XLM payment to you equal to the XLM leg's `minimumAmount`. Decode the XDR locally and refuse any operation type or source not in the list above (for example `setOptions`). The transaction source must be a ROZO channel account, never your address. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. The hash of the locally decoded transaction must equal the `txHash` the signing request returned. Refuse to sign anything else.
-- **Check ROZO's accounts.** Every ROZO account in the transaction must be in `GET /funding/capabilities` `rozoAccounts.stellar`: the transaction source in `transactionSources`, the `beginSponsoringFutureReserves` and `createAccount` operations from `reserveSponsor`, the XLM payment from `xlmPayer`, the sponsor fee to `claimCustody`. They can rotate, so read them before signing. Current as of 2026-10-14:
-
-  | Role | Address |
-  | --- | --- |
-  | Claim custody (receives the sponsor fee) | `GBLTI2TTQXUAYNKGCQ63YA55KTFEAOQJ3DPBPELNPWCJVE76ADWMXUAE` |
-  | Reserve sponsor | `GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U` |
-  | XLM payer | `GAFYWMVXY2FI7PVBRT7H3P5O4WOK3COEO6SGMPVBDIETC6EX6LROC7Y7` |
-  | Transaction sources (channels, pay the network fee) | `GCW5VQ32URMOM2D3PY2Y5KEEOKTTFWATVSZ2IVHWWHYGAMHIG2M56E6U`, `GB4EDWTTIOLYJZHCB3GIOG2TEVF2TF3YES2MDP2S3J7BQWCTCNHAN44A`, `GDRLDKMRO2B2CDZ6YZIMQWFTG5CR6LSKNCFQW7MZG37Q72FDSYF4O2FW`, `GB52UAWSQOTBP4SOMRAHSJEAKQN6G3UP753HKH7A2Q74BPSNTUU54543` |
+- **Check before you sign.** Compare the signing request's `operations` with what you expect: your address; a claimed USDC amount (gross) equal to the current order's refreshed stable `legs[].minimumAmount` plus the sponsor fee; at most one payment out of your address, the sponsor fee in USDC to the current `rozoAccounts.stellar.claimCustody` (0.0000001 USDC with a paid `usdGas` tier, the quoted `stellar_sponsor_fee` with `usdGas` `"0"`, none if the address needed no onboarding); and an XLM payment to you equal to the XLM leg's `minimumAmount`. Decode the XDR locally and refuse any operation type or source not in the list above (for example `setOptions`). The transaction source must be a ROZO channel account, never your address. The XDR itself carries only the claimable balance id; its amount is in `operations` and at `https://horizon.stellar.org/claimable_balances/<id>`. The hash of the locally decoded transaction must equal the `txHash` the signing request returned. Refuse to sign anything else.
+- **Check ROZO's accounts.** Every ROZO account in the transaction must be in `GET /funding/capabilities` `rozoAccounts.stellar`: the transaction source in `transactionSources`, the `beginSponsoringFutureReserves` and `createAccount` operations from `reserveSponsor`, the XLM payment from `xlmPayer`, the sponsor fee to `claimCustody`. They can rotate, so read them before signing. Do not cache a historical list as a permanent allowlist.
 - **A new account with 0 XLM balance is fine.** Reserves are sponsored by ROZO, so readiness checks must not require a minimum XLM balance.
 - **Quote first, pay second.** If the quote expired before the order, quote again. Pay before `payBefore`; a late payment is not delivered automatically and goes to manual handling.
 - **Current output amounts.** Show the quote before payment. After payment, read the refreshed order: a valid smaller deposit can deliver less USDC than the original quote. Sign only the exact server-provided XDR for that order; do not modify its operations or amounts.

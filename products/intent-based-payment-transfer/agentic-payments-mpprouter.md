@@ -87,30 +87,36 @@ Prices and availability change; the table above is illustrative and the catalog 
 
 ## Getting started
 
-The fastest path for Claude Code or similar AI agents is the [`stellar-agent-wallet`](https://github.com/mpprouter/stellar-agent-wallet-skill) plugin. Seven skills ship in it (`onboard`, `check-balance`, `discover`, `pay-per-call`, `send-payment`, `send-raw` and `bridge`), and two of them drive the pay-per-call loop:
+Choose one installation method from the [Stellar agent wallet instructions](https://github.com/mpprouter/stellar-agent-wallet-skill#install-claude-code-plugin).
 
-- `discover`: fetch and filter the MPP Router service catalog
-- `pay-per-call`: execute the full 402 → sign → retry loop, handling both MPP and x402 dialects
+**Claude Code plugin:** run these in Claude Code, not in a system shell:
 
-Install the plugin, then:
+```text
+/plugin marketplace add mpprouter/stellar-agent-wallet-skill
+/plugin install stellar-agent-wallet@mpprouter
+```
+
+**CLI or another agent:** clone the public repository and install its dependencies. Run the commands below from that repository directory:
 
 ```bash
-# Find a service
-./node_modules/.bin/tsx skills/discover/run.ts --query "web search"
-
-# Call it; the skill pays automatically
-./node_modules/.bin/tsx skills/pay-per-call/run.ts \
-  "https://apiserver.mpprouter.dev/v1/services/parallel/search" \
-  --body '{"query": "Summarize https://stripe.com/docs"}' \
-  --method POST
+git clone https://github.com/mpprouter/stellar-agent-wallet-skill
+cd stellar-agent-wallet-skill
+npm install
+./node_modules/.bin/tsx skills/discover/run.ts --query "web search" --pick-one --json
 ```
+
+Discovery is public: it needs no wallet key and makes no payment. Read the repository's `SKILL.md` and the selected command's instructions before using a wallet.
+
+To make a paid call, select an endpoint from the current catalog and follow the [pay-per-call instructions](https://github.com/mpprouter/stellar-agent-wallet-skill#use-from-any-agent). Configure a compatible funded wallet and the user's spending authorization first. Validate the challenge against the expected amount and recipient. Check both the API result and the payment receipt; a submitted signature alone does not establish success.
+
+MPP Router payments use Stellar mainnet. The wallet tool also has a testnet option, but that does not make MPP Router a testnet service. If you need Stellar USDC first, follow the [Wallet guide](../../start/wallets.md) for a compatible funding path.
 
 For custom integrations, use the `@stellar/mpp` SDK on npm with `@stellar/stellar-sdk ^14.6.1` and `mppx ^0.4.11` as peer dependencies.
 
 ## Safety notes
 
 - **Credentials are single-use.** The HMAC binding to amount, currency, and recipient is the router's defense against replay. If the retry fails, start fresh with a new 402 challenge. Do not re-send the same credential.
-- **Confirm above a threshold.** For mainnet calls above ~$1.00, prompt the user before signing. The `pay-per-call` skill enforces this by default (`--max-auto <usd>` to override).
+- **Authorize spending.** Follow the wallet tool's current confirmation and spending-limit instructions. Do not disable confirmation or raise a limit beyond the user's authorization.
 - **Validate the challenge amount.** If you know the advertised price from the catalog, verify the 402 challenge amount matches before signing.
 - **Mainnet only.** MPP Router does not run on Stellar testnet.
 
