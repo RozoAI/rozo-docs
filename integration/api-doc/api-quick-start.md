@@ -41,7 +41,7 @@ Set these in your local or server environment:
 
 | Variable | Value |
 | --- | --- |
-| `ROZO_ORDER_ID` | Your unique order reference, reused when retrying this same request |
+| `ROZO_ORDER_ID` | Your unique order reference; preserve it for lookup if creation is uncertain |
 | `ROZO_RECEIVER_ADDRESS` | The intended Stellar G-address, obtained from the recipient |
 
 After the user approves the amount and destination:
