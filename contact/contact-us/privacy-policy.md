@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last Updated:** \[2025-08-28]
+**Last Updated:** October 21, 2026
 
 ## 1. Introduction
 
@@ -42,6 +42,30 @@ We use cookies and similar tracking technologies to:
 * Analyze service usage
 * Improve user experience
 * Provide personalized content
+
+### 2.4 Rozo Checkout MCP Server
+
+This section covers the Rozo Checkout MCP server at mcp.rozo.ai, which AI agents and MCP clients use to quote and create checkout orders.
+
+**What the server receives:**
+
+* The Coinbase payment link URL you ask it to quote
+* Your chain and token choice
+* An optional contact email you choose to give, stored with the order so Rozo can reach you if a payment needs attention
+* For Stellar wallet funding: the receiving Stellar public address, the source chain and amount, an order reference you choose, and the transaction your wallet signed
+* An optional channel tag in the server URL (for example `?src=registry`), attached to orders so Rozo can tell which listing an order came from
+
+**What it never receives or stores:**
+
+* Private keys, seed phrases, or Stellar secret keys (values that look like a Stellar secret are refused)
+* Passwords
+* Your conversation history
+
+There are no user accounts, and the server keeps no state between requests.
+
+**Shared with:** Rozo's payment backend and MPP Router (operated by Rozo) to create and track orders, and the public blockchains and Coinbase invoice the payment settles. For rate limiting, the caller's IP address may be forwarded to Rozo's funding API.
+
+**Contact:** hi@rozo.ai
 
 ## 3. How We Use Your Information
 
@@ -183,4 +207,4 @@ If you have any questions about this Privacy Policy, please contact us:
 
 **Email:** \[hi@rozo.ai]
 
-_This Privacy Policy is effective as of \[2025-08-28] and was last updated on \[2025-08-28]._
+_This Privacy Policy is effective as of \[2025-08-28] and was last updated on October 21, 2026._
