@@ -7,6 +7,7 @@ Use this guide to try a Base Sepolia USDC payment to a Stellar testnet recipient
 - Use a wallet you control on Base Sepolia, with test USDC and test ETH for transaction fees. Test tokens are available from the [Circle USDC faucet](https://faucet.circle.com/) and [Alchemy Base Sepolia faucet](https://www.alchemy.com/faucets/base-sepolia).
 - Choose your own Stellar **testnet** recipient. Confirm that it can receive the test USDC asset. A `C` address must identify the intended compatible contract on testnet.
 - The documented source amount range is 0.01 to 1.00 test USDC. The order response supplies the actual payment instructions and expiry.
+- `display.title` and `display.currency` (`USD`) are required in every create request.
 - This endpoint does not require an authentication header. Its test app ID is not a production app registration.
 
 API base URL:
@@ -26,6 +27,10 @@ curl -sS -X POST 'https://intentapitestnet.rozo.ai/functions/v1/payment-api/paym
     "appId": "testnet-base-to-stellar",
     "orderId": "YOUR_UNIQUE_TEST_ORDER_ID",
     "type": "exactIn",
+    "display": {
+      "title": "Testnet order",
+      "currency": "USD"
+    },
     "source": {
       "chainId": "84532",
       "tokenSymbol": "USDC",
