@@ -23,7 +23,7 @@ redirects:
   reward-docs: products/intent-based-bridge/README.md
   docs: contact/contact-us/README.md
   rozo-intentpay-techdoc: rozo-intentpay-techdoc.md
-  testnet: testnet/README.md
+  testnet: contact/contact-us/README.md
   # group 2: 2026-09 restructure
   start/litepaper: start/litepaper.md
   start/litepaper/rozo-intentpay-techdoc: rozo-intentpay-techdoc.md
@@ -32,8 +32,8 @@ redirects:
   products/intent-based-payment-transfer/intent-based-payment: products/intent-based-payment-transfer/intent-based-payment.md
   products/cctp-bridge: products/cctp-bridge/README.md
   products/intent-based-earn: products/intent-based-bridge/README.md
-  tests/testnet: testnet/README.md
-  integration/testnet: testnet/README.md
+  tests/testnet: contact/contact-us/README.md
+  integration/testnet: contact/contact-us/README.md
   products/pos-merchant-app: products/mobile-app/pos-merchant-app.md
   contact/contracts-and-audits: contact/contracts-and-audits.md
   contact/media-kit: contact/media-kit/README.md
@@ -49,3 +49,4 @@ redirects:
   start/intent-based-earn/rss.xml: products/intent-based-bridge/README.md
   start/supported-tokens-and-chains/rss.xml: integration/api-doc/supported-tokens-and-chains.md
   blog/en/faq: contact/faqs.md
+  integration/api-doc/bridge-api/testnet: contact/contact-us/README.md

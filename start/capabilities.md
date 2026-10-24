@@ -45,6 +45,6 @@ This catalog links to the documentation for each capability. It is a discovery m
 - [Fee preview](../integration/api-doc/api-for-advanced-used/get-fees.md): preview an intent payment; Funding uses its own quote flow.
 - [Webhooks](../integration/api-doc/api-for-advanced-used/webhook.md): intent payment notifications. Funding currently requires polling.
 - [Look up by transaction hash](../integration/api-doc/api-for-advanced-used/lookup-by-tx-hash.md): locate a payment using its transaction.
-- [Testnet](../testnet/README.md): the documented Base Sepolia to Stellar test flow, not a test environment for every product.
+- The Base Sepolia to Stellar testnet route is currently unavailable.
 
 For an ordered walkthrough, choose the [Merchant](merchants.md), [Wallet](wallets.md) or [Agent](agents.md) guide.
