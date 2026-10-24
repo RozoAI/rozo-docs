@@ -59,6 +59,6 @@ For intent payment notifications, follow [Webhook](integration/api-doc/api-for-a
 
 ## Test and review
 
-The Base Sepolia to Stellar testnet route is currently unavailable. Contact Rozo to discuss integration testing before accepting customer payments.
+Start with the [Base Sepolia to Stellar testnet guide](testnet/README.md) when it covers your intended route. Check success, expiry, duplicate requests and interrupted status polling before accepting customer payments. Features outside that test route have their own environment and access requirements.
 
 For public contract source and published reviews, see [Contracts & Audits](contact/contracts-and-audits.md). For integration questions or an unresolved payment, [contact Rozo](contact/contact-us/README.md) with the relevant order reference and transaction evidence.

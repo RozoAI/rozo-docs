@@ -22,7 +22,7 @@ For gas plus a stablecoin, see [Gas + Stablecoin Funding](../integration/api-doc
 ## Start a cross-chain integration
 
 1. Read [Bridge & Wallet API](../integration/api-doc/bridge-api.md), including app registration and webhook access. Consult [Supported Tokens and Chains](../integration/api-doc/supported-tokens-and-chains.md) and the selected flow's narrower restrictions.
-2. The Base Sepolia to Stellar testnet route is currently unavailable. Contact Rozo before planning testnet integration.
+2. Use the [testnet guide](../testnet/README.md) for its documented Base Sepolia to Stellar test route. Testnet coverage does not imply that Funding, MPP or every mainnet route is available there.
 3. Follow the [Bridge API quick start](../integration/api-doc/api-quick-start.md) and [fee preview](../integration/api-doc/api-for-advanced-used/get-fees.md). Resolve app access before creating a live payment.
 4. Have the user approve and pay according to the returned order instructions. Track settlement using that flow's status reference or [webhooks](../integration/api-doc/api-for-advanced-used/webhook.md).
 
