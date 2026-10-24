@@ -69,7 +69,7 @@ Preserve the order reference if the result is unclear. Resume status checks inst
 - [Fee previews and errors](api-for-advanced-used/get-fees.md): handle rejected quotes and read fees from the response.
 - [Supported chains and tokens](supported-tokens-and-chains.md): discover available routes; individual apps can have narrower support.
 - [Wallet top-up](api-for-advanced-used/wallet-topup.md): variable-amount deposits.
-- The Base Sepolia to Stellar testnet route is currently unavailable.
+- [Testnet](../../testnet/README.md): the separate Base Sepolia to Stellar test flow.
 
 ## Routing provider (optional)
 
