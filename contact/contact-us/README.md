@@ -1,4 +1,8 @@
 ---
+
+## Testnet availability
+
+The Base Sepolia to Stellar testnet route is currently unavailable. Do not create or fund orders using the previous testnet guide. Contact us below to discuss integration testing.
 icon: messages
 ---
 

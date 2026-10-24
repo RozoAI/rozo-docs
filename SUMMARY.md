@@ -38,7 +38,6 @@
       * [Open a Stellar Wallet](integration/api-doc/funding/stellar-wallet-onboarding.md)
       * [Buy Gas Tokens](integration/api-doc/funding/buy-gas-tokens.md)
       * [Gas + Stablecoin Funding](integration/api-doc/funding/gas-plus-stablecoin.md)
-    * [Testnet: Base Sepolia → Stellar](testnet/README.md)
   * [Merchant API](integration/api-doc/merchant-api.md)
     * [API Quick Start (Merchant)](integration/api-doc/api-quick-start-merchant.md)
     * [Merchant API Keys](integration/api-doc/merchant-api-keys.md)
