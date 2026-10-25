@@ -16,6 +16,15 @@
 ##   /blogs, /products-1, /integration/api-doc/api-for-advanced-used, /blog/en
 ##   Templated API paths such as /payments/{paymentId} are not pages; Google
 ##   extracts them from the GitBook/Apidog hydration JSON. Leave them as 404.
+##   Verified 2026-10-25: every occurrence in the Markdown sources is inside a
+##   code span, code fence or table code cell, and production renders them as
+##   <code>, never as <a href>. There is nothing to unlink in the source.
+##   */rss.xml URLs: GitBook serves per-page RSS only for pages with an Updates
+##   block; this site has none, and no page links an RSS feed. GitBook does not
+##   apply redirects to rss.xml paths (the two rss.xml entries that used to be
+##   here still returned 404 on 2026-10-25), so they were removed. Leave as 404.
+##   /_next/static/css/*: stale hashed build assets from earlier GitBook
+##   deploys. Leave as 404; never redirect them to a page.
 
 redirects:
   # group 1: unpublished directories
@@ -46,6 +55,4 @@ redirects:
   # group 3: legacy URLs still crawled (2026-10-12 Search Console 404 report)
   integration/deposit-api: integration/api-doc/deposit-api.md
   start/intent-based-earn: products/intent-based-bridge/README.md
-  start/intent-based-earn/rss.xml: products/intent-based-bridge/README.md
-  start/supported-tokens-and-chains/rss.xml: integration/api-doc/supported-tokens-and-chains.md
   blog/en/faq: contact/faqs.md
