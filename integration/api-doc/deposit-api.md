@@ -69,10 +69,11 @@ Show `evm_address` to your user. It is the same address on every supported EVM c
 
 | Rule | Fee |
 | ---- | --- |
-| Default | 0.1% of the amount received, minimum $0.01 |
-| Paid from Ethereum | minimum $0.10 |
+| Default (USDC) | 0.1% of the amount received, minimum $0.01 |
+| USDT | 0.2% of the amount received, minimum $0.01 |
+| Paid from Ethereum | minimum $0.10 (applies when higher than the percentage fee) |
 
-Amount paid out = amount received minus fee. Example: 0.1 USDC on Base pays out 0.09 USDC (fee $0.01). 100 USDC on Base pays out 99.90 USDC.
+Amount paid out = amount received minus fee. Example: 0.1 USDC on Base pays out 0.09 USDC (fee $0.01). 100 USDC on Base pays out 99.90 USDC. 100 USDT on BNB Chain pays out 99.80 USDC (fee $0.20).
 
 ## 4. Minimum deposit
 
