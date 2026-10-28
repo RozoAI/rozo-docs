@@ -120,7 +120,7 @@ The full agent-oriented reference for these calls, including every safety check,
 
 The public `payments/supported` list on the payment-record API is the intents backend's full rail list (it also shows EURC, XLM, USDT0 and other pairs). It is not the list of coins accepted for an OpenRouter or Coinbase invoice; use `quote-invoice` (`supportedSources`) or the MCP `supported_coins` tool for that.
 
-USDT is not accepted on Base or Stellar. On-chain Bitcoin and Tron are not accepted. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Native coin orders are limited to $2,000 per invoice, fee included; above that, `create-invoice` answers `UNSUPPORTED_SOURCE`, so pay large invoices with a stablecoin.
+USDT is not accepted on Base or Stellar. TRON and TON Alpha use dedicated web pages and are not supported by this standard agent flow. On-chain Bitcoin is not accepted; Bitcoin payments use Lightning. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Supported OpenRouter native-coin invoices have a $3,500 limit. Other merchants and dedicated Alpha routes have separate limits. Use the options returned by the quote for the specific invoice. If the requested native route is unavailable, create-invoice can return UNSUPPORTED_SOURCE; choose an offered stablecoin route for a larger invoice.
 
 ## Fees
 
@@ -191,3 +191,13 @@ ROZO cannot see the OpenRouter balance, so credit delivery is always reported as
 ## Support
 
 Email [hi@rozo.ai](mailto:hi@rozo.ai) with the payment link, `rozoPaymentId` and transaction hash, or reach us on [Discord](https://discord.com/invite/EfWejgTbuU) or [X](https://x.com/ROZOai).
+
+## Payment minimum, processor scope and support
+
+The minimum depends on the merchant and the payment option used to create your link. Check the accepted credit amount at the merchant checkout and the final ROZO quote before paying. Credits and the total paid may differ because of fees.
+
+This guide documents Coinbase payment links (`payment-links/pl_*`) and payment sessions (`payment-sessions/paymentSession_*`). Support in the web checkout does not imply support in every CLI or MCP version. Check the specific tool’s supported link types for other processors.
+
+Contact support with the transaction hash. We reply within one business day and review recovery case by case. Recovery is not guaranteed; completion time depends on the case. Do not pay again while we investigate.
+
+TRON Alpha adds $1 and TON Alpha adds $0.10 on their dedicated web routes, on top of the standard 1% Checkout service fee. UPI has separate pricing. Listing a service does not imply a partnership or endorsement.
