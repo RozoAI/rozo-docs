@@ -200,4 +200,4 @@ This guide documents Coinbase payment links (`payment-links/pl_*`) and payment s
 
 Contact support with the transaction hash. We reply within one business day and review recovery case by case. Recovery is not guaranteed; completion time depends on the case. Do not pay again while we investigate.
 
-TRON Alpha adds $1 and TON Alpha adds $0.10 on their dedicated web routes, on top of the standard 1% Checkout service fee. UPI has separate pricing. Listing a service does not imply a partnership or endorsement.
+TRON Alpha charges the standard 1% Checkout service fee with a $0.50 minimum, and TON Alpha charges the standard 1% only, on their dedicated web routes. UPI has separate pricing. Listing a service does not imply a partnership or endorsement.
