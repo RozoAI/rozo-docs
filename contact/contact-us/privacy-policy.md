@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last Updated:** October 21, 2026
+**Last Updated:** November 7, 2026
 
 ## 1. Introduction
 
@@ -66,6 +66,10 @@ There are no user accounts, and the server keeps no state between requests.
 **Shared with:** Rozo's payment backend and MPP Router (operated by Rozo) to create and track orders, and the public blockchains and Coinbase invoice the payment settles. For rate limiting, the caller's IP address may be forwarded to Rozo's funding API.
 
 **Contact:** hi@rozo.ai
+
+### 2.5 Rozo Discord Bot
+
+If you use our Discord bot, we store your Discord user ID and direct-message channel in encrypted form, your display name, your language and default network, and for each payment link you send: the merchant name, the amount, an encrypted copy of the link, the order status and the on-chain payment details needed to track it. We do not save the text of your chat messages. Wallets connect on our payment pages, not in the bot. We share payment details with the payment providers needed to complete your order. Send "delete my data" to the bot at any time to delete everything the bot has saved about you. Records kept by the payment providers and by Rozo's payment service for completed orders are not part of the bot and are handled under the rest of this policy.
 
 ## 3. How We Use Your Information
 

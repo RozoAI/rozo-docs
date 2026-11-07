@@ -1,6 +1,6 @@
 # Terms of service
 
-**Last Updated:** \[2025-08-28]
+**Last Updated:** November 7, 2026
 
 ## 1. Acceptance of Terms
 
@@ -9,6 +9,10 @@ By accessing or using our service, you agree to be bound by these Terms of Servi
 ## 2. Description of Service
 
 Rozo provides a comprehensive stablecoin payment infrastructure platform that serves as "the Visa for stablecoins." Our service includes payment processing, settlement, merchant tools, and related financial technology services for stablecoin transactions. We reserve the right to modify, suspend, or discontinue the service at any time without notice.
+
+### 2.1 Rozo Discord Bot
+
+The bot helps you pay a payment link from your own wallet. Rozo does not hold your keys. Crypto payments cannot be reversed by us. You are responsible for sending the exact amount and the exact coin on the exact network shown on the payment page. A payment in another coin, or a smaller amount, may not be detected or completed automatically: do not pay again, and contact hi@rozo.ai with your order number. Rozo is independent and not affiliated with OpenRouter, Coinbase, Stripe or Discord.
 
 ## 3. User Accounts
 
