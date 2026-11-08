@@ -187,7 +187,7 @@ USDT on Stellar to USDT on another chain is part of the USDT payout beta above. 
 **Fees and limits**
 
 * Fee: **0.2%** of the pay in amount, with a **minimum of 0.10 USD** per order. The fee is charged on the source side, so paying 100 USDC returns 99.80 USDT, and paying 10 USDC returns 9.90 USDT. Check the exact amount with a dryrun quote before you create the order.
-* Limit: up to **1,000 USD per order** during the beta. Larger orders are rejected with `amountTooHigh`. Split larger amounts into several orders.
+* Limit: up to **10,000 USD per order** during the beta. Larger orders are rejected with `amountTooHigh`. Split larger amounts into several orders.
 * Availability depends on Rozo's liquidity for the payout leg. If a route is temporarily short, the order is rejected at creation with `INSUFFICIENT_LIQUIDITY` and no funds are taken.
 * Fees and limits may change during the beta. A quote keeps the fee it was issued with.
 
