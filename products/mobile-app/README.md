@@ -8,6 +8,10 @@ icon: mobile
 
 Current mobile app is invite only.  Please contact us if you want to earn in our mobile app.
 
+### Rozo Earn
+
+Rozo Earn is a feature of the ROZO Wallet that lets you earn rewards on your crypto. Open it at [earn.rozo.ai](https://earn.rozo.ai/).
+
 
 
 ### iOS App
