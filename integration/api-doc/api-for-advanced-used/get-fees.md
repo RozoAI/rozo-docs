@@ -53,7 +53,7 @@ Dry-run and create responses also carry a `feeInfo` block that names the routing
 | Provider | Rate |
 | --- | --- |
 | `rozo` | your app tier (public default 0.1%, minimum $0.01) |
-| `near` | flat 0.3% (minimum $0.01); per-destination minimums still apply (e.g. Solana $0.20, Ethereum $0.10, USDT on Tron $1) |
+| `near` | flat 0.3% (minimum $0.01); per-destination minimums still apply (e.g. Solana $0.20, Ethereum $0.10) |
 
 `feePercentage` is the **effective** rate: when a minimum fee applies to a small order it shows the real percentage, not the nominal one.
 

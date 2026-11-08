@@ -20,8 +20,10 @@ There is no account to create and no private key to share. You pay from your own
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 | Zcash (Beta) | ZEC on Zcash, paid to a one-time transparent (t1) address on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only |
+| USDT on TRON (Alpha) | USDT on TRON, on [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only |
+| USDT on TON (Alpha) | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only |
 
-On-chain Bitcoin and Tron are not accepted, and USDT is not accepted on Base or Stellar.
+On-chain Bitcoin is not accepted. USDT is not accepted on Base or Stellar. USDT on TRON and USDT on TON are in Alpha and are offered only on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton): the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
 
 Where each one works:
 
@@ -31,8 +33,10 @@ Where each one works:
 | Stablecoins, including Arbitrum | Yes | Yes | Yes |
 | Native coins | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin |
 | ZEC (Beta) | [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only | No: the CLI does not create ZEC orders and points to /zec | No: points to /zec |
+| USDT on TRON (Alpha) | [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only | No | No |
+| USDT on TON (Alpha) | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only | No | No |
 
-A native coin is offered only for invoices up to $2,000 (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
+A native coin is offered only for invoices up to $3,500 (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
 
 ## Supported merchants
 
