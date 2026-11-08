@@ -40,7 +40,6 @@ redirects:
   integration/api-doc/supported-tokens-and-chains: integration/api-doc/supported-tokens-and-chains.md
   products/intent-based-payment-transfer/intent-based-payment: products/intent-based-payment-transfer/intent-based-payment.md
   products/cctp-bridge: products/cctp-bridge/README.md
-  products/intent-based-earn: products/intent-based-bridge/README.md
   tests/testnet: testnet/README.md
   integration/testnet: testnet/README.md
   products/pos-merchant-app: products/mobile-app/pos-merchant-app.md
@@ -54,5 +53,5 @@ redirects:
   contact/faqs: contact/faqs.md
   # group 3: legacy URLs still crawled (2026-10-12 Search Console 404 report)
   integration/deposit-api: integration/api-doc/deposit-api.md
-  start/intent-based-earn: products/intent-based-bridge/README.md
+  start/intent-based-earn: products/intent-based-earn.md
   blog/en/faq: contact/faqs.md
