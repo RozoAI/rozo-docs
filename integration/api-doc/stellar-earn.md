@@ -1,5 +1,7 @@
 # Stellar Earn
 
+Rozo Earn is a feature of the ROZO Wallet. Open it at [earn.rozo.ai](https://earn.rozo.ai/).
+
 The Stellar Earn API enables integration with DeFindex vault for yield-earning functionality. Users can deposit funds to receive yield-bearing dTokens, or withdraw dTokens to receive USDC on any supported chain.
 
 ## Overview
