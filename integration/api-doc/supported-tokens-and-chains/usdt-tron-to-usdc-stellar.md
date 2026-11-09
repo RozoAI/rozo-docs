@@ -25,10 +25,10 @@ This route is not listed in `GET /payments/supported`. TRON is not a pay-out cha
 ## Fees and limits
 
 * Fee: a Rozo service fee at a dynamic rate with a 0.20% floor and a $0.50 minimum, plus your partner fee if configured (see [Partner Fee](../api-for-advanced-used/partner-fee.md)). Rozo calculates the fee on the server. The response shows the exact amount to send.
-* Minimum: **10 USDC** net per order (the USDC amount the receiving account gets).
-* Maximum: **1,000 USDC** per order and **3,000 USDC** per app per UTC day.
-* These are beta limits and may change. An order outside them returns `422` `beta_limit`. For higher limits, [contact us](../../../contact/contact-us/README.md).
-* Rozo's overall TRON budget also applies. Once it is used up for the day, new orders return `422` `daily_budget_exhausted` until the next UTC day.
+* Very small orders are mostly fee because of the $0.50 minimum. An order whose total to pay is below 1 USDT is not offered.
+* Maximum: **3,000 USD** per order. An order above it returns `422` `order_cap_exceeded`.
+* Daily limit: **10,000 USD** per UTC day on TRON, shared across all apps. Once it is used up, new orders return `422` `daily_budget_exhausted` until the next UTC day.
+* Fees and limits may change during the beta. For higher limits, [contact us](../../../contact/contact-us/README.md).
 * Each order reserves USDC on Stellar for the payout when the payment option is created. If Rozo cannot reserve it, the API returns `422` `inventory_unavailable` and no payment address is issued. Try again later or offer another payment method.
 
 ## How to integrate
@@ -143,9 +143,9 @@ Or by payment id: `GET /payment-api/payments/{id}`. Treat the order as settled o
 | `409` | `beta_unsupported_order` | The order does not exist, is not a Rozo `exactOut` order to Stellar USDC, has more than 6 decimals, carries a native coin, `USDT0` or exchange quote lock, or its amount does not match `baseServiceUsd` |
 | `409` | `pilot_partner_fee_invalid`, `pilot_partner_fee_mismatch` | The partner fee is not in USDC or USDT, or does not match the configured rate on the net amount |
 | `410` | `order_expired` | The payment window closed |
-| `422` | `beta_limit` | Below the minimum, or above the per-order or per-app daily limit |
+| `422` | `order_cap_exceeded` | Above the 3,000 USD per-order maximum |
 | `422` | `inventory_unavailable` | No USDC can be reserved on Stellar now |
 | `422` | `trustline_missing` | The receiving account does not exist or has no authorized USDC trustline |
-| `422` | `daily_budget_exhausted` | Rozo's overall TRON budget for the UTC day is used up |
+| `422` | `daily_budget_exhausted` | The 10,000 USD TRON limit for the UTC day, shared across all apps, is used up |
 | `503` | `pool_exhausted` (with `"hideOption": true`) | No TRON payment address is free right now. Hide the TRON option and offer another method |
 | `503` | `stellar_check_unavailable` | The Stellar account check could not run. Try again later |
