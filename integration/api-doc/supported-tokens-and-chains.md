@@ -140,6 +140,9 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 
 USDT on Stellar (asset code `USDT0`) is also accepted as a pay in, in beta. See [USDT on Stellar (beta)](#usdt-on-stellar-beta).
 
+* USDT on BNB Chain to USDC on Stellar: see [USDT on BNB Chain to USDC on Stellar](supported-tokens-and-chains/usdt-bsc-to-usdc-stellar.md).
+* USDT on TRON to USDC on Stellar, open beta: see [USDT on TRON to USDC on Stellar (beta)](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md).
+
 ### Pay Out Tokens and Chains
 
 **USDC Support**
