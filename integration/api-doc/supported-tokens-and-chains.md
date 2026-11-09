@@ -243,7 +243,9 @@ The flow has two calls. First create the order on the Payment API. Then ask for 
 
 **1. Create the order**
 
-Create an `exactOut` order that pays USDC on Stellar (`1500`). `orderId` is your own unique reference. `destination.amount` is the USDC amount the receiving account gets, with at most 6 decimals. `receiverAddress` and `receiverMemo` must be the receiving account and memo approved for your app; omit `receiverMemo` if your app was approved with no memo. Source fields: **TBD before publish**.
+Create an `exactOut` order that pays USDC on Stellar (`1500`), with `"provider": "rozo"` set explicitly. `orderId` is your own unique reference. `destination.amount` is the USDC amount the receiving account gets, with at most 6 decimals. `receiverAddress` and `receiverMemo` must be the receiving account and memo approved for your app; omit `receiverMemo` if your app was approved with no memo. Do not send `metadata.original` (if you send it, it must equal `destination.amount`).
+
+The Payment API does not accept TRON as a source, so set the source to USDC on Base (`8453`). The order gets its own Base deposit address as usual. Do not show that address to the payer: the payer pays only the TRON option from step 2.
 
 ```bash
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments' \
@@ -253,8 +255,9 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
     "appId": "<your appId>",
     "orderId": "<your order reference>",
     "type": "exactOut",
+    "provider": "rozo",
     "display": { "title": "TRON USDT to Stellar USDC", "currency": "USD" },
-    "source": { "chainId": "<TBD before publish>", "tokenSymbol": "<TBD before publish>" },
+    "source": { "chainId": "8453", "tokenSymbol": "USDC" },
     "destination": {
         "chainId": "1500",
         "tokenSymbol": "USDC",
@@ -265,7 +268,7 @@ curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment
 }'
 ```
 
-An order that does not exist, is not `exactOut`, or has an amount with more than 6 decimals is refused at the next step with `409` `beta_unsupported_order` (after release).
+An order that does not exist, is not `exactOut`, has an amount with more than 6 decimals, is routed to a provider other than Rozo, or carries a native coin, `USDT0` or exchange quote lock is refused at the next step with `409` `beta_unsupported_order` (after release). An order that is already paid or closed is refused with `409` `order_not_open`. If your app has a partner fee, it must be in USDC or USDT and equal the configured rate on the net amount, rounded up to 4 decimals; otherwise the request is refused with `409` `pilot_partner_fee_invalid` or `pilot_partner_fee_mismatch` (after release).
 
 **2. Get the TRON payment option**
 
@@ -311,6 +314,7 @@ Show the payer `receivingAddress` and `expectedAmount`. Calling the same request
 * Send **exactly** `expectedAmount` of USDT on TRON to `receivingAddress` before `expiresAt`. The payment window is 60 minutes. When paying from an exchange, add the exchange's withdrawal fee on top so that the exact amount arrives.
 * Use the address from this order's response only. Do not copy an address from wallet history.
 * After the transfer is confirmed on chain, the order moves to `payment_payin_completed` and the USDC payout to Stellar starts.
+* If the order's Base deposit address is also paid, the order settles as a normal Base to Stellar order and the TRON payment is held as a duplicate for manual review.
 * A transfer outside a small tolerance of `expectedAmount`, a transfer after the window has closed, or a second payment for an order that is already paid is not paid out automatically. The funds are held and reviewed by Rozo. Contact us with the TRON transaction hash.
 * After expiry the same request returns `410` `order_expired`. Create a new order.
 
@@ -332,7 +336,9 @@ Or by payment id: `GET /payment-api/payments/{id}`. Treat the order as settled o
 | `403` | `destination_not_approved`, `memo_mismatch` | The order does not pay the approved account or memo (after release) |
 | `400` | `bad_request`, `unsupported_asset` | Missing fields, or a network/token other than TRON USDT |
 | `409` | `order_conflict` | Same order reference sent with different values |
-| `409` | `beta_unsupported_order` | The order does not exist, is not `exactOut` to Stellar USDC, or its amount does not match `baseServiceUsd` (after release) |
+| `409` | `beta_unsupported_order` | The order does not exist, is not a Rozo `exactOut` order to Stellar USDC, carries a native, `USDT0` or exchange quote lock, or its amount does not match `baseServiceUsd` (after release) |
+| `409` | `order_not_open` | The order is already paid or closed (after release) |
+| `409` | `pilot_partner_fee_invalid`, `pilot_partner_fee_mismatch` | The partner fee is not in USDC or USDT, or does not match the configured rate on the net amount (after release) |
 | `410` | `order_expired` | The payment window closed |
 | `422` | `beta_limit` | Above your app's per-order or daily limit (after release) |
 | `422` | `order_cap_exceeded`, `daily_budget_exhausted` | Above Rozo's overall TRON limits |
