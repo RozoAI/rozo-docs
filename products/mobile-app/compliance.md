@@ -5,8 +5,6 @@ description: >-
 icon: shield-check
 ---
 
-<!-- DRAFT. Not approved for publication. External wording requires founder approval. Remove all HTML comments before merge. -->
-
 # Compliance
 
 This page describes the sanctions compliance policy for ROZO Wallet.
@@ -24,13 +22,11 @@ ROZO screens the following addresses against the digital currency addresses that
 * ROZO wallet addresses.
 * Addresses that send funds to ROZO wallets on Stellar.
 
-<!-- TODO: once screening of cross-chain deposit source addresses is active, add this bullet: "* Addresses that fund ROZO wallets through ROZO cross-chain deposits." Do not add it before it is active. -->
-
-ROZO re-checks known addresses as the SDN List is updated.
+ROZO also re-checks addresses it has already screened.
 
 ## Sanctioned jurisdictions
 
-ROZO blocks requests from comprehensively sanctioned jurisdictions. ROZO determines the location of a request from its IP address.
+ROZO may block requests from comprehensively sanctioned jurisdictions. ROZO determines the location of a request from its IP address.
 
 ## ROZO blocklist
 
@@ -49,13 +45,9 @@ ROZO may deny ROZO services to an address, user or IP address that matches the S
 * Deploying a new ROZO wallet.
 * Transactions sponsored by ROZO, where ROZO pays the network fee.
 
-If ROZO denies a service, the app shows that the service is unavailable. ROZO may not give a reason.
-
 ## Cash-out
 
-When you cash out through a ROZO partner, identity verification (KYC) is performed by that cash-out partner, not by ROZO. The partner's own terms and checks apply.
-
-<!-- FOUNDER DECISION: (1) name the cash-out partner (MoneyGram) here or keep it generic; (2) cash-out is not live yet, so decide whether to keep this section before launch or add it when cash-out ships. -->
+ROZO does not perform identity verification. Where a cash-out service is offered through a partner, that partner performs identity verification (KYC) under its own terms.
 
 ## Questions
 
