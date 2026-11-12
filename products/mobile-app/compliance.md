@@ -13,7 +13,7 @@ This page describes the sanctions compliance policy for ROZO Wallet.
 
 ROZO Wallet is a non-custodial smart wallet on Stellar. You sign in with a passkey, and your passkey controls your wallet. ROZO does not hold your funds or your keys.
 
-ROZO does not collect identity information, such as your name or ID documents, and does not verify the identity of wallet users. For this reason, ROZO screens wallet addresses, not people.
+ROZO does not collect identity documents and does not verify the identity of wallet users. For this reason, ROZO screens wallet addresses, not people.
 
 ## Sanctions screening
 
