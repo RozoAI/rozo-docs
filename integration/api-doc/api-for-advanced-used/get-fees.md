@@ -77,6 +77,19 @@ curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/supported'
 
 These numbers are indicative. Read the dry-run `feeInfo` for the preview, then check the actual created order before paying. A dry-run does not lock a future price.
 
+## TRON USDT to Stellar USDC quote (Beta)
+
+The same dry run quotes the TRON USDT to Stellar USDC Beta route. Send `"provider": "rozo"`, `"type": "exactOut"`, source `{"chainId": "728126428", "tokenSymbol": "USDT"}` and destination USDC on Stellar (`1500`) with the net amount, receiver and optional memo. A valid API key is required.
+
+The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `destination.amount` (net USDC) and `feeInfo`, and adds a `paymentOption` block:
+
+* `priceLocked: false` and `amountIsEstimate: true`: the quote reserves nothing, and the final amount to pay can be slightly higher.
+* `available` and `availabilityReason`: whether a payment option can be created right now, and why not.
+* `limits.minGrossUsd`, `limits.maxGrossUsd`: current limits on the gross amount.
+* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate.
+
+Creating the order is a separate two-step flow; a successful quote does not mean `POST /payments` accepts a TRON source. See [TRON USDT pay-in, settle in Stellar USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md) for request and response examples. Any other request with a TRON source, including TRX, is still rejected.
+
 ## Errors specific to NEAR-routed quotes
 
 | Error code | Meaning |
