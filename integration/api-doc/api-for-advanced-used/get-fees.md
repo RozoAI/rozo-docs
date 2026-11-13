@@ -86,7 +86,9 @@ The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `
 * `priceLocked: false` and `amountIsEstimate: true`: the quote reserves nothing, and the final amount to pay can be slightly higher.
 * `available` and `availabilityReason`: whether a payment option can be created right now, and why not.
 * `limits.minGrossUsd`, `limits.maxGrossUsd`: current limits on the gross amount.
-* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate.
+* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate. `feeInfo` shows the same rate as `feePercentage` and `minimumFee: "$0.50"`.
+* `source.amount` is the gross rounded up to 0.01 USDT; limits are checked on that amount. When the request cannot be priced (route off, app not eligible, receiver malformed or not allowed), `source.amount`, `feeInfo` and `fees` are `null`.
+* A dependency that cannot be read returns HTTP 503 `serviceUnavailable`; retry later. A request without an API key is rejected with HTTP 400.
 
 Creating the order is a separate two-step flow; a successful quote does not mean `POST /payments` accepts a TRON source. See [TRON USDT pay-in, settle in Stellar USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md) for request and response examples. Any other request with a TRON source, including TRX, is still rejected.
 
