@@ -1,11 +1,7 @@
----
-hidden: true
----
-
 # TRON USDT pay-in, settle in Stellar USDC (Beta)
 
 {% hint style="info" %}
-**Beta.** Any wallet or merchant with a valid Rozo API key can use this route. There is no invite list. Fees, limits and timing may change while the beta runs. Settlement times will be published after measured runs; until then this page makes no timing promise.
+**Beta.** Any wallet or merchant with a valid Rozo API key can use this route, and anyone can use it without an API key on [intents.rozo.ai/bridge](#in-the-rozo-bridge-app). There is no invite list. Fees, limits and behavior may change while the beta runs. This page makes no settlement time promise.
 {% endhint %}
 
 The payer sends USDT on TRON to a payment address issued for one order. Rozo confirms the transfer on chain and pays USDC on Stellar to the receiving account and memo set on your order, the same way as on every other route.
@@ -20,6 +16,7 @@ The payer sends USDT on TRON to a payment address issued for one order. Rozo con
 * **Who:** any app (wallet or merchant) with a valid `X-API-Key`. Anonymous orders are not accepted. See [Merchant API Keys](../merchant-api-keys.md).
 * **Direction:** one way only. USDT on TRON in, USDC on Stellar out.
 * **Not offered on this route:** TRX (the TRON native coin), USDT payouts, TRON as a payout chain, Stellar to TRON, and any destination other than USDC on Stellar.
+* **Merchants with a configured payout chain:** if your merchant account settles to a payout chain set in its settings, this route does not apply to it.
 * This route is not a row in the `data` list of `GET /payments/supported`. When it is enabled, it is described in the optional `paymentOptions` list of the same response. See [Supported Tokens and Chains](../supported-tokens-and-chains.md#payment-options).
 
 ## Before you start
@@ -56,7 +53,6 @@ The service fee is charged on the gross amount: at the floor rate, fee = net × 
 | 2.00 | 0.50 | 2.50 | Minimum fee applies |
 | 100.00 | 0.50 | 100.50 | Minimum fee applies (0.20% would be about 0.20) |
 | 1,000.00 | 2.004009 | 1,002.01 | Percentage fee applies |
-| 2,995.00 | 6.002005 | 3,001.01 | Refused: `above_order_max`, the gross is above the per-order maximum |
 
 The minimum fee applies to every order up to about 249.50 USDC net at the floor rate.
 
@@ -65,7 +61,7 @@ The minimum fee applies to every order up to about 249.50 USDC net at the floor 
 ## Limits
 
 * **Minimum:** the rounded gross amount to pay must be at least 1 USDT. Because of the 0.50 USD minimum fee, the smallest net payout is 0.50 USDC.
-* **Per-order maximum:** currently 3,000 USD, checked on the rounded **gross** amount (fees included). A key bound to an approved receiver can have a lower maximum; the quote shows the one that applies. A net amount that is below the maximum but whose gross is above it is refused.
+* **Per-order maximum:** there is a per-order maximum, checked on the rounded **gross** amount (fees included). A key bound to an approved receiver can have a lower maximum. A net amount that is below the maximum but whose gross is above it is refused (`above_order_max`). Read the current value from the quote.
 * **Shared daily capacity:** TRON pay-ins have a daily capacity per UTC day that is **shared by all apps on the platform**. It is not a per-user or per-app allowance, and Rozo does not publish it as a guarantee: a new order can be refused because the platform-wide capacity is used up, even if your app has not paid anything that day. It resets at 00:00 UTC.
 * **Inventory:** each order reserves Stellar USDC for its payout when the payment option is created. If none can be reserved, no payment address is issued.
 
@@ -153,7 +149,7 @@ Example response (illustrative values for an app without a partner fee):
     "amountIsEstimate": true,
     "available": true,
     "availabilityReason": null,
-    "limits": { "minGrossUsd": "1.00", "maxGrossUsd": "3000.00" },
+    "limits": { "minGrossUsd": "1.00", "maxGrossUsd": "<current per-order maximum>" },
     "fees": {
       "rozoFeeUsd": "0.500000",
       "rozoFeeBps": 20,
@@ -242,8 +238,6 @@ Example response (illustrative values, no partner fee; some fields omitted):
   "expectedAmountAtomic": "100510000",
   "grossUsd": "100.51",
   "expiresAt": "2026-01-01T01:00:00Z",
-  "poolAddress": true,
-  "inventoryBeta": true,
   "netOutUsdc": "100.000000",
   "rozoFeeUsdt": "0.500000",
   "partnerFeeUsdt": "0.000000",
@@ -324,18 +318,16 @@ Or by payment id: `GET /payment-api/payments/{id}`. See [Reading order status](.
 
 Quote reasons appear in `paymentOption.availabilityReason` with HTTP 200 (the table shows the reason value). Quote errors use the standard `error.code` envelope of the Payment API. Create errors from `/tron-ton-alpha` are returned as `{"error": "<code>"}` with the HTTP status shown. Match on the code, not on message text.
 
-## In the Rozo Bridge app (coming soon)
+## In the Rozo Bridge app
 
 {% hint style="info" %}
-**Not available yet.** The Rozo Bridge app does not offer this route today. The steps below describe the planned flow and may change before it ships.
+**Beta.** This route is available on [intents.rozo.ai/bridge](https://intents.rozo.ai/bridge). No integration work, API key or TRON wallet connection is needed.
 {% endhint %}
 
-When this Beta is enabled in the app, [intents.rozo.ai/bridge](https://intents.rozo.ai/bridge) will offer it without any integration work:
-
 1. Choose **USDT · TRON · Beta** as the source. The destination is set to **USDC · Stellar** and cannot be changed for this source.
-2. Enter the USDC amount to receive, the Stellar receiving account and an optional memo. The app checks the USDC trustline.
-3. Review the quote: USDT to pay, net USDC, Rozo fee, partner fee and limits. Nothing is reserved yet.
-4. Generate the payment: the app shows the TRON address as a QR code, with separate buttons to copy the address and the exact amount, and a countdown.
+2. Enter the USDC amount to receive, the Stellar receiving account and an optional memo. The account must hold a USDC trustline.
+3. Review the quote: USDT to pay, net USDC, Rozo fee and limits. Nothing is reserved yet.
+4. Generate the payment: the page shows the TRON address as a QR code, with separate buttons to copy the address and the exact amount, and a countdown for the payment window.
 5. Pay from any TRON wallet or exchange. The page shows waiting for payment, confirming, paying out, and completed with the Stellar transaction. Refreshing the page resumes the same order.
 
-No TRON wallet connection is needed.
+The page never shows a Base address. Pay only the TRON address and amount it displays.
