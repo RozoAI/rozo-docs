@@ -65,6 +65,7 @@
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
+  * [Compliance](products/mobile-app/compliance.md)
 * [Rozo Earn](products/intent-based-earn.md)
 
 ## TECHNICAL REFERENCE <a href="#reference" id="reference"></a>
