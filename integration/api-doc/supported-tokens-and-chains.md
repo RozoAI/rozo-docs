@@ -28,7 +28,30 @@ Each entry describes one (chain, token) leg in Rozo's own naming:
 * `destinationMinimumFee`: present only when a per-destination minimum fee applies.
 * The top-level `fees` object is the rate card per rail (see [Get Fees](api-for-advanced-used/get-fees.md)).
 
-New chains and tokens appear here automatically as they are enabled. Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
+New chains and tokens appear here automatically as they are enabled.
+
+#### Payment options
+
+Some routes cannot be created with a single `POST /payments` call. When such a route is enabled, the response carries an optional top-level `paymentOptions` list next to `data`. The `data` list keeps its shape, and a leg that appears only in `paymentOptions` is not accepted by the standard create call.
+
+```json
+"paymentOptions": [
+  {
+    "route": "tron_usdt_to_stellar_usdc",
+    "source": { "chainId": "728126428", "tokenSymbol": "USDT" },
+    "destination": { "chainId": "1500", "tokenSymbol": "USDC" },
+    "orderMode": "exactOut",
+    "creationMode": "order_option",
+    "beta": true,
+    "quote": "POST /payments?dryrun=true",
+    "create": "POST /payments (Base USDC placeholder) then POST /tron-ton-alpha"
+  }
+]
+```
+
+* `creationMode: "order_option"` means the route is created in two steps: an order, then a payment option for that order. Follow the linked route page.
+* The field is absent when no such route is enabled. Treat it as optional. Clients that read only `data` are not affected.
+* Today the only entry is TRON USDT to Stellar USDC (Beta). See [TRON USDT pay-in, settle in Stellar USDC](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md). Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
 
 > **Note on Chain IDs for Solana and Stellar:** For non-EVM chains, the API accepts **either** the numeric chain ID **or** the lowercase chain name string:
 > - **Solana**: `900` or `"solana"`
@@ -141,7 +164,7 @@ If you're routing via Circle's CCTP V2, you can pass the CCTP domain using the *
 USDT on Stellar (asset code `USDT0`) is also accepted as a pay in, in beta. See [USDT on Stellar (beta)](#usdt-on-stellar-beta).
 
 * USDT on BNB Chain to USDC on Stellar: see [USDT on BNB Chain to USDC on Stellar](supported-tokens-and-chains/usdt-bsc-to-usdc-stellar.md).
-* USDT on TRON to USDC on Stellar, open beta: see [USDT on TRON to USDC on Stellar (beta)](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md).
+* USDT on TRON, settled in USDC on Stellar (Beta, any app with an API key, no invite list): see [TRON USDT pay-in, settle in Stellar USDC](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md). This route is listed under `paymentOptions`, not in `data` (see [Payment options](#payment-options)).
 
 ### Pay Out Tokens and Chains
 

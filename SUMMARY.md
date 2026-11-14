@@ -6,7 +6,7 @@
 * [Choose Your Integration](start/choose-your-integration.md)
 * [Capability Catalog](start/capabilities.md)
 * [Supported Tokens and Chains](integration/api-doc/supported-tokens-and-chains.md)
-  * [USDT on TRON to USDC on Stellar (beta)](integration/api-doc/supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md)
+  * [TRON USDT pay-in, settle in Stellar USDC (Beta)](integration/api-doc/supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md)
   * [USDT on BNB Chain to USDC on Stellar](integration/api-doc/supported-tokens-and-chains/usdt-bsc-to-usdc-stellar.md)
 * [Vision and Missions](start/vision-and-missions.md)
 
