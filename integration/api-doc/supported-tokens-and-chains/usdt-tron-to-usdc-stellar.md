@@ -33,7 +33,7 @@ This route uses `exactOut` orders:
 * **Net** (`destination.amount`): the USDC the receiving account gets on Stellar. This is what you enter.
 * **Gross** (`source.amount` on a quote, `expectedAmount` on the payment option): the USDT the payer sends on TRON. Gross = net + Rozo service fee + partner fee (if any), rounded **up** to the next 0.01 USDT, plus a tiny unique increment explained below.
 
-All money values are decimal strings. Do your arithmetic in integer base units (6 decimals), never in floating point.
+All money values in responses are decimal strings. Do your arithmetic in integer base units (6 decimals), never in floating point.
 
 ## Fees
 

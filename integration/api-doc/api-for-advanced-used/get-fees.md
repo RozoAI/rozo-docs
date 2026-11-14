@@ -86,7 +86,7 @@ The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `
 * `priceLocked: false` and `amountIsEstimate: true`: the quote reserves nothing, and the final amount to pay can be slightly higher.
 * `available` and `availabilityReason`: whether a payment option can be created right now, and why not.
 * `limits.minGrossUsd`, `limits.maxGrossUsd`: current limits on the gross amount.
-* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate. `feeInfo` shows the same rate as `feePercentage` and `minimumFee: "$0.50"`.
+* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate. On this route `feeInfo.feePercentage` shows that rate, not an effective rate, even when the 0.50 USD minimum applies; read `paymentOption.fees.rozoFeeUsd` and `minimumFeeApplied` for the actual fee.
 * `source.amount` is the gross rounded up to 0.01 USDT; limits are checked on that amount. When the request cannot be priced (route off, app not eligible, receiver malformed or not allowed), `source.amount`, `feeInfo` and `fees` are `null`.
 * A dependency that cannot be read returns HTTP 503 `serviceUnavailable`; retry later. A request without an API key is rejected with HTTP 400.
 
