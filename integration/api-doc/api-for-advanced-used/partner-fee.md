@@ -50,7 +50,7 @@ Dry-run and create responses carry `source.partnerFee` (in source-token units) a
 
 ## Scope
 
-The fee applies to orders whose **source token is USDC or USDT** and that settle through the Rozo hub. Native-coin pay-ins (XLM / ETH / SOL / BNB / POL / Lightning), EURC destinations, Stellar USDT0 and Stellar Direct settlements charge `0` for now.
+The fee applies to orders whose **source token is USDC or USDT** and that settle through the Rozo hub. Native-coin pay-ins (ETH / SOL / BNB / POL / Lightning), EURC destinations, Stellar USDT0 and Stellar Direct settlements charge `0` for now.
 
 ## Settlement
 

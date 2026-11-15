@@ -25,7 +25,7 @@ Each entry describes one (chain, token) leg in Rozo's own naming:
 
 * `providers`: rails that accept this leg as a **pay-in source**.
 * `destinationProviders`: rails that can **pay out to** it. They differ for `near`: it accepts pay-ins from many chains but only settles on Base, Solana and Stellar.
-* `destinationMinimumFee`: present only when a per-destination minimum fee applies.
+* `destinationMinimumFee`: present only when the chain has its own minimum fee. Solana shows the conservative value (0.20 USD for a receiver that does not hold the token account yet; 0.01 USD when it already does), so read the exact fee for your receiver from a dryrun.
 * The top-level `fees` object is the rate card per rail (see [Get Fees](api-for-advanced-used/get-fees.md)).
 
 New chains and tokens appear here automatically as they are enabled.
@@ -127,13 +127,13 @@ Request it with `options.gasDrop` on a dryrun or a create:
 | Setting | Value |
 | --- | --- |
 | Minimum | 0.10 USD (Ethereum: 1.00 USD) |
-| Maximum | 10.00 USD |
+| Maximum | Up to 10.00 USD. The effective maximum can be lower for some gas coins, depending on the coin price at quote time |
 | Step | 0.10 USD |
-| Spread | 5% of the gas drop amount |
+| Spread | 5% of the gas drop amount, rounded up to the next 0.01 USD |
 | Gas coin by destination chain | ETH on Ethereum, Base and Arbitrum; BNB on BNB Chain; POL on Polygon; SOL on Solana; XLM on Stellar; HYPE on HyperEVM |
 
 * `amountUsd` is what the payer gives up for the gas coin. On `exactIn` it comes out of the USDC payout; on `exactOut` it is added to the pay-in.
-* An amount outside the range or off the 0.10 USD step returns `"available": false` with `"reason": "amount_out_of_range"`.
+* An amount outside the range or off the 0.10 USD step returns `"available": false` with `"reason": "amount_out_of_range"`. The same reason is returned when the gas coin amount for the requested USD value is larger than Rozo can send in one gas drop, which can happen below 10.00 USD for some coins. Choose a smaller amount and quote again.
 * At quote time a refused gas drop only removes the add-on: the quote is returned without it and the rest is unchanged.
 * At order creation the gas coin is reserved for the order. If that reservation fails, for example because the gas inventory ran out after the quote, the API returns HTTP `409` with `gasDropUnavailable` and **the order is not created**. Request a new quote; it will show whether the gas drop is still available.
 * The response `gasDrop` block shows `amountNative`, `chargedUsd`, `feeUsd` (the spread) and `principalUsd`. Example for 1 USD to Arbitrum: `chargedUsd` 1.00, `feeUsd` 0.05, `principalUsd` 0.95, delivered as ETH at the quoted price.
