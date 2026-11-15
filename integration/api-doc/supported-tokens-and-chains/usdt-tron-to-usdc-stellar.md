@@ -15,7 +15,7 @@ The payer sends USDT on TRON to a payment address issued for one order. Rozo con
 
 * **Who:** any app (wallet or merchant) with a valid `X-API-Key`. Anonymous orders are not accepted. See [Merchant API Keys](../merchant-api-keys.md).
 * **Direction:** one way only. USDT on TRON in, USDC on Stellar out.
-* **Not offered on this route:** TRX (the TRON native coin), USDT payouts, TRON as a payout chain, Stellar to TRON, and any destination other than USDC on Stellar.
+* **Not offered on this route:** TRX (the TRON native coin), USDT payouts, TRON as a payout chain, Stellar to TRON, and any destination other than USDC on Stellar. For USDC on Base, see [TRON USDT pay-in, settle in Base USDC](usdt-tron-to-usdc-base.md).
 * **Merchants with a configured payout chain:** if your merchant account settles to a payout chain set in its settings, this route does not apply to it.
 * This route is not a row in the `data` list of `GET /payments/supported`. When it is enabled, it is described in the optional `paymentOptions` list of the same response. See [Supported Tokens and Chains](../supported-tokens-and-chains.md#payment-options).
 
@@ -77,7 +77,9 @@ The flow is: quote (optional, no side effects), then two calls to create the pay
 
 ### 1. Get a quote (optional)
 
-`POST /payment-api/payments?dryrun=true` with a TRON USDT source. The quote does not create an order, does not reserve inventory or capacity, and does not issue an address. It is accepted only for `"provider": "rozo"`, `"type": "exactOut"`, TRON USDT to Stellar USDC, with a valid API key. Any other request with a TRON source, including TRX, is still rejected.
+`POST /payment-api/payments?dryrun=true` with a TRON USDT source. The quote does not create an order, does not reserve inventory or capacity, and does not issue an address. It is accepted only for `"provider": "rozo"`, `"type": "exactOut"`, TRON USDT to Stellar USDC, with a valid API key. TRON USDT to Base USDC is quoted the same way (see [TRON USDT pay-in, settle in Base USDC](usdt-tron-to-usdc-base.md)). Any other request with a TRON source, including TRX, is still rejected.
+
+`receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
 
 `receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
 
@@ -326,7 +328,7 @@ Quote reasons appear in `paymentOption.availabilityReason` with HTTP 200 (the ta
 **Beta.** This route is available on [intents.rozo.ai/bridge](https://intents.rozo.ai/bridge). No integration work, API key or TRON wallet connection is needed.
 {% endhint %}
 
-1. Choose **USDT · TRON · Beta** as the source. The destination is set to **USDC · Stellar** and cannot be changed for this source.
+1. Choose **USDT · TRON · Beta** as the source and **USDC · Stellar** as the destination. For this source the destination can be USDC on Stellar or USDC on Base; for Base, see [TRON USDT pay-in, settle in Base USDC](usdt-tron-to-usdc-base.md#in-the-rozo-bridge-app).
 2. Enter either the USDT to pay or the USDC to receive; the other amount is calculated. A quote is shown as soon as an amount is entered, before you enter the receiving account. Until then it is an estimate: the receiver has not been checked yet.
 3. Enter the Stellar receiving account. The account must hold a USDC trustline. If the receiving account needs a memo, for example an exchange deposit account, open **Advanced** and enter it there: a text memo of 1 to 28 characters, letters, numbers and basic symbols (ASCII).
 4. Review the quote: USDT to pay, net USDC, and the fee as one row that you can expand to see the breakdown. TRON network fees are paid by the sending wallet or exchange and are not included. Nothing is reserved yet.
