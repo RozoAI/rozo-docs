@@ -77,7 +77,7 @@ The flow is: quote (optional, no side effects), then two calls to create the pay
 
 ### 1. Get a quote (optional)
 
-`POST /payment-api/payments?dryrun=true` with a TRON USDT source. The quote does not create an order, does not reserve inventory or capacity, and does not issue an address. It is accepted only for `"provider": "rozo"`, `"type": "exactOut"`, TRON USDT to Stellar USDC, with a valid API key. Any other request with a TRON source, including TRX, is still rejected.
+`POST /payment-api/payments?dryrun=true` with a TRON USDT source. The quote does not create an order, does not reserve inventory or capacity, and does not issue an address. It is accepted only for `"provider": "rozo"`, `"type": "exactOut"`, TRON USDT to Stellar USDC, with a valid API key. TRON USDT to Base USDC is quoted the same way (see [TRON USDT pay-in, settle in Base USDC](usdt-tron-to-usdc-base.md)). Any other request with a TRON source, including TRX, is still rejected.
 
 `receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
 
