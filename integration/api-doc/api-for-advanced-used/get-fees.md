@@ -109,7 +109,7 @@ The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `
 * `source.amount` is the gross rounded up to 0.01 USDT; limits are checked on that amount. When the request cannot be priced (route off, app not eligible, receiver malformed or not allowed), `source.amount`, `feeInfo` and `fees` are `null`.
 * A dependency that cannot be read returns HTTP 503 `serviceUnavailable`; retry later. A request without an API key is rejected with HTTP 400.
 
-Creating the order is a separate two-step flow; a successful quote does not mean `POST /payments` accepts a TRON source. See [TRON USDT pay-in, settle in Stellar USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md) for request and response examples. Any other request with a TRON source, including TRX, is still rejected.
+Creating the order is a separate two-step flow; a successful quote does not mean `POST /payments` accepts a TRON source. See [TRON USDT pay-in, settle in Stellar USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md) for request and response examples. Apart from this route and TRON USDT to Base USDC below, any other request with a TRON source, including TRX, is still rejected.
 
 ## TRON USDT to Base USDC quote (Beta)
 
