@@ -16,7 +16,7 @@ Try it at [bridge.rozo.ai/cctp](https://bridge.rozo.ai/cctp).
 * **Self-custody, always.** Rozo's operator can never move or redirect your funds. On EVM chains each transfer routes through an immutable forwarder contract whose destination is locked at creation; on Stellar you sign a single atomic transaction; on Solana the burn goes straight to Circle's TokenMessenger. A compromised Rozo key still cannot take user funds.
 * **Native USDC on both ends.** Circle CCTP burns USDC on the source chain and mints canonical USDC on the destination — no wrapped or bridged representations.
 * **Fast.** Built on CCTP V2 **Fast Transfer**, most bridges complete in **~30–120 seconds**.
-* **No Rozo fee (v1).** You only pay Circle's protocol fee (~1.3 bps). The minimum transfer is **1 USDC**.
+* **No Rozo fee (v1).** You only pay Circle's protocol fee, which depends on the direction (at most about 1.3 bps). The minimum transfer is **1 USDC**.
 * **Stellar `G…` and `C…` addresses** are both supported as destinations.
 
 ## Supported routes

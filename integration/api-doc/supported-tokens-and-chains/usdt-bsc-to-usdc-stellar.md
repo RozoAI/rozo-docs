@@ -10,9 +10,9 @@ USDT on BNB Chain (BSC, chain `56`) can be paid in and settled as USDC on Stella
 | --- | --- |
 | Pay in | USDT on BSC, `0x55d398326f99059ff775485246999027b3197955`, **18 decimals** |
 | Pay out | USDC on Stellar, `USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN`, 7 decimals |
-| Fee on Rozo's rail | **0.2%** of the amount (any order with USDT on either side), minimum per your app tier (public default $0.01). Your partner fee, if any, is added on top |
+| Fee on Rozo's rail | at least **0.2%** of the amount (any order with USDT on either side), priced from the route cost, so it can be higher (0.25% on 2026-11-15); read it from a dryrun. Minimum per your app tier (public default $0.01). Your partner fee, if any, is added on top |
 | Fee on NEAR Intents | flat 0.3%, minimum $0.01 (see [Get Fees](../api-for-advanced-used/get-fees.md)) |
-| Example | 100 USDT on BSC pays out 99.80 USDC on Stellar on Rozo's rail (fee $0.20) |
+| Example | 100 USDT on BSC paid out 99.75 USDC on Stellar on Rozo's rail on 2026-11-15 (fee $0.25) |
 | Limits | Wallet Top-up: $0.02 to $10,000 per payment. Wallet Deposit: no fixed minimum; a deposit not larger than its fee is not paid out |
 
 The Stellar receiving account must hold a USDC trustline. Always read the exact fee from the dry-run or created order.
