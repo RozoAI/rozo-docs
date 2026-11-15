@@ -53,16 +53,16 @@ The per-order limit is checked at quote time and the daily limits when you creat
 | --- | --- | --- |
 | Bridge fee | Every order | Same as the ROZO bridge: 0.1 %, minimum 0.01 USDC (Ethereum minimum 0.10 USDC) |
 | XLM and account opening (`usdGas`) | Optional | `"0"` = no XLM, `"0.5"` = 1.6 XLM, `"1"` = 3.2 XLM. Fixed XLM amounts at a fixed USD price. The part of the price above the XLM's market value covers opening the account and trustline (there is no other opening fee); the quote shows it as `gas_tier_price_adjustment` |
-| Sponsor fee | Only if the address is new or has no USDC trustline | With `usdGas` `"0"`: same as the ROZO bridge (about 0.44 USDC). With a paid `usdGas` tier: 0.0000001 USDC, the smallest amount the claim accepts |
+| Sponsor fee | Only if the address is new or has no USDC trustline | With `usdGas` `"0"`: an amount that follows the XLM price (about 0.33 USDC on 2026-11-15); read it from the quote. With a paid `usdGas` tier: 0.0000001 USDC, the smallest amount the claim accepts |
 
 `usdGas` default: `"0.5"` if the address is new or has no USDC trustline; `"0"` if it already has a USDC trustline. Set it yourself to override. The smallest USDC delivery is 0.01.
 
 | You pay (Base) | Address | `usdGas` | You get |
 | --- | --- | --- | --- |
-| 1 USDC | New | `"0.5"` (default) | 1.6 XLM + about 0.49 USDC, account and trustline ready |
-| 10 USDC | New | `"0.5"` (default) | 1.6 XLM + about 9.49 USDC |
-| 10 USDC | New | `"0"` | about 9.55 USDC (sponsor fee charged) |
-| 10 USDC | Has USDC trustline | `"0"` (default) | about 9.99 USDC, no signature |
+| 1 USDC | New | `"0.5"` (default) | 1.6 XLM + about 0.48 USDC, account and trustline ready |
+| 10 USDC | New | `"0.5"` (default) | 1.6 XLM + about 9.48 USDC |
+| 10 USDC | New | `"0"` | about 9.65 USDC (sponsor fee charged) |
+| 10 USDC | Has USDC trustline | `"0"` (default) | about 9.98 USDC, no signature |
 
 The quote is authoritative: read `fees` and `totals` from it.
 

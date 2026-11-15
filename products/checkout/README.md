@@ -36,7 +36,7 @@ Where each one works:
 | USDT on TRON (Alpha) | [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only | No | No |
 | USDT on TON (Alpha) | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only | No | No |
 
-A native coin is offered only for invoices up to $3,500 (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
+A native coin is offered only when the total you pay, including the 1% service fee, is $3,500 or less (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
 
 ## Supported merchants
 

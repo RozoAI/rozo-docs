@@ -81,6 +81,8 @@ The flow is: quote (optional, no side effects), then two calls to create the pay
 
 `receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
 
+`receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
+
 ```bash
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments?dryrun=true' \
 --header 'X-API-Key: <your api key>' \
