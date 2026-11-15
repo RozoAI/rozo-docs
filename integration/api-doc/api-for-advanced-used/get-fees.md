@@ -129,7 +129,7 @@ The same dry run quotes TRON USDT to Base USDC. Send the same body with destinat
 }
 ```
 
-The response has the same `paymentOption` block, with `route` set to `tron_usdt_to_base_usdc`; fees and limits follow the same rules as the Stellar route. `receiverAddress` is optional on the quote, and `receiverMemo` is not accepted. A non-200 answer, or a 200 without `paymentOption.route`, means the route is not available to your app right now. See [TRON USDT pay-in, settle in Base USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-base.md).
+The response has the same `paymentOption` block, with `route` set to `tron_usdt_to_base_usdc`; fees and limits follow the same rules as the Stellar route (dynamic rate with a 0.20% floor, 0.50 USD minimum), but the fee is calculated for this route, so read it from the quote. `receiverAddress` is optional on the quote, and `receiverMemo` is not accepted. A non-200 answer, or a 200 without `paymentOption.route`, means the route is not available to your app right now. See [TRON USDT pay-in, settle in Base USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-base.md).
 
 ## Errors specific to NEAR-routed quotes
 

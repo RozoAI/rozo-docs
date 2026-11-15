@@ -6,7 +6,7 @@
 
 The payer sends USDT on TRON to a payment address issued for one order. Rozo confirms the transfer on chain and pays USDC on Base to the receiving address set on your order.
 
-This route works like [TRON USDT pay-in, settle in Stellar USDC](usdt-tron-to-usdc-stellar.md), with the same fees, amount rules, payment flow and status lifecycle. This page describes what is different for a Base destination and repeats the parts you need to integrate.
+This route works like [TRON USDT pay-in, settle in Stellar USDC](usdt-tron-to-usdc-stellar.md), with the same fee rules, amount rules, payment flow and status lifecycle. This page describes what is different for a Base destination and repeats the parts you need to integrate.
 
 | Side | Chain | Chain ID | Token | Asset | Decimals |
 | --- | --- | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ This route works like [TRON USDT pay-in, settle in Stellar USDC](usdt-tron-to-us
 
 ## Amounts, fees and limits
 
-The rules are the same as on the Stellar route. See [Amounts: gross and net](usdt-tron-to-usdc-stellar.md#amounts-gross-and-net), [Fees](usdt-tron-to-usdc-stellar.md#fees) and [Limits](usdt-tron-to-usdc-stellar.md#limits). In short:
+The rules are the same as on the Stellar route. The fee for a given amount is calculated for this route and can differ from a Stellar quote for the same amount; always read it from this route's quote. See [Amounts: gross and net](usdt-tron-to-usdc-stellar.md#amounts-gross-and-net), [Fees](usdt-tron-to-usdc-stellar.md#fees) and [Limits](usdt-tron-to-usdc-stellar.md#limits). In short:
 
 * `exactOut` orders: you enter the net USDC the receiver gets on Base; the payer sends the gross USDT.
 * **Rozo service fee:** a dynamic rate with a **0.20% floor**, and a **0.50 USD minimum** per order. The 0.50 USD minimum replaces the percentage fee on small orders; it is not added on top of it.
@@ -130,18 +130,28 @@ Paying, the status lifecycle and webhooks are the same as on the Stellar route. 
 
 ## Errors and recovery
 
-The quote reasons and create errors of the Stellar route apply, except the Stellar trustline and inventory cases. Specific to this route:
+Quote reasons appear in `paymentOption.availabilityReason` with HTTP 200. Create errors from `/tron-ton-alpha` are returned as `{"error": "<code>"}`, some with a `detail`, with the HTTP status shown. Match on the code, not on message text.
 
 | Situation | What you see | What to do |
 | --- | --- | --- |
 | Route not available | Quote: a non-200 response, or no `paymentOption.route`; create `403` `base_route_disabled` or `base_route_not_allowed` | Hide the Base option, or offer USDC on Stellar |
+| App not eligible | Quote `app_not_eligible`; create `403` `app_not_allowed` | Contact Rozo |
+| Amount too small | Quote `below_minimum` | Raise the amount so the rounded gross is at least the minimum |
+| Above the per-order maximum | Quote `above_order_max`; create `422` `order_cap_exceeded` | Lower the amount or split into several orders |
+| Shared daily capacity used up | Quote `daily_capacity_exhausted`; create `422` `daily_budget_exhausted` | Try again later, or after 00:00 UTC. This is platform-wide, not your quota |
 | Base payout capacity used up | Quote `payout_capacity_insufficient`; create `422` `base_capacity_insufficient` | Try a smaller amount, try later, or offer USDC on Stellar. No address was issued |
-| Base capacity could not be read | Quote `503` `serviceUnavailable`; create `503` `base_capacity_unavailable` | Retry later |
+| Too many open payment options for your app | Quote `app_active_limit`; create `429` `app_active_limit` with `limit` | Wait for open options to be paid or expire, then retry |
+| No TRON address free | Create `503` `pool_exhausted` with `"hideOption": true` | Hide the TRON option for now |
 | Receiver malformed, zero, bad checksum, or a memo was sent | Quote `recipient_invalid`; create `403` `destination_not_approved` | Fix the address and drop the memo |
 | Receiver refused (for example the USDC token contract) | Quote `recipient_not_allowed`; create `403` `destination_not_approved` | Use another receiving address |
-| Order does not fit this route | Create `409` `base_unsupported_order` | The order must be an unpaid Rozo `exactOut` order to Base USDC with at most 6 decimals and no memo |
-
-Match on the code, not on message text.
+| Order is not to USDC on Base | Create `403` `destination_not_approved` | Create a new `exactOut` order to Base USDC |
+| Order does not fit this route | Create `409` `base_unsupported_order` | The order must be a Rozo `exactOut` order to Base USDC with at most 6 decimals |
+| Order already paid or closed | Create `409` `order_not_open` | Read the order status; do not pay again |
+| Same order reference with different values, or `baseServiceUsd` not equal to the net amount | Create `409` `order_conflict` | Use a new order reference, or send `baseServiceUsd` equal to the order's net amount |
+| Fee route too costly right now | Quote `fee_refused`; create `409` `no_executable_route` | Retry later |
+| Payment window closed before payment | Create `410` `order_expired` | Create a new order. Do not pay the old address |
+| A check could not run | Quote `503` `serviceUnavailable`; create `503` (for example `base_capacity_unavailable` or `base_route_unavailable`) | Retry later |
+| Paid after the window, underpaid, overpaid, or paid twice | Not paid out automatically | Funds are held and reviewed by Rozo. [Contact us](../../../contact/contact-us/README.md) with the TRON transaction hash |
 
 ## In the Rozo Bridge app
 
@@ -149,7 +159,7 @@ Match on the code, not on message text.
 **Beta.** This route is available on [intents.rozo.ai/bridge](https://intents.rozo.ai/bridge). No integration work, API key or TRON wallet connection is needed.
 {% endhint %}
 
-1. Choose **USDT · TRON · Beta** as the source, then **USDC · Base** as the destination. The destination can be USDC on Stellar or USDC on Base for this source.
+1. Choose **USDT · TRON · Beta** as the source, then **USDC · Base** as the destination. While this route is offered, the destination for this source can be USDC on Stellar or USDC on Base.
 2. Enter either the USDT to pay or the USDC to receive; the other amount is calculated. A quote is shown before you enter the receiving address; until then it is an estimate.
 3. Enter the Base receiving address. There is no memo for a Base destination.
 4. Review the quote, generate the payment and pay the TRON address and exact amount shown, as on the Stellar route.
