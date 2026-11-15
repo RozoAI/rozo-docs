@@ -79,6 +79,8 @@ The flow is: quote (optional, no side effects), then two calls to create the pay
 
 `POST /payment-api/payments?dryrun=true` with a TRON USDT source. The quote does not create an order, does not reserve inventory or capacity, and does not issue an address. It is accepted only for `"provider": "rozo"`, `"type": "exactOut"`, TRON USDT to Stellar USDC, with a valid API key. Any other request with a TRON source, including TRX, is still rejected.
 
+`receiverAddress` and `receiverMemo` are optional on a quote. Without a receiver the quote is priced, but the receiver checks (USDC trustline, the approved receiver of a bound key) do not run, so `available: true` says nothing about the receiver. Send the receiver to check it. The order you create in step 2 always needs one.
+
 ```bash
 curl --location --request POST 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments?dryrun=true' \
 --header 'X-API-Key: <your api key>' \
@@ -325,9 +327,10 @@ Quote reasons appear in `paymentOption.availabilityReason` with HTTP 200 (the ta
 {% endhint %}
 
 1. Choose **USDT · TRON · Beta** as the source. The destination is set to **USDC · Stellar** and cannot be changed for this source.
-2. Enter the USDC amount to receive, the Stellar receiving account and an optional memo. The account must hold a USDC trustline.
-3. Review the quote: USDT to pay, net USDC, Rozo fee and limits. Nothing is reserved yet.
-4. Generate the payment: the page shows the TRON address as a QR code, with separate buttons to copy the address and the exact amount, and a countdown for the payment window.
-5. Pay from any TRON wallet or exchange. The page shows waiting for payment, confirming, paying out, and completed with the Stellar transaction. Refreshing the page resumes the same order.
+2. Enter either the USDT to pay or the USDC to receive; the other amount is calculated. A quote is shown as soon as an amount is entered, before you enter the receiving account. Until then it is an estimate: the receiver has not been checked yet.
+3. Enter the Stellar receiving account. The account must hold a USDC trustline. If the receiving account needs a memo, for example an exchange deposit account, open **Advanced** and enter it there: a text memo of 1 to 28 characters, letters, numbers and basic symbols (ASCII).
+4. Review the quote: USDT to pay, net USDC, and the fee as one row that you can expand to see the breakdown. TRON network fees are paid by the sending wallet or exchange and are not included. Nothing is reserved yet.
+5. Generate the payment: the page shows the TRON address as a QR code, with separate buttons to copy the address and the exact amount, and a countdown for the payment window.
+6. Pay from any TRON wallet or exchange. The page shows waiting for payment, confirming, paying out, and completed with the Stellar transaction. Refreshing the page resumes the same order.
 
 The page never shows a Base address. Pay only the TRON address and amount it displays.

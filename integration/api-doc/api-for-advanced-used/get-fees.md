@@ -18,21 +18,33 @@ The client sends `POST /payments?dryrun=true` with your server-side `X-API-Key`.
 
 ## Response
 
+Trimmed example for 100 USDC on Base to USDC on Stellar on the public default tier:
+
 ```json
 {
-  "fee": "0.10",
+  "status": "dryrun",
+  "type": "exactIn",
   "source": {
     "chainId": "8453",
     "tokenSymbol": "USDC",
-    "amount": "100.00"
+    "amount": "100.000000",
+    "fee": "0.10"
   },
   "destination": {
     "chainId": "1500",
     "tokenSymbol": "USDC",
-    "amount": "99.90"
+    "amount": "99.900000"
+  },
+  "provider": "rozo",
+  "feeInfo": {
+    "feePercentage": "0.1%",
+    "minimumFee": "$0.01",
+    "provider": "rozo"
   }
 }
 ```
+
+The Rozo fee is `source.fee`, in source token units.
 
 > **Note**: The `dryrun=true` parameter returns fee details without creating a payment record.
 
@@ -52,8 +64,15 @@ Dry-run and create responses also carry a `feeInfo` block that names the routing
 
 | Provider | Rate |
 | --- | --- |
-| `rozo` | your app tier (public default 0.1%, minimum $0.01) |
-| `near` | flat 0.3% (minimum $0.01); per-destination minimums still apply (e.g. Solana $0.20, Ethereum $0.10) |
+| `rozo` | your app tier (public default 0.1%, minimum $0.01); per-chain minimums apply (see below) |
+| `near` | flat 0.3% (minimum $0.01); the Solana payout minimum still applies |
+
+Per-chain minimum fees on the public tiers:
+
+* Paying out to Solana: $0.20 when the receiver does not hold the token account yet, $0.01 when it already does. This applies on both rails.
+* Paying in from or paying out to Ethereum on `rozo`: $0.10.
+
+A minimum replaces the percentage fee when it is higher; it is not added on top.
 
 `feePercentage` is the **effective** rate: when a minimum fee applies to a small order it shows the real percentage, not the nominal one.
 
@@ -79,7 +98,7 @@ These numbers are indicative. Read the dry-run `feeInfo` for the preview, then c
 
 ## TRON USDT to Stellar USDC quote (Beta)
 
-The same dry run quotes the TRON USDT to Stellar USDC Beta route. Send `"provider": "rozo"`, `"type": "exactOut"`, source `{"chainId": "728126428", "tokenSymbol": "USDT"}` and destination USDC on Stellar (`1500`) with the net amount, receiver and optional memo. A valid API key is required.
+The same dry run quotes the TRON USDT to Stellar USDC Beta route. Send `"provider": "rozo"`, `"type": "exactOut"`, source `{"chainId": "728126428", "tokenSymbol": "USDT"}` and destination USDC on Stellar (`1500`) with the net amount, and optionally the receiver and memo. A valid API key is required. Without a receiver the quote is priced but the receiver checks (trustline, approved receiver for a bound key) do not run; the receiver is required when you create the order.
 
 The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `destination.amount` (net USDC) and `feeInfo`, and adds a `paymentOption` block:
 
