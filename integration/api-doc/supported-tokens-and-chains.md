@@ -51,7 +51,7 @@ Some routes cannot be created with a single `POST /payments` call. When such a r
 
 * `creationMode: "order_option"` means the route is created in two steps: an order, then a payment option for that order. Follow the linked route page.
 * The field is absent when no such route is enabled. Treat it as optional. Clients that read only `data` are not affected.
-* Today the only entry is TRON USDT to Stellar USDC (Beta). See [TRON USDT pay-in, settle in Stellar USDC](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md). Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
+* Today the entries are TRON USDT to Stellar USDC (Beta), `tron_usdt_to_stellar_usdc`, and TRON USDT to Base USDC (Beta), `tron_usdt_to_base_usdc`. See [TRON USDT pay-in, settle in Stellar USDC](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md) and [TRON USDT pay-in, settle in Base USDC](supported-tokens-and-chains/usdt-tron-to-usdc-base.md). Optimism (`10`) and World Chain (`480`) are not offered: no payout rail exists for them, so orders to them are rejected at creation. See [Routing provider](api-quick-start.md#routing-provider-optional) for how to select a rail.
 
 > **Note on Chain IDs for Solana and Stellar:** For non-EVM chains, the API accepts **either** the numeric chain ID **or** the lowercase chain name string:
 > - **Solana**: `900` or `"solana"`
@@ -165,6 +165,7 @@ USDT on Stellar (asset code `USDT0`) is also accepted as a pay in, in beta. See 
 
 * USDT on BNB Chain to USDC on Stellar: see [USDT on BNB Chain to USDC on Stellar](supported-tokens-and-chains/usdt-bsc-to-usdc-stellar.md).
 * USDT on TRON, settled in USDC on Stellar (Beta, any app with an API key, no invite list): see [TRON USDT pay-in, settle in Stellar USDC](supported-tokens-and-chains/usdt-tron-to-usdc-stellar.md). This route is listed under `paymentOptions`, not in `data` (see [Payment options](#payment-options)).
+* USDT on TRON, settled in USDC on Base (Beta, any app with an API key, no invite list): see [TRON USDT pay-in, settle in Base USDC](supported-tokens-and-chains/usdt-tron-to-usdc-base.md). This route is also listed under `paymentOptions`.
 
 ### Pay Out Tokens and Chains
 
