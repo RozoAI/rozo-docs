@@ -66,6 +66,8 @@
   * [dApp Integration](products/mobile-app/dapp-integration.md)
   * [Support](products/mobile-app/support.md)
   * [Privacy Policy](products/mobile-app/privacy.md)
+  * [ROZO Wallet Terms of Service](products/mobile-app/wallet-terms.md)
+  * [ROZO Merchant Terms of Service](products/mobile-app/merchant-terms.md)
 * [Rozo Earn](products/intent-based-earn.md)
 
 ## TECHNICAL REFERENCE <a href="#reference" id="reference"></a>
