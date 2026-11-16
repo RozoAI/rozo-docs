@@ -8,7 +8,7 @@ description: >-
 
 **Effective date:** 2026-11-16
 
-These Terms of Service ("Terms") govern your use of the ROZO Wallet mobile application for iOS and Android (Google Play package `com.rozoapp`) and its related features (together, the "App"). The App is provided by ROZO LLC ("ROZO", "we", "us"). By installing, opening or using the App you agree to these Terms. If you do not agree, do not use the App.
+These Terms of Service ("Terms") govern your use of the ROZO Wallet mobile application for iOS and Android (Google Play package `com.rozoapp`) and its related features (together, the "App"). The App is provided by ROZO LLC, a Nevada limited liability company ("ROZO", "we", "us"). By installing, opening or using the App you agree to these Terms. If you do not agree, do not use the App.
 
 The [ROZO Wallet Privacy Policy](privacy.md) explains how we handle your information and forms part of these Terms.
 
@@ -96,7 +96,7 @@ To the extent permitted by law, you agree to indemnify ROZO against claims, loss
 
 ## 15. Governing law and disputes
 
-These Terms are governed by the laws of the jurisdiction in which ROZO LLC is organized, without regard to conflict of law rules, except where the mandatory laws of your country of residence apply. Before starting any formal claim, please contact us at [hi@rozo.ai](mailto:hi@rozo.ai) so we can try to resolve the issue informally.
+These Terms are governed by the laws of the State of Nevada, United States, without regard to conflict of law rules, except where the mandatory laws of your country of residence apply. Before starting any formal claim, please contact us at [hi@rozo.ai](mailto:hi@rozo.ai) so we can try to resolve the issue informally.
 
 ## 16. Changes to these Terms
 

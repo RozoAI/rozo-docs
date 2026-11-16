@@ -8,7 +8,7 @@ description: >-
 
 **Effective date:** 2026-11-16
 
-These Terms of Service ("Terms") govern your use of the ROZO Merchant mobile application, also called ROZO POS, for iOS and Android (Google Play package `ai.rozo.merchant`), and the related merchant account and payment services (together, the "Service"). The Service is provided by ROZO LLC ("ROZO", "we", "us"). By activating or using the Service, you agree to these Terms on behalf of yourself and the business you represent ("you", "Merchant"). If you do not agree, do not use the Service.
+These Terms of Service ("Terms") govern your use of the ROZO Merchant mobile application, also called ROZO POS, for iOS and Android (Google Play package `ai.rozo.merchant`), and the related merchant account and payment services (together, the "Service"). The Service is provided by ROZO LLC, a Nevada limited liability company ("ROZO", "we", "us"). By activating or using the Service, you agree to these Terms on behalf of yourself and the business you represent ("you", "Merchant"). If you do not agree, do not use the Service.
 
 The [ROZO App Privacy Policy](privacy.md) explains how we handle information and forms part of these Terms.
 
@@ -97,7 +97,7 @@ You agree to indemnify ROZO against claims, losses and costs (including reasonab
 
 ## 15. Governing law and disputes
 
-These Terms are governed by the laws of the jurisdiction in which ROZO LLC is organized, without regard to conflict of law rules. Before starting any formal claim, please contact us at [hi@rozo.ai](mailto:hi@rozo.ai) so we can try to resolve the issue informally.
+These Terms are governed by the laws of the State of Nevada, United States, without regard to conflict of law rules. Before starting any formal claim, please contact us at [hi@rozo.ai](mailto:hi@rozo.ai) so we can try to resolve the issue informally.
 
 ## 16. Changes to these Terms
 
