@@ -27,3 +27,8 @@ The merchant-side app for accepting stablecoin payments in person. Enter an amou
 ## Getting an account
 
 Merchant accounts are provisioned by ROZO. [Contact us](../../contact/contact-us/README.md) with your business name and the chains you want to settle on.
+
+## Legal
+
+* [ROZO Merchant Terms of Service](merchant-terms.md)
+* [Privacy Policy](privacy.md)

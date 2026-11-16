@@ -22,6 +22,12 @@ Current mobile app is invite only.  Please contact us if you want to earn in our
 
 Looking for the merchant-side app? See [ROZO POS (Merchant App)](pos-merchant-app.md).
 
+### Legal
+
+* [ROZO Wallet Terms of Service](wallet-terms.md)
+* [ROZO Merchant Terms of Service](merchant-terms.md)
+* [Privacy Policy](privacy.md)
+
 ### Support and Contact Us
 
 See [Support](support.md).
