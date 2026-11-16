@@ -33,7 +33,7 @@ This route works like [TRON USDT pay-in, settle in Stellar USDC](usdt-tron-to-us
 The rules are the same as on the Stellar route. The fee for a given amount is calculated for this route and can differ from a Stellar quote for the same amount; always read it from this route's quote. See [Amounts: gross and net](usdt-tron-to-usdc-stellar.md#amounts-gross-and-net), [Fees](usdt-tron-to-usdc-stellar.md#fees) and [Limits](usdt-tron-to-usdc-stellar.md#limits). In short:
 
 * `exactOut` orders: you enter the net USDC the receiver gets on Base; the payer sends the gross USDT.
-* **Rozo service fee:** a dynamic rate with a **0.20% floor**, and a **0.50 USD minimum** per order. The 0.50 USD minimum replaces the percentage fee on small orders; it is not added on top of it.
+* **Rozo service fee:** a dynamic rate with a **0.20% floor**, and a **0.30 USD minimum** per order. The 0.30 USD minimum replaces the percentage fee on small orders; it is not added on top of it.
 * **Partner fee:** charged separately if your app has one configured. See [Partner Fee](../api-for-advanced-used/partner-fee.md).
 * **Network fee:** the payer pays the TRON network fee (Energy / TRX) from their own wallet. It is not part of the Rozo fee.
 * **Minimum:** the rounded gross amount to pay must be at least 1 USDT.

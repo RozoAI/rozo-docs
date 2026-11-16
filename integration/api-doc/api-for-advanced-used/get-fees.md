@@ -105,7 +105,7 @@ The response keeps the usual `status: "dryrun"`, `source.amount` (gross USDT), `
 * `priceLocked: false` and `amountIsEstimate: true`: the quote reserves nothing, and the final amount to pay can be slightly higher.
 * `available` and `availabilityReason`: whether a payment option can be created right now, and why not.
 * `limits.minGrossUsd`, `limits.maxGrossUsd`: current limits on the gross amount.
-* `fees`: Rozo fee amount and basis points, whether the 0.50 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.50 USD minimum; the partner fee is separate. On this route `feeInfo.feePercentage` shows that rate, not an effective rate, even when the 0.50 USD minimum applies; read `paymentOption.fees.rozoFeeUsd` and `minimumFeeApplied` for the actual fee.
+* `fees`: Rozo fee amount and basis points, whether the 0.30 USD minimum applied, and the partner fee. The Rozo fee is dynamic with a 0.20% floor and a 0.30 USD minimum; the partner fee is separate. On this route `feeInfo.feePercentage` shows that rate, not an effective rate, even when the 0.30 USD minimum applies; read `paymentOption.fees.rozoFeeUsd` and `minimumFeeApplied` for the actual fee.
 * `source.amount` is the gross rounded up to 0.01 USDT; limits are checked on that amount. When the request cannot be priced (route off, app not eligible, receiver malformed or not allowed), `source.amount`, `feeInfo` and `fees` are `null`.
 * A dependency that cannot be read returns HTTP 503 `serviceUnavailable`; retry later. A request without an API key is rejected with HTTP 400.
 
@@ -129,7 +129,7 @@ The same dry run quotes TRON USDT to Base USDC. Send the same body with destinat
 }
 ```
 
-The response has the same `paymentOption` block, with `route` set to `tron_usdt_to_base_usdc`; fees and limits follow the same rules as the Stellar route (dynamic rate with a 0.20% floor, 0.50 USD minimum), but the fee is calculated for this route, so read it from the quote. `receiverAddress` is optional on the quote, and `receiverMemo` is not accepted. A non-200 answer, or a 200 without `paymentOption.route`, means the route is not available to your app right now. See [TRON USDT pay-in, settle in Base USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-base.md).
+The response has the same `paymentOption` block, with `route` set to `tron_usdt_to_base_usdc`; fees and limits follow the same rules as the Stellar route (dynamic rate with a 0.20% floor, 0.30 USD minimum), but the fee is calculated for this route, so read it from the quote. `receiverAddress` is optional on the quote, and `receiverMemo` is not accepted. A non-200 answer, or a 200 without `paymentOption.route`, means the route is not available to your app right now. See [TRON USDT pay-in, settle in Base USDC](../supported-tokens-and-chains/usdt-tron-to-usdc-base.md).
 
 ## Errors specific to NEAR-routed quotes
 
