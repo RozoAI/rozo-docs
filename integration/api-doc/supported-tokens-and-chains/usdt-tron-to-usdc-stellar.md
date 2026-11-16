@@ -37,30 +37,30 @@ All money values in responses are decimal strings. Do your arithmetic in integer
 
 ## Fees
 
-* **Rozo service fee:** a dynamic rate with a **0.20% floor**, and a **0.50 USD minimum** per order. The rate can be above the floor when routing costs are higher. The 0.50 USD minimum replaces the percentage fee on small orders; it is not added on top of it.
+* **Rozo service fee:** a dynamic rate with a **0.20% floor**, and a **0.30 USD minimum** per order. The rate can be above the floor when routing costs are higher. The 0.30 USD minimum replaces the percentage fee on small orders; it is not added on top of it.
 * **Partner fee:** charged separately if your app has one configured. See [Partner Fee](../api-for-advanced-used/partner-fee.md).
 * **Network fee:** the payer pays the TRON network fee (Energy / TRX) from their own wallet. It is not part of the Rozo fee.
 * Rozo calculates every fee on the server. Show the values from the quote or payment option; do not compute fees in your client.
 
-The service fee is charged on the gross amount: at the floor rate, fee = net × 0.002 / 0.998, rounded up to the next base unit, and never less than 0.50.
+The service fee is charged on the gross amount: at the floor rate, fee = net × 0.002 / 0.998, rounded up to the next base unit, and never less than 0.30.
 
 **Worked examples.** These are illustrations at the 0.20% floor with no partner fee. They are not a price commitment. Always read the real quote.
 
 | Net USDC you ask for | Rozo fee | Quoted gross USDT (`source.amount`, rounded up to 0.01) | Note |
 | --- | --- | --- | --- |
-| 0.20 | 0.50 | 0.70 | Refused: `below_minimum` |
-| 0.50 | 0.50 | 1.00 | Smallest payable order: the minimum fee makes up half |
-| 2.00 | 0.50 | 2.50 | Minimum fee applies |
-| 100.00 | 0.50 | 100.50 | Minimum fee applies (0.20% would be about 0.20) |
+| 0.20 | 0.30 | 0.50 | Refused: `below_minimum` |
+| 0.70 | 0.30 | 1.00 | Smallest payable order: the minimum fee makes up 30% |
+| 2.00 | 0.30 | 2.30 | Minimum fee applies |
+| 100.00 | 0.30 | 100.30 | Minimum fee applies (0.20% would be about 0.20) |
 | 1,000.00 | 2.004009 | 1,002.01 | Percentage fee applies |
 
-The minimum fee applies to every order up to about 249.50 USDC net at the floor rate.
+The minimum fee applies to every order up to about 149.70 USDC net at the floor rate.
 
 **Rounding and unique increment.** The quoted gross is already rounded up to the 0.01 USDT step, and limits are checked on that rounded amount. To match each TRON transfer to exactly one order, Rozo may add one or more further 0.01 steps when it creates the payment option (shown as `allocationIncrementUsdt`). The final amount to send is `expectedAmount`, which can be slightly higher than the quote.
 
 ## Limits
 
-* **Minimum:** the rounded gross amount to pay must be at least 1 USDT. Because of the 0.50 USD minimum fee, the smallest net payout is 0.50 USDC.
+* **Minimum:** the rounded gross amount to pay must be at least 1 USDT. Because of the 0.30 USD minimum fee, the smallest net payout is 0.70 USDC.
 * **Per-order maximum:** there is a per-order maximum, checked on the rounded **gross** amount (fees included). A key bound to an approved receiver can have a lower maximum. A net amount that is below the maximum but whose gross is above it is refused (`above_order_max`). Read the current value from the quote.
 * **Shared daily capacity:** TRON pay-ins have a daily capacity per UTC day that is **shared by all apps on the platform**. It is not a per-user or per-app allowance, and Rozo does not publish it as a guarantee: a new order can be refused because the platform-wide capacity is used up, even if your app has not paid anything that day. It resets at 00:00 UTC.
 * **Inventory:** each order reserves Stellar USDC for its payout when the payment option is created. If none can be reserved, no payment address is issued.
@@ -118,10 +118,10 @@ Example response (illustrative values for an app without a partner fee):
     "chainId": "728126428",
     "tokenSymbol": "USDT",
     "tokenAddress": null,
-    "amount": "100.500000",
+    "amount": "100.300000",
     "receiverAddress": null,
     "receiverMemo": null,
-    "fee": "0.500000",
+    "fee": "0.300000",
     "senderAddress": null,
     "txHash": null,
     "amountReceived": null,
@@ -141,7 +141,7 @@ Example response (illustrative values for an app without a partner fee):
   "provider": "rozo",
   "feeInfo": {
     "feePercentage": "0.20%",
-    "minimumFee": "$0.50",
+    "minimumFee": "$0.30",
     "provider": "rozo"
   },
   "paymentOption": {
@@ -155,7 +155,7 @@ Example response (illustrative values for an app without a partner fee):
     "availabilityReason": null,
     "limits": { "minGrossUsd": "1.00", "maxGrossUsd": "<current per-order maximum>" },
     "fees": {
-      "rozoFeeUsd": "0.500000",
+      "rozoFeeUsd": "0.300000",
       "rozoFeeBps": 20,
       "minimumFeeApplied": true,
       "partnerFeeUsd": "0.000000"
@@ -176,7 +176,7 @@ For an app with a partner fee, `source` also carries `partnerFee` and `partnerFe
 | `paymentOption.available` | Whether a payment option can be created right now |
 | `paymentOption.availabilityReason` | Why not, when `available` is `false` (see [Errors and recovery](#errors-and-recovery)) |
 | `paymentOption.limits` | Current minimum and maximum gross, in USD |
-| `paymentOption.fees` | Rozo fee amount and rate in basis points, whether the 0.50 minimum applied, and the partner fee. `null` when the request could not be priced |
+| `paymentOption.fees` | Rozo fee amount and rate in basis points, whether the 0.30 minimum applied, and the partner fee. `null` when the request could not be priced |
 | `paymentOption.paymentWindowMinutes` | How long a created payment option stays payable |
 
 `available: true` is a snapshot. Capacity and inventory are checked again when you create the payment option, and can be gone by then.
@@ -238,14 +238,14 @@ Example response (illustrative values, no partner fee; some fields omitted):
   "tokenIdentity": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
   "tokenDecimals": 6,
   "receivingAddress": "T...",
-  "expectedAmount": "100.51",
-  "expectedAmountAtomic": "100510000",
-  "grossUsd": "100.51",
+  "expectedAmount": "100.31",
+  "expectedAmountAtomic": "100310000",
+  "grossUsd": "100.31",
   "expiresAt": "2026-01-01T01:00:00Z",
   "netOutUsdc": "100.000000",
-  "rozoFeeUsdt": "0.500000",
+  "rozoFeeUsdt": "0.300000",
   "partnerFeeUsdt": "0.000000",
-  "totalFeeUsdt": "0.500000",
+  "totalFeeUsdt": "0.300000",
   "allocationIncrementUsdt": "0.010000",
   "destination": {
     "chainId": "1500",
