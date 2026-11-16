@@ -113,7 +113,7 @@ You agree to defend, indemnify, and hold harmless the company and its licensee a
 
 ## 12. Governing Law
 
-These Terms shall be interpreted and governed by the laws of \[Your Jurisdiction], without regard to its conflict of law provisions.
+These Terms shall be interpreted and governed by the laws of the State of Nevada, United States, without regard to its conflict of law provisions.
 
 ## 13. Changes to Terms
 
@@ -123,6 +123,6 @@ We reserve the right to modify or replace these Terms at any time. If a revision
 
 If you have any questions about these Terms of Service, please contact us at:
 
-**Email:** \[hi@rozo.ai]
+**Email:** [hi@rozo.ai](mailto:hi@rozo.ai)
 
-_These Terms of Service are effective as of \[2025-08-28] and was last updated on \[2025-08-28]._
+_These Terms of Service are effective as of 2025-08-28 and was last updated on 2026-11-16._
