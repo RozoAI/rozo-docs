@@ -6,11 +6,17 @@ icon: code
 
 Integrate **Pay with Rozo Wallet** into your dApp using the `window.rozo` provider for gasless USDC transfers on Stellar.
 
-When your dApp is opened inside the Rozo Wallet mobile app, the `window.rozo` provider is automatically injected into the WebView, giving users:
+When a page is opened in the in-app browser of the Rozo Wallet mobile app, the app injects the `window.rozo` provider into the WebView, giving users:
 
-- **Gasless USDC payments** — fees sponsored by OpenZeppelin Relayer
-- **Biometric authentication** — Face ID / Touch ID
-- **No wallet setup** — the user's Rozo Wallet is ready to go
+- **Gasless USDC payments**: fees sponsored by OpenZeppelin Relayer
+- **Passkey verification**: Face ID / Touch ID
+- **No wallet setup**: the user's Rozo Wallet is ready to go
+
+## Availability
+
+- The provider is available only to pages served from `rozo.ai` or a subdomain of `rozo.ai` (for example `https://<name>.rozo.ai`). Pages on any other domain do not receive `window.rozo`, and requests from them are rejected with the error code `UNTRUSTED_ORIGIN`.
+- The provider exists only inside the mobile app's in-app browser. It is not available in the web version of Rozo Wallet or in a regular mobile browser.
+- The network (`PUBLIC` or `TESTNET`) is fixed by the app build. Read it with `getNetwork()` or `getNetworkDetails()`; a dApp cannot switch it.
 
 ## Architecture
 
@@ -27,10 +33,9 @@ When your dApp is opened inside the Rozo Wallet mobile app, the `window.rozo` pr
 ┌─────────────────────────────────────────────────────────────┐
 │                  Rozo Wallet App (Native)                    │
 │                                                              │
-│  4. Show confirmation modal → User approves                  │
-│  5. Biometric authentication → Face ID / Touch ID            │
-│  6. Sign with Passkey → Submit to Relayer (gasless!)        │
-│  7. Return { hash, status, signedAuthEntry }                 │
+│  4. Passkey verification → Face ID / Touch ID                │
+│  5. Sign with Passkey → Submit to Relayer (gasless!)         │
+│  6. Return { signedAuthEntry, signerAddress, hash, status }  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -73,10 +78,13 @@ const { network, sorobanRpcUrl, networkPassphrase } =
   await window.rozo.getNetworkDetails();
 console.log('Network:', network); // "PUBLIC" or "TESTNET"
 
-// Get balance
-const { balance } = await window.rozo.getBalance();
-console.log('Balance:', balance); // "10000000" (1.0 USDC in stroops)
+// Get balances (strings, in stroops: 7 decimals)
+const { usdc, eurc } = await window.rozo.getBalance();
+console.log('USDC:', usdc); // "10000000" (1.0 USDC)
+console.log('EURC:', eurc); // "0"
 ```
+
+`getBalance()` also returns `balance`, which equals `usdc` and is kept for backward compatibility. Use `usdc` in new code.
 
 ### 3. Build USDC Transfer Transaction
 
@@ -173,11 +181,13 @@ const funcXdr = opXdr.hostFunction().toXDR('base64');
 const result = await window.rozo.signAuthEntry(authEntryXdr, {
   func: funcXdr,           // Host function XDR (required for submit: true)
   submit: true,            // Submit via Relayer (gasless!)
-  message: 'Transfer 10.50 USDC',  // User-facing description
 });
 
+if (result.status !== 'SUCCESS') {
+  throw new Error(result.error || 'Transaction submission failed');
+}
+
 console.log('Transaction hash:', result.hash);
-console.log('Status:', result.status);
 console.log('Signed auth entry:', result.signedAuthEntry);
 ```
 
@@ -185,20 +195,93 @@ console.log('Signed auth entry:', result.signedAuthEntry);
 
 When you call `window.rozo.signAuthEntry()`:
 
-1. **Confirmation Modal** appears showing the description, recipient, amount, and network
-2. **User clicks "Confirm"** — or cancels (throws `"User rejected the signing request"`)
-3. **Biometric Authentication** — Face ID / Touch ID (cannot be bypassed)
-4. **Sign with Passkey** — signs in secure enclave, private key never exposed
-5. **Submit to Relayer** (when `submit: true`) — OpenZeppelin Relayer sponsors gas fees
-6. **Return Result**:
+1. **Passkey verification**: the user verifies with Face ID / Touch ID. Cancelling rejects the call with a `PASSKEY_CANCELLED` or `USER_CANCELLED` error code.
+2. **Sign with Passkey**: the passkey signs the auth entry; the private key is never exposed.
+3. **Submit to Relayer** (when `submit: true` and `func` is provided): OpenZeppelin Relayer sponsors the fees.
+4. **Return Result**:
 
 ```javascript
 {
-  signedAuthEntry: "AAAABg...",  // Signed XDR
-  hash: "a1b2c3...",             // Transaction hash
-  status: "PENDING"              // Status
+  signedAuthEntry: "AAAABg...",  // Signed auth entry XDR
+  signerAddress: "CXXX...XXX",   // The wallet's contract address
+  hash: "a1b2c3...",             // Transaction hash (only when status is "SUCCESS")
+  status: "SUCCESS",             // "SUCCESS" or "FAILED"; absent when submit was not requested
+  error: undefined               // Relayer error message (only when status is "FAILED")
 }
 ```
+
+If the relayer rejects the submission, the call still resolves with the signed entry, `status: "FAILED"` and `error`. If `submit: true` is passed without `func`, the entry is signed but not submitted, and `hash` and `status` are absent.
+
+## Provider API Reference
+
+All methods return Promises. Read methods time out after 10 seconds and signing methods after 120 seconds (error code `TIMEOUT`).
+
+| Method | Returns | User prompt |
+|--------|---------|-------------|
+| `isConnected()` | `{ isConnected }` | None |
+| `getAddress()` | `{ address }`, the wallet's contract (`C...`) address | None |
+| `getPublicKey()` | `{ publicKey }` | None |
+| `getNetwork()` | `{ network, networkPassphrase }`; `network` is `"PUBLIC"` or `"TESTNET"` | None |
+| `getNetworkDetails()` | `{ network, networkUrl, networkPassphrase, sorobanRpcUrl }` | None |
+| `getBalance()` | `{ usdc, eurc, balance }`, strings in stroops; `balance` equals `usdc` (legacy) | None |
+| `getActiveCurrency()` | `{ currency }`, `"USDC"` or `"EURC"`, the user's display currency | None |
+| `signAuthEntry(authEntryXdr, opts)` | `{ signedAuthEntry, signerAddress, hash?, status?, error? }` | Requires passkey verification |
+| `signTransaction(xdr, opts)` | `{ signedTxXdr, signerAddress, operationXDR?, hash?, status? }` | Requires passkey verification |
+| `signMessage(message, opts)` | `{ signedMessage, signerAddress }` | Confirmation dialog, then passkey verification |
+| `on(event, callback)` / `off(event, callback)` | Registers or removes a listener for `connect`, `disconnect`, `accountChanged` or `networkChanged` | None |
+
+### `signAuthEntry` options
+
+| Option | Description |
+|--------|-------------|
+| `func` | Host function XDR (base64). Required for submission. |
+| `submit` | `true` to submit through the relayer after signing. |
+| `address` | Optional. The wallet signs with its own address. |
+| `paymentId`, `fromAddress`, other fields | Optional. Any additional fields are forwarded to the relayer request body. |
+
+### `signTransaction` options
+
+`signTransaction(xdr, { submit: true })` signs the auth entries in the transaction that belong to the wallet and submits the transaction's host function through the relayer. On success it returns `hash` and `status: "SUCCESS"`; a relayer failure rejects the call. Use it with `submit: true`: without `submit`, `signedTxXdr` is the transaction XDR as passed in.
+
+### `signMessage`
+
+`signMessage(message)` shows a confirmation dialog with the message, then asks for passkey verification. `signedMessage` is the passkey signature as a hex string. Declining the dialog rejects with the error code `USER_REJECTED`.
+
+### Events
+
+`on()` and `off()` accept the provider event names above, but the current app version does not emit them. Use the DOM events below instead.
+
+The wallet dispatches these DOM events on `window`:
+
+| Event | When | `event.detail` |
+|-------|------|----------------|
+| `rozo:ready` | Once the provider is injected, and again after the page finishes loading | `{ provider }`; the second dispatch also includes the `rozo:state` fields |
+| `rozo:state` | After the page finishes loading | `{ isConnected, isDeployed, address, usdc, eurc, balance }` |
+
+Listening for `rozo:state` lets a page show the address and balances without calling `isConnected()`, `getAddress()` and `getBalance()` in sequence:
+
+```javascript
+window.addEventListener('rozo:state', (event) => {
+  const { isConnected, isDeployed, address, usdc } = event.detail;
+  // usdc is null when the wallet is not deployed yet
+});
+```
+
+### Errors
+
+Rejected calls throw an `Error` with a machine readable `code`, a user facing `message` and, for some errors, a `recoverySuggestion`. Branch on `code`, not on `message`. Common codes:
+
+| Code | Meaning |
+|------|---------|
+| `USER_REJECTED`, `USER_CANCELLED`, `PASSKEY_CANCELLED` | The user declined or cancelled |
+| `WALLET_NOT_CONNECTED` | No wallet is signed in to the app |
+| `WALLET_NOT_DEPLOYED` | The wallet contract is not deployed yet (checked before any `submit: true` call) |
+| `INSUFFICIENT_BALANCE` | Not enough balance |
+| `SIMULATION_FAILED`, `SUBMISSION_FAILED`, `SIGNING_FAILED`, `AUTHORIZATION_FAILED` | The transaction could not be signed or submitted |
+| `TIMEOUT` | No response within the method's timeout |
+| `UNTRUSTED_ORIGIN` | The page is not on `rozo.ai` or a `rozo.ai` subdomain |
+| `BRIDGE_NOT_AVAILABLE` | The page is not running inside the Rozo Wallet app |
+| `UNKNOWN_ERROR` | Anything else |
 
 ## Complete Example: Vanilla JavaScript
 
@@ -231,12 +314,14 @@ When you call `window.rozo.signAuthEntry()`:
     } from 'https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk/+esm';
     import { Server } from 'https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk/rpc/+esm';
 
-    const MERCHANT_ADDRESS = 'GDQP2KPQGKIHYJGXNUIYOMHARUARCA7DJT5FO2FFOOUJ3UBSIB3GN5QA';
+    const MERCHANT_ADDRESS = 'YOUR_MERCHANT_STELLAR_ADDRESS'; // G... or C... address
 
     const USDC_CONTRACTS = {
       PUBLIC: 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75',
       TESTNET: 'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
     };
+
+    const CANCEL_CODES = ['USER_REJECTED', 'USER_CANCELLED', 'PASSKEY_CANCELLED'];
 
     const statusEl = document.getElementById('status');
     const paymentFormEl = document.getElementById('payment-form');
@@ -318,22 +403,21 @@ When you call `window.rozo.signAuthEntry()`:
         const opXdr = txXdr.operations()[0].body().invokeHostFunctionOp();
         const funcXdr = opXdr.hostFunction().toXDR('base64');
 
-        showStatus('Waiting for confirmation...');
+        showStatus('Waiting for passkey verification...');
         const result = await window.rozo.signAuthEntry(authEntryXdr, {
           func: funcXdr,
           submit: true,
-          message: `Transfer ${amount} USDC`,
         });
 
-        if (!result.hash) {
-          throw new Error('Transaction submission failed');
+        if (result.status !== 'SUCCESS') {
+          throw new Error(result.error || 'Transaction submission failed');
         }
 
         showStatus(`Payment successful! Tx: ${result.hash.slice(0, 8)}...`);
         await refreshBalance();
         return result;
       } catch (error) {
-        if (error.message.includes('User rejected')) {
+        if (CANCEL_CODES.includes(error.code)) {
           showStatus('Payment cancelled by user');
         } else {
           showStatus(`Error: ${error.message}`);
@@ -345,8 +429,8 @@ When you call `window.rozo.signAuthEntry()`:
     async function refreshBalance() {
       if (!window.rozo) return;
       try {
-        const { balance } = await window.rozo.getBalance();
-        balanceEl.textContent = fromStroops(balance);
+        const { usdc } = await window.rozo.getBalance();
+        balanceEl.textContent = fromStroops(usdc);
       } catch (error) {
         console.error('Failed to get balance:', error);
       }
@@ -423,6 +507,8 @@ const USDC_CONTRACTS = {
   TESTNET: 'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
 };
 
+const CANCEL_CODES = ['USER_REJECTED', 'USER_CANCELLED', 'PASSKEY_CANCELLED'];
+
 function toStroops(amount: string): bigint {
   const [whole, decimal = ''] = amount.split('.');
   const paddedDecimal = decimal.padEnd(7, '0').slice(0, 7);
@@ -443,11 +529,11 @@ function PaymentButton() {
       if (!isConnected) return;
 
       const { address } = await window.rozo.getAddress();
-      const { balance } = await window.rozo.getBalance();
+      const { usdc } = await window.rozo.getBalance();
 
       setIsConnected(true);
       setAddress(address);
-      setBalance(balance);
+      setBalance(usdc);
     }
 
     init();
@@ -468,7 +554,7 @@ function PaymentButton() {
         network === 'PUBLIC' ? USDC_CONTRACTS.PUBLIC : USDC_CONTRACTS.TESTNET;
       const usdcContract = new Contract(usdcContractId);
 
-      const toAddress = 'GDQP2KPQGKIHYJGXNUIYOMHARUARCA7DJT5FO2FFOOUJ3UBSIB3GN5QA';
+      const toAddress = 'YOUR_MERCHANT_STELLAR_ADDRESS'; // G... or C... address
       const amount = '10.00';
       const amountStroops = toStroops(amount);
 
@@ -511,15 +597,18 @@ function PaymentButton() {
       const result = await window.rozo.signAuthEntry(authEntryXdr, {
         func: funcXdr,
         submit: true,
-        message: `Transfer ${amount} USDC`,
       });
+
+      if (result.status !== 'SUCCESS') {
+        throw new Error(result.error || 'Transaction submission failed');
+      }
 
       alert(`Success! Transaction: ${result.hash}`);
 
-      const { balance: newBalance } = await window.rozo.getBalance();
+      const { usdc: newBalance } = await window.rozo.getBalance();
       setBalance(newBalance);
     } catch (error) {
-      if (!error.message.includes('User rejected')) {
+      if (!CANCEL_CODES.includes(error.code)) {
         alert(`Error: ${error.message}`);
       }
     } finally {
@@ -581,9 +670,9 @@ function toStroops(amount) {
 try {
   await window.rozo.signAuthEntry(...);
 } catch (error) {
-  if (error.message.includes('User rejected')) {
-    // User cancelled — don't show error
-  } else if (error.message.includes('Insufficient balance')) {
+  if (['USER_REJECTED', 'USER_CANCELLED', 'PASSKEY_CANCELLED'].includes(error.code)) {
+    // User cancelled: don't show an error
+  } else if (error.code === 'INSUFFICIENT_BALANCE') {
     // Not enough USDC
   } else {
     console.error(error);
@@ -604,9 +693,6 @@ const usdcAddress = network === 'PUBLIC'
 ## Testing
 
 1. **Install Rozo Wallet** mobile app (iOS/Android)
-2. **Start your dev server** with HTTPS:
-   ```bash
-   npx ngrok http 3000
-   ```
-3. **Open your app** in Rozo Wallet's Explore tab
-4. **Test on testnet** first before mainnet
+2. **Serve your page over HTTPS from `rozo.ai` or a `rozo.ai` subdomain.** Pages on other domains, including local tunnels, do not receive `window.rozo` (see [Availability](#availability)).
+3. **Open the page inside the app**, for example by scanning a QR code of its URL with the in-app scanner, or from a link in the Discover tab.
+4. **Check the network** with `getNetwork()` before sending funds, and test with small amounts first.
