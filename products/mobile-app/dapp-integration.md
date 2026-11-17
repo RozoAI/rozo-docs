@@ -214,7 +214,7 @@ If the relayer rejects the submission, the call still resolves with the signed e
 
 ## Provider API Reference
 
-All methods return Promises. Read methods time out after 10 seconds and signing methods after 120 seconds (error code `TIMEOUT`).
+All methods except `on()` and `off()` return Promises; `on()` and `off()` return nothing. Read methods time out after 10 seconds and signing methods after 120 seconds (error code `TIMEOUT`).
 
 | Method | Returns | User prompt |
 |--------|---------|-------------|
@@ -237,11 +237,11 @@ All methods return Promises. Read methods time out after 10 seconds and signing 
 | `func` | Host function XDR (base64). Required for submission. |
 | `submit` | `true` to submit through the relayer after signing. |
 | `address` | Optional. The wallet signs with its own address. |
-| `paymentId`, `fromAddress`, other fields | Optional. Any additional fields are forwarded to the relayer request body. |
+| `paymentId`, `fromAddress`, other fields | Optional. Fields other than `authEntryXdr`, `func`, `submit`, `address` and `message` are forwarded to the relayer request body. `message` is ignored. |
 
 ### `signTransaction` options
 
-`signTransaction(xdr, { submit: true })` signs the auth entries in the transaction that belong to the wallet and submits the transaction's host function through the relayer. On success it returns `hash` and `status: "SUCCESS"`; a relayer failure rejects the call. Use it with `submit: true`: without `submit`, `signedTxXdr` is the transaction XDR as passed in.
+`signTransaction(xdr, { submit: true })` expects a transaction with a single invoke host function operation that includes an auth entry for this wallet. The wallet signs its auth entries and submits that operation's host function through the relayer. On success it returns `hash` and `status: "SUCCESS"`; a relayer failure rejects the call. If no auth entry in the transaction belongs to the wallet, nothing is signed or submitted and the call returns `signedTxXdr` (the transaction as passed in) without `status`. Without `submit`, `signedTxXdr` is also the transaction as passed in. Always check `status === "SUCCESS"` before treating the payment as sent.
 
 ### `signMessage`
 
