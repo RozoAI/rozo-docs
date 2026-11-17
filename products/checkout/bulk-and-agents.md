@@ -116,7 +116,7 @@ The full agent-oriented reference for these calls, including every safety check,
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar | Yes | Yes |
 | Bitcoin | BTC over Lightning | Yes | Yes |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon | Yes, when the quote lists the coin and the invoice is within the native limit below | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
-| Zcash (Beta) | ZEC on Zcash, to a one-time transparent (t1) address | No. Both point to [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
+| Zcash | ZEC on Zcash, to a one-time transparent (t1) address | No. Both point to [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
 
 The public `payments/supported` list on the payment-record API is the intents backend's full rail list (it also shows EURC, USDT0 and other pairs). It is not the list of coins accepted for an OpenRouter or Coinbase invoice; use `quote-invoice` (`supportedSources`) or the MCP `supported_coins` tool for that.
 
