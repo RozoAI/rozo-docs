@@ -54,6 +54,7 @@
   * [How Intent Based Payment Works](products/intent-based-payment-transfer/intent-based-payment.md)
 * [Agentic Payments (MPP Router)](products/intent-based-payment-transfer/agentic-payments-mpprouter.md)
 * [ROZO Checkout](products/checkout/README.md)
+  * [On-chain Bitcoin (Beta)](products/checkout/btc-onchain.md)
   * [Bulk Purchases and Agents](products/checkout/bulk-and-agents.md)
   * [x402 Payer](products/checkout/x402-payer.md)
 * [Bridge](products/intent-based-bridge/README.md)
