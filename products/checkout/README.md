@@ -17,19 +17,21 @@ There is no account to create and no private key to share. You pay from your own
 | Type | What you can pay with |
 | --- | --- |
 | Bitcoin | BTC over Lightning |
+| Bitcoin on-chain (Beta) | BTC on the Bitcoin network, to a one-time address, invoices from $10. See [On-chain Bitcoin (Beta)](btc-onchain.md) |
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 | Zcash | ZEC on Zcash, paid to a one-time transparent (t1) address on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only |
 | USDT on TRON (Alpha) | USDT on TRON, on [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only |
 | USDT on TON (Alpha) | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only |
 
-On-chain Bitcoin is not accepted. USDT is not accepted on Base or Stellar. USDT on TRON and USDT on TON are in Alpha and are offered only on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton): the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
+On-chain Bitcoin (Beta) and BTC over Lightning are separate rails: pick the one that matches the wallet you send from. USDT is not accepted on Base or Stellar. USDT on TRON and USDT on TON are in Alpha and are offered only on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton): the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
 
 Where each one works:
 
 | Coin | Web ([checkout.rozo.ai](https://checkout.rozo.ai)) | CLI (`@rozoai/checkout` 0.1.21 or later) and skill | MCP server |
 | --- | --- | --- | --- |
 | BTC over Lightning | Yes | Yes | Yes |
+| BTC on-chain (Beta) | Yes, when the invoice's quote lists it | No | No: points to [checkout.rozo.ai/btc-onchain](https://checkout.rozo.ai/btc-onchain) |
 | Stablecoins, including Arbitrum | Yes | Yes | Yes |
 | Native coins | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin |
 | ZEC | [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only | No: the CLI does not create ZEC orders and points to /zec | No: points to /zec |
@@ -107,6 +109,7 @@ Paying x402 APIs from an agent? Top up a ROZO balance once with the coin you hol
 * **Quote validity.** A quote (`quoteReceipt`) is valid for about 60 seconds. Creating the order takes a fresh quote.
 * **Order deadline.** Each deposit order has its own expiry, returned when the order is created (`expiresAt`). It is also bounded by the expiry of the Coinbase link itself. Send well before the earlier of the two: settlement usually completes in about 30 seconds after your payment confirms, but leave a few minutes of buffer, and the CLI shows the safe-send window (`order.expiry`) for each order. If the window has passed, create a new order instead of paying old deposit details.
 * **ZEC.** Paid on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) to a one-time transparent (t1) deposit address; the deposit address is public on chain, so this is not a shielded or private checkout. The price is held for 30 minutes if your payment is detected in that window. The top-up starts after 1 confirmation when the amount is under $110, and after 2 from $110. A Zcash block takes about 75 seconds on average and sometimes longer, so there is no fixed arrival time. If a ZEC payment arrives late or short, do not send more; contact support with your transaction hash.
+* **On-chain BTC (Beta).** Sent on the Bitcoin network to a one-time address. The top-up starts after 1 to 3 confirmations depending on the amount, usually 10 to 60 minutes. The BTC amount includes the 1% service fee and a 1% exchange rate margin. If an on-chain payment arrives late or short, do not send more; contact support with your transaction ID. See [On-chain Bitcoin (Beta)](btc-onchain.md).
 * **Refunds.** Crypto top-ups to OpenRouter are never refundable. That is OpenRouter's policy. Check the credit amount before you pay.
 * **Minimum.** OpenRouter sets its own minimum top-up; see [Pay OpenRouter with crypto](https://checkout.rozo.ai/blog/pay-openrouter-with-crypto).
 
