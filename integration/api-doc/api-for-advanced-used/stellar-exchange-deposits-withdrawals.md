@@ -29,12 +29,12 @@ The `G` address is operated by Rozo and can only move funds to the `C` it is bou
 
 ### API
 
-Host: `https://iufqieirueyalyxfzszh.supabase.co/functions/v1`
+Host: `https://appapi.rozo.ai/functions/v1`
 
 **Bind or look up the G address**
 
 ```bash
-curl -X POST 'https://iufqieirueyalyxfzszh.supabase.co/functions/v1/app_stellar_intake' \
+curl -X POST 'https://appapi.rozo.ai/functions/v1/app_stellar_intake' \
   -H 'Content-Type: application/json' \
   -d '{ "c_address": "C...your smart account..." }'
 ```

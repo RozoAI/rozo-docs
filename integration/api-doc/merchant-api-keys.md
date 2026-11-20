@@ -25,7 +25,7 @@ The server sends the key in `X-API-Key`. Follow [Make Your First API Request](fi
 | Operation | Base URL |
 | --- | --- |
 | Quote, create and read payments | `https://intentapiv4.rozo.ai/functions/v1/payment-api` |
-| Merchant statistics and delivery history | `https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api` |
+| Merchant statistics and delivery history | `https://intentapiv4.rozo.ai/functions/v1/merchant-api` |
 
 These are programmatic API endpoints. Use the partner portal to manage your account.
 
@@ -79,7 +79,7 @@ Use an Admin key only when you need statistics. An Orders key is sufficient for 
 const apiKey = process.env.ROZO_API_KEY;
 if (!apiKey) throw new Error('Set ROZO_API_KEY in your server environment.');
 const response = await fetch(
-  'https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api/me/stats?period=7d',
+  'https://intentapiv4.rozo.ai/functions/v1/merchant-api/me/stats?period=7d',
   { headers: { 'X-API-Key': apiKey }, signal: AbortSignal.timeout(30_000) },
 );
 if (!response.ok) throw new Error(`Statistics request failed: HTTP ${response.status}`);
