@@ -453,7 +453,7 @@ You can also fetch this programmatically:
 
 ```bash
 curl -H "Authorization: Bearer $JWT" \
-  "https://aozudqtlykbhzbuzalzz.supabase.co/functions/v1/merchant-api/me/webhook/deliveries?limit=50"
+  "https://intentapiv4.rozo.ai/functions/v1/merchant-api/me/webhook/deliveries?limit=50"
 ```
 
 ---
