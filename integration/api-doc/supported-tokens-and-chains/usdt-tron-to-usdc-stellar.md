@@ -286,7 +286,7 @@ payment_unpaid → payment_payin_completed → payment_payout_started → paymen
 * A wallet showing the transfer as sent does not mean the order is paid. Rozo waits for the TRON confirmations its current policy requires before it marks the pay-in complete. The order stays `payment_unpaid` until then; there is no separate "detected" status on this route.
 * After the transfer is confirmed, the order moves to `payment_payin_completed` and the USDC payout to Stellar starts. The TRON transaction is reported in `source.alpha` (`txHash`, amount, receiving address), not in `source.txHash`.
 * Treat the order as settled only at raw `status` `payment_payout_completed`, and reconcile the Stellar transaction and net amount.
-* Webhooks: `payment_payin_completed` and `payment_payout_completed` are sent as for every other order. See [Webhook](../api-for-advanced-used/webhook.md).
+* Webhooks: the same events as for every other order (`payment_payin_completed`, `payment_payout_completed`, and `payment_bounced` when applicable). See [Webhook](../api-for-advanced-used/webhook.md).
 
 ```bash
 curl 'https://intentapiv4.rozo.ai/functions/v1/payment-api/payments/order/<your appId>/<your order reference>' \

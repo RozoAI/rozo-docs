@@ -64,16 +64,91 @@ You can change the URL at any time without rotating the secret. The change appli
 
 ## 4. What Triggers a Webhook
 
-Rozo sends two webhook events per payment, both with the envelope described in §5:
+Rozo can send the following webhook events for a payment, all with the envelope described in §5:
 
-| Event `type`               | Trigger                                                                  |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `payment_payin_completed`  | Buyer's payin tx confirmed on the source chain                           |
-| `payment_payout_completed` | Payout tx confirmed on the destination chain (terminal success)          |
+| Event `type`               | Trigger                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| `payment_payin_completed`  | Buyer's payin tx confirmed on the source chain                                                 |
+| `payment_payout_completed` | Payout tx confirmed on the destination chain (success)                                         |
+| `payment_bounced`          | The payment could not be completed as quoted, for example because the payout failed. See §4.1  |
 
-Failure terminals (`payment_bounced` / `payment_expired` / `payment_refunded`) and intermediate states (`payment_started`, `payment_bridging`, `payment_payout_started`) do **not** generate a webhook. Your server must poll `GET /payment-api/payments/{id}` to observe those.
+Other statuses (`payment_started`, `payment_bridging`, `payment_payout_started`, `payment_expired`, `payment_refunded`) do **not** generate a webhook. Not every payment that ends in `payment_bounced` generates a `payment_bounced` webhook either. Your server must poll `GET /payment-api/payments/{id}` to observe those states.
 
-> **Failure handling is on you.** Schedule a periodic `GET /payment-api/payments/{id}` for any payment that hasn't reached a success terminal within your expected window — see §7 Delivery Semantics.
+> **Do not rely on webhooks alone.** Schedule a periodic `GET /payment-api/payments/{id}` for any payment that hasn't reached a final state within your expected window. See §7 Delivery Semantics.
+
+### 4.1 `payment_bounced`
+
+**When it may fire.** Rozo may send `payment_bounced` when a payment moves into the `payment_bounced` status after a payin for it was detected, for example when the payout to the destination fails, or when the amount or token received does not match the quote. Some bounces, such as a deposit rejected at payin time, are visible only through `GET /payment-api/payments/{id}`.
+
+**What `data` contains.** A Payment object with the same structure as `GET /payment-api/payments/{id}`, minus the fields listed in §5 ("Fields stripped from `data`"), with `status` set to `payment_bounced` and these fields describing the bounce:
+
+| Field          | Meaning |
+| -------------- | ------- |
+| `bounceCode`   | Reason code, for example `destination_no_trustline`, `payout_below_minimum`, `underpaid` or `payout_delayed`. Always a public code: a reason that cannot be shown publicly is reported under a related public code where one exists, otherwise as `internal_error`. New codes may be added: treat any code you do not recognise like `internal_error` |
+| `errorMessage` | Human-readable sentence for `bounceCode` |
+| `errorCode`    | Legacy error code, kept for backward compatibility. Prefer `bounceCode` |
+| `refundStatus` | `none`, `pending`, `sent` or `confirmed`. Reflects the refund state at the time of the event |
+| `refundTxHash` | Present only when a refund transaction is known |
+
+**`payment_bounced` is not always final.** After a `payment_bounced` event the same payment can still:
+
+* be retried and complete, in which case you may receive `payment_payout_completed` later;
+* be retried and bounce again, in which case you may receive another `payment_bounced` event for the same payment, with a new `event_id`;
+* move to `payment_refunded`, which does not generate a webhook.
+
+Process every `payment_bounced` event you receive, including a second one for the same payment. Do not dedupe it on (`data.id`, `type`); that key is only for the two completion events (see §7). Do not fulfil an order on `payment_bounced`, and do not treat it as a permanent failure either.
+
+**What you should do.**
+
+1. Verify the signature as for any other event (§6). `payment_bounced` uses the same signature headers and the same webhook secret as the completion events. Reject any delivery whose signature is missing or invalid.
+2. Mark the order as needing attention in your system.
+3. Confirm the current state with `GET /payment-api/payments/{id}` before taking any irreversible action. The event describes the payment at the moment it bounced; the payment may have changed since.
+4. Keep polling `GET /payment-api/payments/{id}` until you observe `payment_payout_completed` or `payment_refunded`, or until your own timeout. If you need help, contact Rozo with the payment `id`.
+
+Example:
+
+```json
+{
+  "event_id": "3c6b1f9a-0d2e-4a7b-9e51-8f2c4d6a7b10",
+  "type": "payment_bounced",
+  "timestamp": "2026-05-10T14:46:02.318Z",
+  "data": {
+    "id": "a22a0213-9b4e-4113-adef-acdf958a84ae",
+    "appId": "wallet_hellotest",
+    "orderId": null,
+    "status": "payment_bounced",
+    "errorCode": "op_no_trust",
+    "bounceCode": "destination_no_trustline",
+    "errorMessage": "<sentence for this bounceCode>",
+    "refundStatus": "none",
+    "type": "exactIn",
+    "createdAt": "2026-05-10T14:42:00.000Z",
+    "updatedAt": "2026-05-10T14:46:01.000Z",
+    "display": { "title": "Test payment", "currency": "USD" },
+    "source": {
+      "chainId": "8453",
+      "tokenSymbol": "USDC",
+      "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "10.00",
+      "receiverAddress": "0xForwarderAddressOnBase...",
+      "fee": "0.05",
+      "senderAddress": "0xPayerAddressOnBase...",
+      "txHash": "0xPayinTxHash...",
+      "amountReceived": "10.00",
+      "confirmedAt": "2026-05-10T14:44:50.000Z"
+    },
+    "destination": {
+      "chainId": "1500",
+      "receiverAddress": "GUSERSTELLARWALLET...",
+      "tokenSymbol": "USDC",
+      "tokenAddress": "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+      "amount": "9.95",
+      "txHash": null,
+      "confirmedAt": null
+    }
+  }
+}
+```
 
 ---
 
@@ -144,8 +219,8 @@ The body is a small envelope wrapped around the same Payment object you get from
 
 | Field       | Notes                                                                                                                                                                |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `event_id`  | Globally unique delivery id. Use this as your **idempotency key**. Equal to the `deliveryId` shown in the dashboard's delivery log — paste it there to find the matching record |
-| `type`      | `payment_payin_completed` or `payment_payout_completed` (see §4)                                                                                                     |
+| `event_id`  | Globally unique id of this delivery. Equal to the `deliveryId` shown in the dashboard's delivery log, so you can paste it there to find the matching record. A redelivery of the same event carries a new `event_id`, so do not use it alone as your idempotency key; see §7 |
+| `type`      | One of the event types in §4: `payment_payin_completed`, `payment_payout_completed` or `payment_bounced` |
 | `timestamp` | ISO-8601 (UTC) when Rozo emitted this event                                                                                                                          |
 | `data`      | The Payment object, identical to `GET /payment-api/payments/{data.id}` (with the fields below stripped)                                                              |
 
@@ -164,14 +239,15 @@ If you need any of the above, fetch them via `GET /payment-api/payments/{data.id
 
 `data` always carries the full Payment schema — fields that haven't been populated yet are sent as `null`, never omitted. This matches the shape `GET /payment-api/payments/{id}` returns, so reconcile logic can be byte-for-byte identical.
 
-| Field                         | `payment_payin_completed` | `payment_payout_completed` |
-| ----------------------------- | ------------------------- | -------------------------- |
-| `data.source.txHash`          | populated                 | populated                  |
-| `data.source.senderAddress`   | populated                 | populated                  |
-| `data.source.amountReceived`  | populated                 | populated                  |
-| `data.source.confirmedAt`     | populated                 | populated                  |
-| `data.destination.txHash`     | `null`                    | populated                  |
-| `data.destination.confirmedAt`| `null`                    | populated                  |
+| Field                         | `payment_payin_completed` | `payment_payout_completed` | `payment_bounced` |
+| ----------------------------- | ------------------------- | -------------------------- | ----------------- |
+| `data.source.txHash`          | populated                 | populated                  | usually populated |
+| `data.source.senderAddress`   | populated                 | populated                  | usually populated |
+| `data.source.amountReceived`  | populated                 | populated                  | usually populated |
+| `data.source.confirmedAt`     | populated                 | populated                  | usually populated |
+| `data.destination.txHash`     | `null`                    | populated                  | usually `null`    |
+| `data.destination.confirmedAt`| `null`                    | populated                  | usually `null`    |
+| `data.bounceCode`             | absent                    | absent                     | populated         |
 
 ### Concrete payload examples
 
@@ -201,7 +277,7 @@ If you need any of the above, fetch them via `GET /payment-api/payments/{data.id
       "amount": "10.00",
       "receiverAddress": "0xForwarderAddressOnBase...",
       "fee": "0.05",
-      "senderAddress": "0x5772fbe7a7817ef7f586215ca8b23b8dd22c8897",
+      "senderAddress": "0xPayerAddressOnBase...",
       "txHash": "0x76d360eb2ef590390e36533455da2db9f19cb2463275d93fa791cd6a3e965e5b",
       "amountReceived": "10.00",
       "confirmedAt": "2026-05-10T14:44:50.000Z"
@@ -246,7 +322,7 @@ If you need any of the above, fetch them via `GET /payment-api/payments/{data.id
       "amount": "10.00",
       "receiverAddress": "0xForwarderAddressOnBase...",
       "fee": "0.05",
-      "senderAddress": "0x5772fbe7a7817ef7f586215ca8b23b8dd22c8897",
+      "senderAddress": "0xPayerAddressOnBase...",
       "txHash": "0x76d360eb2ef590390e36533455da2db9f19cb2463275d93fa791cd6a3e965e5b",
       "amountReceived": "10.00",
       "confirmedAt": "2026-05-10T14:44:50.000Z"
@@ -315,9 +391,17 @@ app.post(
     );
     if (!ok) return res.status(401).json({ error: 'invalid_signature' });
 
-    // 4. Idempotency: event_id is globally unique per delivery.
+    // 4. Idempotency: the same event can be delivered more than once,
+    //    each time with a new event_id. The two completion events happen
+    //    at most once per payment, so dedupe them on (payment id, event type).
+    //    Do not apply this key to other event types (e.g. failure events):
+    //    they can legitimately occur more than once for the same payment.
     const event = JSON.parse(rawBody);
-    if (await db.alreadyProcessed(event.event_id)) {
+    const COMPLETION = ['payment_payin_completed', 'payment_payout_completed'];
+    const dedupeKey = COMPLETION.includes(event.type)
+      ? `${event.data.id}:${event.type}`
+      : null;
+    if (dedupeKey && await db.alreadyProcessed(dedupeKey)) {
       return res.json({ ok: true });
     }
 
@@ -326,8 +410,13 @@ app.post(
     if (event.type === 'payment_payout_completed') {
       await fulfillOrder(event.data.id, event.data.destination.txHash);
     }
+    if (event.type === 'payment_bounced') {
+      // dedupeKey is null for this type, so this runs on every delivery.
+      // Not final: confirm with GET /payment-api/payments/{id} and keep polling.
+      await flagOrderForReview(event.data.id, event.data.bounceCode);
+    }
 
-    await db.markProcessed(event.event_id);
+    if (dedupeKey) await db.markProcessed(dedupeKey);
     res.json({ ok: true });
   },
 );
@@ -357,14 +446,24 @@ def rozo_webhook():
         return jsonify(error='invalid_signature'), 401
 
     event = json.loads(raw)
-    if db.already_processed(event['event_id']):
+    # Dedupe only the two completion events; other event types
+    # (e.g. failure events) can legitimately repeat for one payment.
+    dedupe_key = None
+    if event['type'] in ('payment_payin_completed', 'payment_payout_completed'):
+        dedupe_key = f"{event['data']['id']}:{event['type']}"
+    if dedupe_key and db.already_processed(dedupe_key):
         return jsonify(ok=True)
 
     # event['data'] is the same Payment object as GET /payment-api/payments/{id}
     if event['type'] == 'payment_payout_completed':
         fulfill_order(event['data']['id'], event['data']['destination']['txHash'])
+    elif event['type'] == 'payment_bounced':
+        # dedupe_key is None for this type, so this runs on every delivery.
+        # Not final: confirm with GET /payment-api/payments/{id} and keep polling.
+        flag_order_for_review(event['data']['id'], event['data'].get('bounceCode'))
 
-    db.mark_processed(event['event_id'])
+    if dedupe_key:
+        db.mark_processed(dedupe_key)
     return jsonify(ok=True)
 ```
 
@@ -409,7 +508,9 @@ func handle(w http.ResponseWriter, r *http.Request) {
 
     var ev map[string]any
     json.Unmarshal(raw, &ev)
-    // dedupe on ev["event_id"]; payment fields are under ev["data"].
+    // for payment_payin_completed / payment_payout_completed, dedupe on
+    // ev["data"]["id"] + ev["type"]; process every other event type each time.
+    // payment fields are under ev["data"].
     w.Write([]byte(`{"ok":true}`))
 }
 
@@ -418,20 +519,20 @@ func abs(x int64) int64 { if x < 0 { return -x }; return x }
 
 ---
 
-## 7. Delivery Semantics — Read This Carefully
+## 7. Delivery Semantics: Read This Carefully
 
-Rozo webhooks are **at-most-once delivery**. This is a design choice, not a gap.
+Rozo delivers each webhook event **usually once**, but **not exactly once**. Your handler must be safe to receive the same event more than once, and your system must not depend on receiving every event.
 
-| Question                                | Answer                                                                                                                                                                                            |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| How many times is each event delivered? | **At most once.** No retries. Whether your server returns 2xx, 5xx, or times out, Rozo will not re-send the same event                                                                            |
-| What happens on failure?                | The delivery is recorded in the dashboard log as `exhausted`. **Reconciliation is on you** — call `GET /payment-api/payments/{id}` to check the current status                                    |
-| Are deliveries ordered?                 | Best-effort by event time. Do not rely on strict ordering — your handler should tolerate `payment_payout_completed` arriving before `payment_payin_completed`                                     |
-| Are deliveries deduplicated?            | One POST per delivery, identified by `event_id`. Dedupe on `event_id` to be safe against your own proxies / framework retries                                                                     |
-| How do I dedupe?                        | Use `event_id` as the idempotency key. It is a UUID, globally unique, and equal to the `deliveryId` shown in the dashboard delivery log                                                           |
-| Will I get an email if a delivery fails?| No. Use the dashboard delivery log + your own monitoring                                                                                                                                          |
+| Question                                | Answer |
+| --------------------------------------- | ------ |
+| How many times is each event delivered? | Usually once. If a delivery fails because of a network or server problem and Rozo has no confirmation that it reached you, Rozo may send the same event again later. Rozo does not guarantee how many times, or for how long, a failed event is re-sent, and some failed events are not re-sent at all |
+| What happens on failure?                | The attempt is recorded in the dashboard delivery log as `exhausted`. It may or may not be followed by another delivery of the same event. Call `GET /payment-api/payments/{id}` to check the current status |
+| Are deliveries ordered?                 | Best-effort by event time. Do not rely on strict ordering. Your handler should tolerate `payment_payout_completed` arriving before `payment_payin_completed` |
+| Can I receive duplicates?               | Yes. A redelivery of the same event, or a retry by your own proxy or framework, can reach you twice |
+| How do I dedupe?                        | For `payment_payin_completed` and `payment_payout_completed`, which happen at most once per payment, use the pair (`data.id`, `type`), that is the payment id plus the event type, as your idempotency key. Do **not** apply this key to other event types, such as failure events: the same payment can fail more than once (for example, a payout is retried and fails again), and each of those is a new event you must process. Do **not** rely on `event_id` alone either: it identifies one delivery (it equals the `deliveryId` in the dashboard log), and a redelivery of the same event carries a new `event_id` |
+| Will I get an email if a delivery fails?| No. Use the dashboard delivery log and your own monitoring |
 
-**Practical implication:** for any payment your business cares about, **don't rely on the webhook alone**. Your server should also poll `GET /payment-api/payments/{id}` (or `/payments/order/{appId}/{orderId}`) periodically until you observe a terminal status. The webhook is a fast-path optimization on top of polling — it saves you a poll, but it isn't the source of truth, and it does not fire on failure terminals.
+**Practical implication:** for any payment your business cares about, **don't rely on the webhook alone**. Your server should also poll `GET /payment-api/payments/{id}` (or `/payments/order/{appId}/{orderId}`) periodically until you observe a terminal status. The webhook is a fast-path optimization on top of polling. It saves you a poll, but it isn't the source of truth.
 
 ---
 
@@ -439,15 +540,15 @@ Rozo webhooks are **at-most-once delivery**. This is a design choice, not a gap.
 
 `Settings → Webhooks → Recent deliveries` shows every POST Rozo has tried to send to your URL. Each row contains:
 
-* `deliveryId` — UUID of this delivery, **equal to the `event_id`** on the webhook body. If you store `event_id` in your handler, paste it here to find the matching record
+* `deliveryId`: UUID of this delivery, **equal to the `event_id`** on the webhook body. If you store `event_id` in your handler, paste it here to find the matching record. If the same event is delivered again, the redelivery appears as a new row with its own `deliveryId`
 * `paymentId` — the order it relates to
-* `eventType` — the event that triggered the delivery (`payment_payin_completed` or `payment_payout_completed`)
+* `eventType`: the event that triggered the delivery (`payment_payin_completed`, `payment_payout_completed` or `payment_bounced`)
 * `statusCode` — HTTP status your endpoint returned
 * `responsePreview` — first 200 chars of your response body
 * `deliveredAt` — when Rozo POSTed
 * `status` — `delivered` (2xx) or `exhausted` (anything else)
 
-`attemptNumber` is always `1` (at-most-once delivery — no retries by design).
+Each row is one delivery. `attemptNumber` is currently always `1` and does not count redeliveries; a redelivery of the same event shows up as a separate row.
 
 You can also fetch this programmatically:
 
@@ -503,7 +604,7 @@ Your server should respond with `200`.
 
 Create a small live payment for your `appId` (any valid `POST /payment-api/payments` call where the `appId` is yours), pay it on-chain, and watch the dashboard delivery log + your own server logs.
 
-You should observe two deliveries to your URL: one `payment_payin_completed` after the buyer's payin lands, then one `payment_payout_completed` after the destination payout confirms.
+You should observe two deliveries to your URL: one `payment_payin_completed` after the buyer's payin lands, then one `payment_payout_completed` after the destination payout confirms. If the payment bounces, you may receive `payment_bounced` instead of, or before, `payment_payout_completed`.
 
 ---
 
@@ -530,9 +631,9 @@ After rotating, the fingerprint changes; `webhookSecretRotatedAt` is also update
 * [ ] Timestamp checked — reject anything more than 5 minutes off.
 * [ ] Constant-time signature comparison.
 * [ ] Raw request bytes used for signing (no re-serialize).
-* [ ] Idempotent on `event_id`.
+* [ ] Completion events (`payment_payin_completed`, `payment_payout_completed`) idempotent on (`data.id`, `type`), not on `event_id` alone. Other event types, such as failure events, are processed every time they arrive.
 * [ ] HTTPS enforced on your endpoint (HTTP refused at registration anyway).
-* [ ] Reconciliation job that polls `GET /payments/{id}` for any payment without a terminal webhook within an expected window — webhook is at-most-once and doesn't fire on failures.
+* [ ] Reconciliation job that polls `GET /payments/{id}` for any payment without a terminal webhook within an expected window. Webhooks can be missed and can arrive more than once, so they are not the source of truth.
 
 ---
 
