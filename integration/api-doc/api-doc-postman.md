@@ -18,7 +18,7 @@ Before calling any endpoint, you need an API key from the Rozo merchant portal.
 1. Sign in at [**partners.rozo.ai**](https://partners.rozo.ai).
 2. Create or open your merchant app — your `appId` will look like `merchant_<slug>` or `wallet_<slug>`.
 3. Generate an API key — format: `rz_live_xxxxx`. The key is bound to that `appId`.
-4. Configure your **webhook URL** in the portal (used for `payment_payin_completed` and `payment_payout_completed` events).
+4. Configure your **webhook URL** in the portal (used for `payment_payin_completed`, `payment_payout_completed` and `payment_bounced` events).
 5. Pass the key on every `POST` request as the `X-API-Key` header:
 
 ```
@@ -57,7 +57,7 @@ X-API-Key: rz_live_xxxxx
 | 3   | GET    | `/payments/order/{appId}/{orderId}` | Look up an order by your own `orderId` (idempotent lookup).                          |
 | 4   | POST   | `/payments/{paymentId}/payin`       | (Optional) Accelerate confirmation — tell Rozo the buyer's on-chain `txHash`.        |
 
-### 2. Webhooks (2 outbound events)
+### 2. Webhooks (3 outbound events)
 
 Rozo will `POST` to the URL you configure at [partners.rozo.ai](https://partners.rozo.ai), signed with HMAC-SHA256.
 
@@ -65,6 +65,7 @@ Rozo will `POST` to the URL you configure at [partners.rozo.ai](https://partners
 | --------------------------- | --------------------------------------------------------------- |
 | `payment_payin_completed`   | The buyer's payment is confirmed on-chain.                      |
 | `payment_payout_completed`  | The merchant wallet has received the funds (final success).     |
+| `payment_bounced`           | The payment could not be completed as quoted, for example the payout failed. Not always final, see [Webhook](api-for-advanced-used/webhook.md). |
 
 **Signature headers**
 

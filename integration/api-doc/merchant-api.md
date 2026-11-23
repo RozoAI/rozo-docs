@@ -14,7 +14,7 @@ Use this API when you are a **merchant accepting payments**. Your receiving wall
 * [API Quick Start (Merchant)](api-quick-start-merchant.md): quote, create and reconcile a payment with your own app.
 * [Merchant API Keys](merchant-api-keys.md): Admin vs Orders scope, and using keys from an AI agent.
 * [API Doc (POSTMAN)](api-doc-postman.md): full OpenAPI spec and Postman collection.
-* [Webhook](api-for-advanced-used/webhook.md): get notified on `payment_payin_completed` and `payment_payout_completed`.
+* [Webhook](api-for-advanced-used/webhook.md): get notified on `payment_payin_completed`, `payment_payout_completed` and `payment_bounced`.
 
 ## Bridging your own funds instead?
 
