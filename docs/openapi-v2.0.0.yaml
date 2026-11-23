@@ -5,8 +5,8 @@ info:
     Cross-chain payment processing API for merchants — USDC/USDT/EURC
     transfers across Ethereum, Base, Polygon, BNB, Solana, Stellar.
 
-    Merchants only need the four endpoints listed below plus the two
-    outbound webhook events. All other backend endpoints (OTP,
+    Merchants only need the four endpoints listed below plus the
+    outbound webhook events described in the `webhooks:` section. All other backend endpoints (OTP,
     registration, dashboard stats) live in the partners.rozo.ai portal,
     not here.
 
@@ -392,7 +392,8 @@ webhooks:
         `GET /payments/{id}` — match on `data.id` to reconcile against
         your stored order.
 
-        At-most-once delivery; dedupe on `event_id`.
+        Usually delivered once, but the same event may be delivered more
+        than once. Dedupe on `data.id` + `type`, not on `event_id`.
       parameters:
         - $ref: '#/components/parameters/WebhookTimestampHeader'
         - $ref: '#/components/parameters/WebhookSignatureHeader'
@@ -437,7 +438,33 @@ webhooks:
         `data.destination.txHash` and `data.destination.confirmedAt` are
         guaranteed populated.
 
-        At-most-once delivery; dedupe on `event_id`.
+        Usually delivered once, but the same event may be delivered more
+        than once. Dedupe on `data.id` + `type`, not on `event_id`.
+      parameters:
+        - $ref: '#/components/parameters/WebhookTimestampHeader'
+        - $ref: '#/components/parameters/WebhookSignatureHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEvent'
+      responses:
+        '2XX':
+          description: Acknowledged. Any 2xx response is treated as `delivered`.
+
+  paymentBounced:
+    post:
+      summary: Payment bounced
+      description: |
+        May be sent when a payment moves into `status = payment_bounced`
+        after a payin was detected, for example because the payout
+        failed. `data` carries `bounceCode`, `errorMessage`, `errorCode`
+        and `refundStatus`. This is not always a final state: the same
+        payment may later produce `payment_payout_completed`, or another
+        `payment_bounced` with a new `event_id`. Process every
+        `payment_bounced` you receive (do not dedupe it on `data.id` +
+        `type`) and confirm the state with `GET /payments/{id}`.
       parameters:
         - $ref: '#/components/parameters/WebhookTimestampHeader'
         - $ref: '#/components/parameters/WebhookSignatureHeader'
@@ -693,17 +720,19 @@ components:
       enum:
         - payment_payin_completed
         - payment_payout_completed
+        - payment_bounced
       description: |
         Outbound webhook event types.
 
         | Event | Trigger |
         |---|---|
         | `payment_payin_completed` | Buyer's payin tx confirmed on source chain |
-        | `payment_payout_completed` | Payout tx confirmed on destination chain (terminal success) |
+        | `payment_payout_completed` | Payout tx confirmed on destination chain (success) |
+        | `payment_bounced` | The payment could not be completed as quoted, for example the payout failed. Not always final: the payment may later complete or bounce again |
 
-        Failure terminals (`payment_bounced`, `payment_expired`,
-        `payment_refunded`) are NOT delivered as webhooks — poll
-        `GET /payments/{id}` for those.
+        `payment_expired` and `payment_refunded` are not delivered as
+        webhooks, and not every bounced payment generates
+        `payment_bounced`. Poll `GET /payments/{id}` for the current state.
 
     WebhookEvent:
       type: object
@@ -718,10 +747,13 @@ components:
           type: string
           format: uuid
           description: |
-            Globally unique delivery ID. Use as the dedup key in your
-            handler — at-most-once delivery, but network retries can
-            still cause duplicates if your endpoint times out after
-            processing.
+            Globally unique ID of this delivery, equal to the `deliveryId`
+            in the dashboard delivery log. A redelivery of the same event
+            carries a new `event_id`, so do not dedupe on this field
+            alone. For `payment_payin_completed` and
+            `payment_payout_completed`, dedupe on `data.id` + `type`;
+            other event types, such as failure events, can occur more
+            than once for the same payment and must each be processed.
         type:
           $ref: '#/components/schemas/WebhookEventType'
         timestamp:
