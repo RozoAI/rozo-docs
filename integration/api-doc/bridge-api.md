@@ -23,7 +23,7 @@ Register a Wallet app and use its Orders API key from your backend. [Make Your F
 
 ## Webhooks
 
-Bridge and wallet apps get the same [Webhook](api-for-advanced-used/webhook.md) notifications (`payment_payin_completed`, `payment_payout_completed`) as merchants: register your app on [partners.rozo.ai](https://partners.rozo.ai) (you'll get a `wallet_<slug>` appId) and configure your webhook URL there. Without a registered appId, poll the payment status instead.
+Bridge and wallet apps get the same [Webhook](api-for-advanced-used/webhook.md) notifications (`payment_payin_completed`, `payment_payout_completed` and `payment_bounced`) as merchants: register your app on [partners.rozo.ai](https://partners.rozo.ai) (you'll get a `wallet_<slug>` appId) and configure your webhook URL there. Without a registered appId, poll the payment status instead.
 
 ## Looking to accept payments instead?
 
