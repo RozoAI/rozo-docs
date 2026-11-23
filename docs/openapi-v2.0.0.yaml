@@ -638,8 +638,29 @@ components:
             - payment_refunded
         errorCode:
           type: string
+          description: Legacy error code, kept for backward compatibility. Prefer `bounceCode`.
         errorMessage:
           type: string
+        bounceCode:
+          type: string
+          description: |
+            Present only when `status = payment_bounced`. A public reason
+            code, for example `destination_no_trustline`,
+            `payout_below_minimum`, `underpaid` or `payout_delayed`; a reason
+            that cannot be shown publicly is reported under a related public
+            code where one exists, otherwise as `internal_error`. New codes
+            may be added, so handle unknown values.
+        refundStatus:
+          type: string
+          enum:
+            - none
+            - pending
+            - sent
+            - confirmed
+          description: Refund state at the time of the response or event.
+        refundTxHash:
+          type: string
+          description: Present only when a refund transaction is known.
         type:
           type: string
           enum:
