@@ -22,7 +22,7 @@ There is no account to create and no private key to share. You pay from your own
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 | Zcash | ZEC on Zcash, paid to a one-time transparent (t1) address on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only |
 | TRON (Beta) | USDT or TRX on TRON, on [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) |
-| TON | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
+| TON | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton). Gram (TON, Toncoin), the network's own coin, is accepted there as a Beta only when the page shows the Gram option |
 | Arc | USDC on Arc, on [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) only |
 | Celo (Beta) | USDT or USDC on Celo, on [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) only |
 
@@ -39,6 +39,7 @@ Where each one works:
 | ZEC | [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only | No: the CLI does not create ZEC orders and points to /zec | No: points to /zec |
 | TRON (Beta): USDT or TRX | [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) | No | Yes, when `quote_invoice` reports TRON open for the invoice |
 | TON: USDT | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) | No | Yes, when `quote_invoice` reports TON open for the invoice |
+| Gram (TON, Toncoin), Beta | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton), only when the page shows the Gram option | No | No: points to [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
 | USDC on Arc | [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) only | No | No: points to [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) |
 | Celo (Beta): USDT or USDC | [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) only | No | No: points to [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) |
 

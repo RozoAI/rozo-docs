@@ -119,6 +119,7 @@ The full agent-oriented reference for these calls, including every safety check,
 | Zcash | ZEC on Zcash, to a one-time transparent (t1) address | No. Both point to [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
 | Bitcoin on-chain (Beta) | BTC on the Bitcoin network, to a one-time address | No. The MCP server points to [checkout.rozo.ai/btc-onchain](https://checkout.rozo.ai/btc-onchain) | Yes, with `?beta=btc`; see [On-chain Bitcoin (Beta)](btc-onchain.md) |
 | TRON (Beta) and TON | USDT or TRX on TRON; USDT on TON | MCP: yes, when `quote_invoice` reports the route open. CLI: no | Web only: [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
+| Gram (TON, Toncoin), Beta | Gram on TON, only when [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) shows the Gram option | No. The MCP server points to the web page | Web only: [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
 | Arc and Celo (Beta) | USDC on Arc; USDT or USDC on Celo | No. The MCP server points to the web pages | Web only: [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) and [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) |
 
 The public `payments/supported` list on the payment-record API is the intents backend's full rail list (it also shows EURC, USDT0 and other pairs). It is not the list of coins accepted for an OpenRouter or Coinbase invoice; use `quote-invoice` (`supportedSources`) or the MCP `supported_coins` tool for that.
