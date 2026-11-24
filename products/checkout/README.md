@@ -45,7 +45,7 @@ Where each one works:
 
 Celo payments are credited about 25 to 30 minutes after the payment is sent.
 
-A native coin is offered only when the total you pay, including the 1% service fee, is $1,200 or less (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
+A native coin is offered only when the total you pay, including the 1% service fee, is $3,500 or less (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
 
 ## Supported merchants
 
