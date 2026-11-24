@@ -117,10 +117,13 @@ The full agent-oriented reference for these calls, including every safety check,
 | Bitcoin | BTC over Lightning | Yes | Yes |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon | Yes, when the quote lists the coin and the invoice is within the native limit below | Yes, when `quote-invoice` lists the coin in `supportedSources` and the invoice is within the native limit below |
 | Zcash | ZEC on Zcash, to a one-time transparent (t1) address | No. Both point to [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) | Web only: [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) |
+| Bitcoin on-chain (Beta) | BTC on the Bitcoin network, to a one-time address | No. The MCP server points to [checkout.rozo.ai/btc-onchain](https://checkout.rozo.ai/btc-onchain) | Yes, with `?beta=btc`; see [On-chain Bitcoin (Beta)](btc-onchain.md) |
+| TRON (Beta) and TON | USDT or TRX on TRON; USDT on TON | MCP: yes, when `quote_invoice` reports the route open. CLI: no | Web only: [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
+| Arc and Celo (Beta) | USDC on Arc; USDT or USDC on Celo | No. The MCP server points to the web pages | Web only: [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) and [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) |
 
 The public `payments/supported` list on the payment-record API is the intents backend's full rail list (it also shows EURC, USDT0 and other pairs). It is not the list of coins accepted for an OpenRouter or Coinbase invoice; use `quote-invoice` (`supportedSources`) or the MCP `supported_coins` tool for that.
 
-USDT is not accepted on Base or Stellar. TRON and TON Alpha use dedicated web pages and are not supported by this standard agent flow. On-chain Bitcoin is not accepted; Bitcoin payments use Lightning. Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Supported OpenRouter native-coin invoices have a $3,500 limit, counted on the total you pay (`callerPays`, the invoice plus the 1% fee). Other merchants and dedicated Alpha routes have separate limits. Use the options returned by the quote for the specific invoice. If the requested native route is unavailable, create-invoice can return UNSUPPORTED_SOURCE; choose an offered stablecoin route for a larger invoice.
+USDT is not accepted on Base or Stellar. TRON (Beta) and TON use dedicated web pages; the MCP server can create those orders, but the CLI and the raw HTTP flow above cannot. On-chain Bitcoin (Beta) is a separate rail from Lightning; see [On-chain Bitcoin (Beta)](btc-onchain.md). Lightning and native coin orders include a conversion spread in the coin amount, and a native coin price is locked only until the quote expires. Supported OpenRouter native-coin invoices have a $1,200 limit, counted on the total you pay (`callerPays`, the invoice plus the 1% fee). Other merchants and dedicated web routes have separate limits. Use the options returned by the quote for the specific invoice. If the requested native route is unavailable, create-invoice can return UNSUPPORTED_SOURCE; choose an offered stablecoin route for a larger invoice.
 
 ## Fees
 
@@ -200,4 +203,4 @@ This guide documents Coinbase payment links (`payment-links/pl_*`) and payment s
 
 Contact support with the transaction hash. We reply within one business day and review recovery case by case. Recovery is not guaranteed; completion time depends on the case. Do not pay again while we investigate.
 
-TRON Alpha charges the standard 1% Checkout service fee with a $0.30 minimum, and TON Alpha charges the standard 1% only, on their dedicated web routes. UPI has separate pricing. Listing a service does not imply a partnership or endorsement.
+TRON (Beta) charges the standard 1% Checkout service fee with a $0.30 minimum, and TON charges the standard 1% only. UPI has separate pricing. Listing a service does not imply a partnership or endorsement.
