@@ -26,7 +26,7 @@ There is no account to create and no private key to share. You pay from your own
 | Arc | USDC on Arc, on [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) only |
 | Celo (Beta) | USDT or USDC on Celo, on [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) only |
 
-On-chain Bitcoin (Beta) and BTC over Lightning are separate rails: pick the one that matches the wallet you send from. USDT is not accepted on Base or Stellar. TRON (Beta) and TON are paid on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton), or through the MCP server: the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
+On-chain Bitcoin (Beta) and BTC over Lightning are separate rails: pick the one that matches the wallet you send from. USDT is not accepted on Base or Stellar. TRON (Beta) and TON are paid on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton); the MCP server can also create USDT or TRX orders on TRON and USDT orders on TON, while Gram is web only: the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
 
 Where each one works:
 
