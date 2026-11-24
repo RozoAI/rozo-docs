@@ -21,10 +21,12 @@ There is no account to create and no private key to share. You pay from your own
 | Stablecoins | USDC or USDT on Solana, Ethereum, BNB Chain, Polygon or Arbitrum; USDC on Base or Stellar |
 | Native coins | ETH on Ethereum, Base or Arbitrum; BNB on BNB Chain; SOL on Solana; POL on Polygon |
 | Zcash | ZEC on Zcash, paid to a one-time transparent (t1) address on [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only |
-| USDT on TRON (Alpha) | USDT on TRON, on [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only |
-| USDT on TON (Alpha) | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only |
+| TRON (Beta) | USDT or TRX on TRON, on [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) |
+| TON | USDT on TON, on [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) |
+| Arc | USDC on Arc, on [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) only |
+| Celo (Beta) | USDT or USDC on Celo, on [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) only |
 
-On-chain Bitcoin (Beta) and BTC over Lightning are separate rails: pick the one that matches the wallet you send from. USDT is not accepted on Base or Stellar. USDT on TRON and USDT on TON are in Alpha and are offered only on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton): the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
+On-chain Bitcoin (Beta) and BTC over Lightning are separate rails: pick the one that matches the wallet you send from. USDT is not accepted on Base or Stellar. TRON (Beta) and TON are paid on the dedicated pages [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) and [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton), or through the MCP server: the exact amount shown must arrive, so add your exchange's withdrawal fee on top of it when you withdraw, and the order window is 60 minutes.
 
 Where each one works:
 
@@ -35,10 +37,14 @@ Where each one works:
 | Stablecoins, including Arbitrum | Yes | Yes | Yes |
 | Native coins | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin | Yes, when the invoice's quote lists the coin |
 | ZEC | [checkout.rozo.ai/zec](https://checkout.rozo.ai/zec) only | No: the CLI does not create ZEC orders and points to /zec | No: points to /zec |
-| USDT on TRON (Alpha) | [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) only | No | No |
-| USDT on TON (Alpha) | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) only | No | No |
+| TRON (Beta): USDT or TRX | [checkout.rozo.ai/tron](https://checkout.rozo.ai/tron) | No | Yes, when `quote_invoice` reports TRON open for the invoice |
+| TON: USDT | [checkout.rozo.ai/ton](https://checkout.rozo.ai/ton) | No | Yes, when `quote_invoice` reports TON open for the invoice |
+| USDC on Arc | [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) only | No | No: points to [checkout.rozo.ai/arc](https://checkout.rozo.ai/arc) |
+| Celo (Beta): USDT or USDC | [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) only | No | No: points to [checkout.rozo.ai/celo](https://checkout.rozo.ai/celo) |
 
-A native coin is offered only when the total you pay, including the 1% service fee, is $3,500 or less (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
+Celo payments are credited about 25 to 30 minutes after the payment is sent.
+
+A native coin is offered only when the total you pay, including the 1% service fee, is $1,200 or less (native ETH on Ethereum needs at least $1). The order is exact-out: send exactly the coin amount shown, before its price lock ends (about an hour).
 
 ## Supported merchants
 
