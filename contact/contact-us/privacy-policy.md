@@ -142,6 +142,8 @@ We retain your personal information only for as long as necessary to:
 
 Note: Financial and transaction data may be retained for extended periods as required by applicable financial regulations, typically 5-7 years.
 
+Conversations with the payment agent on rozo.ai are stored by Rozo for support for 90 days.
+
 ## 7. Your Rights and Choices
 
 ### 7.1 Access and Correction
